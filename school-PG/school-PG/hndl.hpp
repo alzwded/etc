@@ -1,4 +1,4 @@
-inline void doRotate(int x, int y)
+void doRotate(int x, int y)
 {
 	if(!lastMouseF) return;
 	float dx = wSize.first / 2 - x;

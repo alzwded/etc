@@ -20,9 +20,10 @@ gdb.txt
 # visual studio stuff
 Debug
 ipch
-/UglyListTest/*.opensdf
-/UglyListTest/*.sdf
-/UglyListTest/*.suo
-/UglyListTest/*.filters
-/UglyListTest/*.user
+*.opensdf
+*.sdf
+*.suo
+*.filters
+*.user
 Release
+*.ncb

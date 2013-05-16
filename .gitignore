@@ -2,6 +2,7 @@
 *.slo
 *.lo
 *.o
+*.out
 
 # Compiled Dynamic libraries
 *.so
@@ -11,3 +12,17 @@
 *.lai
 *.la
 *.a
+
+# runtime files
+*.log
+gdb.txt
+
+# visual studio stuff
+Debug
+ipch
+/UglyListTest/*.opensdf
+/UglyListTest/*.sdf
+/UglyListTest/*.suo
+/UglyListTest/*.filters
+/UglyListTest/*.user
+Release

@@ -27,3 +27,9 @@ ipch
 *.user
 Release
 *.ncb
+UpgradeLog.XML
+UpgradeReport.css
+UpgradeReport.xslt
+UpgradeReport_Minus.gif
+UpgradeReport_Plus.gif
+school-PG.sln.old

@@ -42,11 +42,39 @@ void updateBullet()
 	}
 }
 
-void update(int value) {
+void updateOneCube(evil& cube)
+{
+	float newX = cube.x + cube.dx;
+	float newY = cube.y + cube.dy;
+	float newZ = cube.z + cube.dz;
+
+	if(newX <= -playFieldWidth || newX >= playFieldWidth) {
+		cube.dx = -cube.dx;
+	}
+	if(newY <= 3.5 || newY >= 30.0) {
+		cube.dy = -cube.dy;
+	}
+	if(newZ <= -playFieldLength || newZ >= playFieldLength) {
+		cube.dz = -cube.dz;
+	}
+
+	cube.x += cube.dx;
+	cube.y += cube.dy;
+	cube.z += cube.dz;
+}
+
+void updateCubes()
+{
+	std::for_each(_evilCubes.begin(), _evilCubes.end(), updateOneCube);
+}
+
+void update(int value)
+{
 	updateAnimations();
 	updatePointer();
 	updatePlayer();
 	updateBullet();
+	updateCubes();
 
 	glutPostRedisplay();
 	glutTimerFunc(25, update, 0);

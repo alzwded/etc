@@ -1,5 +1,7 @@
 int main(int argc, char** argv)
 {
+	srand(clock());
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(1000, 1000); 

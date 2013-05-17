@@ -68,6 +68,9 @@ void handleKeypress(unsigned char key, int x, int y)
 		case 'd':
 			dp.first = 1.0f;
 			break;
+		case 13:
+			spawnAllCubes();
+			break;
 	}
 }
 

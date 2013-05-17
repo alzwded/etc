@@ -1,4 +1,5 @@
 
+static const float MAX_CUBES = 42;
 
 #define LIMIT(REF, CONST, OP) do { \
 	if((REF) OP (CONST)) { \
@@ -13,6 +14,12 @@ struct sbullet {
 	float x, y, z;
 	float dx, dy, dz;
 } _blt;
+
+struct evil {
+	float x, y, z;
+	float dx, dy, dz;
+};
+std::list<evil> _evilCubes;
 
 const float PI = atan(1.0) * 4;
 const float PI_2 = PI / 2.0f;
@@ -66,4 +73,30 @@ float* normalOf(float p01, float p02, float p03, float p11, float p12, float p13
 	normalizeVector(ret);
 
 	return ret;
+}
+
+inline float getRandomFloat()
+{
+	return (float)(rand()) / (float)RAND_MAX;
+}
+
+void spawnCube()
+{
+	evil cube;
+
+	cube.x = getRandomFloat() * 2 * playFieldWidth - playFieldWidth;
+	cube.z = getRandomFloat() * 2 * playFieldLength - playFieldLength;
+	cube.y = getRandomFloat() * 30.f + 3.5f;
+
+	cube.dx = getRandomFloat() * 2.0 - 1.0;
+	cube.dy = getRandomFloat() * 2.0 - 1.0;
+	cube.dz = getRandomFloat() * 2.0 - 1.0;
+
+	_evilCubes.push_back(cube);
+}
+
+void spawnAllCubes()
+{
+	_evilCubes.clear();
+	for(int i = 0; i < MAX_CUBES; ++i) spawnCube();
 }

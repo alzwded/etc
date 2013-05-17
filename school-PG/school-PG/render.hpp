@@ -270,16 +270,41 @@ void drawDirectors()
 	} glEnd();
 }
 
-void drawCubes()
+void drawCube(evil& cube)
 {
 	glPushMatrix();
-	glTranslatef(0.f, 0.f, 0.f);
-	glRotatef(45, 0.0f, 1.0f, 0.0f);
+	glTranslatef(cube.x, cube.y, cube.z);
+	float target[3];
+	target[0] = cube.dx; target[1] = cube.dy; target[2] = cube.dz;
+	normalizeVector(target);
+	float z[3] = { 0, 0, 1 };
+	float prod = 0;
+	for(int i = 0; i < 3; ++i) {
+		prod += target[i] * z[i];
+	}
+	float angle = acos(prod);
+	if(fabs(angle) > 1.0e-5) {
+		float cross[3];
+		for(int i = 0; i < 3; ++i) {
+			cross[i] = target[(i + 1) % 3] * z[(i + 2) % 3] - target[(i + 2) % 3] * z[(i + 1) % 3];
+		}
+		glRotatef(angle, cross[0], cross[1], cross[2]);
+	}
 
+	glutSolidCube(5.0f);
+
+	glPopMatrix();
+}
+
+void drawCubes()
+{
 	GLfloat c[] = {.7f, .4f, .4f, 1.0f};
 	glMaterialfv(GL_FRONT, GL_EMISSION, c);
-	glutSolidCube(.5f);
-	glPopMatrix();
+
+	std::for_each(_evilCubes.begin(), _evilCubes.end(), drawCube);
+	/*glTranslatef(0.f, 0.f, 0.f);
+	glRotatef(45, 0.0f, 1.0f, 0.0f);
+	glutSolidCube(.5f);*/
 }
 
 void crossHairs() { 

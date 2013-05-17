@@ -32,6 +32,19 @@ void updatePlayer()
 	LIMIT(p.second, playFieldLength, >);
 }
 
+void collision(evil& cube)
+{
+	float v[3];
+	v[0] = cube.x - _blt.x;
+	v[1] = cube.y - _blt.y;
+	v[2] = cube.z - _blt.z;
+	float m = 0;
+	for(int i = 0; i < 3; ++i) m += v[i] * v[i];
+	if(m < 10.0f - sbullet_size) {
+		cube.dead = true;
+	}
+}
+
 void updateBullet()
 {
 	if(_animation && _blt.rounds) {
@@ -39,6 +52,8 @@ void updateBullet()
 		_blt.y += _blt.dy * sbullet_accel_scalar;
 		_blt.z += _blt.dz * sbullet_accel_scalar;
 		--_blt.rounds;
+
+		std::for_each(_evilCubes.begin(), _evilCubes.end(), collision);
 	}
 }
 
@@ -58,15 +73,23 @@ void updateOneCube(evil& cube)
 		cube.dz = -cube.dz;
 	}
 
-	cube.x += cube.dx;
-	cube.y += cube.dy;
-	cube.z += cube.dz;
+	static const float scale = 0.3f;
+
+	cube.x += cube.dx * scale;
+	cube.y += cube.dy * scale;
+	cube.z += cube.dz * scale;
+}
+
+inline bool isDead(evil& cube)
+{
+	return cube.dead;
 }
 
 void updateCubes()
 {
 	if(!_animation) return;
 	std::for_each(_evilCubes.begin(), _evilCubes.end(), updateOneCube);
+	_evilCubes.remove_if(isDead);
 }
 
 void update(int value)

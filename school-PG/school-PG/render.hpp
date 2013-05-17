@@ -156,10 +156,13 @@ void drawBullet()
 	glTranslatef(_blt.x, _blt.y, _blt.z);
 	glRotatef(_cameraAngle, .0f, 1.f, .0f);
 	glRotatef(_headAngle, 1.f, 0.f, 0.f);
-	glRotatef(-15, 1.f, 0.f, 0.f);
-	glBegin(GL_TRIANGLES); {
-		GLfloat c[] = {1.f, .0f, .0f, 1.0f};
-		glMaterialfv(GL_FRONT, GL_EMISSION, c);
+	GLfloat c[] = {1.f, .0f, .0f, 1.0f};
+	glMaterialfv(GL_FRONT, GL_EMISSION, c);
+
+	//glutSolidCube(sbullet_size);
+	glutSolidSphere(sbullet_size, 16, 16);
+	
+	/*glBegin(GL_TRIANGLES); {
 
 		static const float down = 0.15f;
 		static const float left = 0.3f;
@@ -177,7 +180,7 @@ void drawBullet()
 		glVertex3f(+left, -down, 0);
 		glVertex3f(-left, -down, 0);
 		delete[] n;
-	} glEnd(); 
+	} glEnd(); */
 	glPopMatrix();
 }
 
@@ -272,9 +275,11 @@ void drawDirectors()
 
 void drawCube(evil& cube)
 {
+	// remind me to fix this later
 	glPushMatrix();
 	glTranslatef(cube.x, cube.y, cube.z);
-	float target[3];
+	gluLookAt(0, 0, 0, cube.dx, cube.dy, cube.dz, 0, 1, 0);
+	/*float target[3];
 	target[0] = cube.dx; target[1] = cube.dy; target[2] = cube.dz;
 	normalizeVector(target);
 	float z[3] = { 0, 0, 1 };
@@ -289,7 +294,7 @@ void drawCube(evil& cube)
 			cross[i] = target[(i + 1) % 3] * z[(i + 2) % 3] - target[(i + 2) % 3] * z[(i + 1) % 3];
 		}
 		glRotatef(angle, cross[0], cross[1], cross[2]);
-	}
+	}*/
 
 	glutSolidCube(5.0f);
 

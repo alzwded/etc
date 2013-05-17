@@ -7,8 +7,9 @@ static const float MAX_CUBES = 42;
 	} \
 }while(0)
 
-static const float sbullet_accel_scalar = 0.9;
+static const float sbullet_accel_scalar = 2.0;
 static const float sbullet_decay = 16;
+static const float sbullet_size = 2.0f;
 struct sbullet {
 	int rounds;
 	float x, y, z;
@@ -18,6 +19,7 @@ struct sbullet {
 struct evil {
 	float x, y, z;
 	float dx, dy, dz;
+	bool dead;
 };
 std::list<evil> _evilCubes;
 
@@ -84,9 +86,11 @@ void spawnCube()
 {
 	evil cube;
 
+	cube.dead = false;
+
 	cube.x = getRandomFloat() * 2 * playFieldWidth - playFieldWidth;
 	cube.z = getRandomFloat() * 2 * playFieldLength - playFieldLength;
-	cube.y = getRandomFloat() * 30.f + 3.5f;
+	cube.y = getRandomFloat() * (30.f - 3.5f) + 3.5f;
 
 	cube.dx = getRandomFloat() * 2.0 - 1.0;
 	cube.dy = getRandomFloat() * 2.0 - 1.0;

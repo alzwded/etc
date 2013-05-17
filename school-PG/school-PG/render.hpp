@@ -105,8 +105,8 @@ void drawFloor()
 			glVertex3f(2 * i, yheight, playFieldLength);
 		}
 		
-		for(float i = -playFieldLength / 2.0f + girth/2.0;
-			i < (playFieldLength - 5.0e-3) / 2.0f + girth/2.0;
+		for(float i = -playFieldLength / 2.0f + girth/2.0f;
+			i < (playFieldLength - 5.0e-3) / 2.0f + girth/2.0f;
 			i += girth)
 		{
 			glNormal3d(westEast[0], westEast[1], westEast[2]);
@@ -323,8 +323,8 @@ void crossHairs() {
 	int viewport[4];
 	float cx, cy, cross_len = 5.0f;
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	cx = (viewport[2] - viewport[0])/2;
-	cy = (viewport[3] - viewport[1])/2;
+	cx = (viewport[2] - viewport[0])/2.f;
+	cy = (viewport[3] - viewport[1])/2.f;
 
 	glBegin(GL_LINES); {
 		glColor3f(.8f, .8f, .8f);

@@ -105,8 +105,8 @@ void drawFloor()
 			glVertex3f(2 * i, yheight, playFieldLength);
 		}
 		
-		for(float i = -playFieldLength / 2.0f + girth;
-			i < (playFieldLength - 5.0e-3) / 2.0f;
+		for(float i = -playFieldLength / 2.0f + girth/2.0;
+			i < (playFieldLength - 5.0e-3) / 2.0f + girth/2.0;
 			i += girth)
 		{
 			glNormal3d(westEast[0], westEast[1], westEast[2]);
@@ -120,6 +120,28 @@ void drawFloor()
 			glVertex3f(playFieldWidth, ydepth, 2 * i + girth);
 			glVertex3f(playFieldWidth, yheight, 2 * i + girth);
 			glVertex3f(playFieldWidth, yheight, 2 * i);
+
+			glNormal3d(northSouth[0], northSouth[1], northSouth[2]);
+			glVertex3f(-playFieldWidth - girth, ydepth, 2 * i + girth);
+			glVertex3f(-playFieldWidth, ydepth, 2 * i + girth);
+			glVertex3f(-playFieldWidth, yheight, 2 * i + girth);
+			glVertex3f(-playFieldWidth - girth, yheight, 2 * i + girth);
+			glNormal3d(northSouth[0], northSouth[1], northSouth[2]);
+			glVertex3f(playFieldWidth + girth, ydepth, 2 * i + girth);
+			glVertex3f(playFieldWidth + girth, yheight, 2 * i + girth);
+			glVertex3f(playFieldWidth, yheight, 2 * i + girth);
+			glVertex3f(playFieldWidth, ydepth, 2 * i + girth);
+			
+			glNormal3d(southNorth[0], southNorth[1], southNorth[2]);
+			glVertex3f(-playFieldWidth - girth, ydepth, 2 * i);
+			glVertex3f(-playFieldWidth - girth, yheight, 2 * i);
+			glVertex3f(-playFieldWidth, yheight, 2 * i);
+			glVertex3f(-playFieldWidth, ydepth, 2 * i);
+			glNormal3d(southNorth[0], southNorth[1], southNorth[2]);
+			glVertex3f(playFieldWidth + girth, ydepth, 2 * i);
+			glVertex3f(playFieldWidth, ydepth, 2 * i);
+			glVertex3f(playFieldWidth, yheight, 2 * i);
+			glVertex3f(playFieldWidth + girth, yheight, 2 * i);
 		}
 		delete[] northSouth;
 		delete[] westEast;

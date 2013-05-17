@@ -65,6 +65,7 @@ void updateOneCube(evil& cube)
 
 void updateCubes()
 {
+	if(!_animation) return;
 	std::for_each(_evilCubes.begin(), _evilCubes.end(), updateOneCube);
 }
 

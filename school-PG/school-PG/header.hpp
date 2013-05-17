@@ -34,20 +34,21 @@ std::pair<float, float> p = std::make_pair(0.f, -5.f);
 void normalizeVector(float* v)
 {
 	float l = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	if(l > -1.0e-5 && l < 1.0e-5) return;
 	for(int i = 0; i < 3; ++i) {
 		v[i] /= l;
 	}
 }
 
-float* normalOf(float first, ...)
+float* normalOf(float p01, float p02, float p03, float p11, float p12, float p13, float p21, float p22, float p23)
 {
-	va_list p;
-	va_start(p, first);
-
 	float* ret = (float*)calloc(3, sizeof(float));
-	float p1[3] = { first, va_arg(p, float), va_arg(p, float) };
-	float p2[3] = { va_arg(p, float), va_arg(p, float), va_arg(p, float) };
-	float p3[3] = { va_arg(p, float), va_arg(p, float), va_arg(p, float) };
+	float p1[3];// = { first, va_arg(p, float), va_arg(p, float) };
+	float p2[3];// = { va_arg(p, float), va_arg(p, float), va_arg(p, float) };
+	float p3[3];// = { va_arg(p, float), va_arg(p, float), va_arg(p, float) };
+	p1[0] = p01; p1[1] = p02; p1[2] = p03;
+	p2[0] = p11; p2[1] = p12; p2[2] = p13;
+	p3[0] = p21; p3[1] = p22; p3[2] = p23;
 
 	normalizeVector(p1);
 	normalizeVector(p2);
@@ -62,7 +63,7 @@ float* normalOf(float first, ...)
 		ret[i] = p2[(i + 1) % 3] * p3[(i + 2) % 3] - p2[(i + 2) % 3] * p3[(i + 1) % 3];
 	}
 
-	va_end(p);
+	normalizeVector(ret);
 
 	return ret;
 }

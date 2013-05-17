@@ -1,4 +1,5 @@
 
+static char _windowTitle[40];
 static const float MAX_CUBES = 42;
 
 #define LIMIT(REF, CONST, OP) do { \

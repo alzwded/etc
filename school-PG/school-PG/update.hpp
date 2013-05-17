@@ -90,6 +90,7 @@ void updateCubes()
 	if(!_animation) return;
 	std::for_each(_evilCubes.begin(), _evilCubes.end(), updateOneCube);
 	_evilCubes.remove_if(isDead);
+	if(_evilCubes.empty()) spawnAllCubes();
 }
 
 void update(int value)
@@ -99,6 +100,9 @@ void update(int value)
 	updatePlayer();
 	updateBullet();
 	updateCubes();
+
+	sprintf(_windowTitle, "JakCube - %d cubes left", _evilCubes.size());
+	glutSetWindowTitle(_windowTitle);
 
 	glutPostRedisplay();
 	glutTimerFunc(25, update, 0);

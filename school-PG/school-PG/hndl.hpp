@@ -1,8 +1,8 @@
 void doRotate(int x, int y)
 {
 	if(!lastMouseF) return;
-	float dx = wSize.first / 2 - x;
-	float dy = wSize.second / 2 - y;
+	float dx = wSize.first / 2.0f - x;
+	float dy = wSize.second / 2.0f - y;
 
 	_cameraAngle += (dx / wSize.first) * 90.0f;
 	float tentativeHeadAngle = _headAngle + (dy / wSize.second) * 90.f;

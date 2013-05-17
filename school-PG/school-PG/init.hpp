@@ -24,8 +24,8 @@ void initLight()
 	glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.5);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.4);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.5f);
+	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.4f);
 
 	GLfloat l2[] = { -20.f, 20.f, -20.f, 0.f };
 	glLightfv(GL_LIGHT1, GL_POSITION, l2);
@@ -38,8 +38,8 @@ void initLight()
 	GLfloat diff3[] = {.0f, .0f, .3f, 1.f};
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, diff3);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
-	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.5);
-	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.4);
+	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.5f);
+	glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.4f);
 
 	//GLfloat l4[] = { 20.f, 40.f, 20.f, 0.f };
 	GLfloat l4[] = { 30.f, 20.f, -30.f, 0.f };

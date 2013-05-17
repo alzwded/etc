@@ -101,7 +101,8 @@ void update(int value)
 	updateBullet();
 	updateCubes();
 
-	sprintf(_windowTitle, "JakCube - %d cubes left", _evilCubes.size());
+	sprintf_s(_windowTitle, 39, "JakCube - %d cubes left", _evilCubes.size());
+	_windowTitle[39] = NULL;
 	glutSetWindowTitle(_windowTitle);
 
 	glutPostRedisplay();

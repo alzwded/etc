@@ -9,7 +9,7 @@ static const float MAX_CUBES = 42;
 }while(0)
 
 static const float sbullet_accel_scalar = 2.0;
-static const float sbullet_decay = 16;
+static const int sbullet_decay = 16;
 static const float sbullet_size = 2.0f;
 struct sbullet {
 	int rounds;
@@ -24,7 +24,7 @@ struct evil {
 };
 std::list<evil> _evilCubes;
 
-const float PI = atan(1.0) * 4;
+const float PI = atanf(1.0) * 4;
 const float PI_2 = PI / 2.0f;
 
 static const float playFieldWidth = 40.0f;
@@ -89,13 +89,13 @@ void spawnCube()
 
 	cube.dead = false;
 
-	cube.x = getRandomFloat() * 2 * playFieldWidth - playFieldWidth;
-	cube.z = getRandomFloat() * 2 * playFieldLength - playFieldLength;
+	cube.x = getRandomFloat() * 2.f * playFieldWidth - playFieldWidth;
+	cube.z = getRandomFloat() * 2.f * playFieldLength - playFieldLength;
 	cube.y = getRandomFloat() * (30.f - 3.5f) + 3.5f;
 
-	cube.dx = getRandomFloat() * 2.0 - 1.0;
-	cube.dy = getRandomFloat() * 2.0 - 1.0;
-	cube.dz = getRandomFloat() * 2.0 - 1.0;
+	cube.dx = getRandomFloat() * 2.0f - 1.0f;
+	cube.dy = getRandomFloat() * 2.0f - 1.0f;
+	cube.dz = getRandomFloat() * 2.0f - 1.0f;
 
 	_evilCubes.push_back(cube);
 }

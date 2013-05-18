@@ -40,7 +40,7 @@ void collision(evil& cube)
 	v[2] = cube.z - _blt.z;
 	float m = 0;
 	for(int i = 0; i < 3; ++i) m += v[i] * v[i];
-	if(m < 10.0f - sbullet_size) {
+	if(m < 10.0f * sqrtf(3.0f) + sbullet_size) {
 		cube.dead = true;
 		spawnExplosion(cube);
 	}
@@ -48,13 +48,18 @@ void collision(evil& cube)
 
 void updateBullet()
 {
-	if(_animation && _blt.rounds) {
+	if(!_animation) return;
+	if(_blt.rounds) {
 		_blt.x += _blt.dx * sbullet_accel_scalar;
 		_blt.y += _blt.dy * sbullet_accel_scalar;
 		_blt.z += _blt.dz * sbullet_accel_scalar;
 		--_blt.rounds;
 
 		std::for_each(_evilCubes.begin(), _evilCubes.end(), collision);
+
+		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	} else {
+		glClearColor(.25f, .25f, 1.f, 1.f);
 	}
 }
 
@@ -67,7 +72,7 @@ void updateOneCube(evil& cube)
 	if(newX <= -playFieldWidth || newX >= playFieldWidth) {
 		cube.dx = -cube.dx;
 	}
-	if(newY <= 3.5 || newY >= 30.0) {
+	if(newY <= cube_min_Y || newY >= cube_max_Y) {
 		cube.dy = -cube.dy;
 	}
 	if(newZ <= -playFieldLength || newZ >= playFieldLength) {

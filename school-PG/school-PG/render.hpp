@@ -340,6 +340,9 @@ void crossHairs() {
 void drawExplosion(explosion& e)
 {
 	glPushMatrix();
+	
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
 
 	switch(e.decay % 6) {
 		case 0:
@@ -379,6 +382,8 @@ void drawExplosion(explosion& e)
 			break;
 	}
 	glutSolidCube(PI_2 * 0.86f * explosion_basic_radius * (explosion_decay - e.decay));
+
+	glBlendFunc(GL_ONE, GL_ZERO);
 
 	glPopMatrix();
 }

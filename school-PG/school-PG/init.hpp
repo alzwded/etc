@@ -5,7 +5,6 @@ void initLight()
 	//glEnable(GL_LIGHT1);
 	//glEnable(GL_LIGHT2);
 	//glEnable(GL_LIGHT3);
-	glEnable(GL_BLEND);
 
 	glEnable(GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT, GL_DIFFUSE);
@@ -59,6 +58,11 @@ void initModel()
 	_blt.rounds = 0;
 }
 
+void initBlending()
+{
+	glEnable(GL_BLEND);
+}
+
 void initRendering()
 {
 	initModel();
@@ -68,6 +72,9 @@ void initRendering()
 
 	// lighting
 	initLight();
+
+	// blending
+	initBlending();
 
 	glClearColor(.25f, .25f, 1.f, 1.f);
 }

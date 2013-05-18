@@ -24,8 +24,8 @@ struct evil {
 };
 std::list<evil> _evilCubes;
 
-static const float explosion_orange[] = { 1.0f, 0.5f, 0.0f, 0.8f };
-static const float explosion_yellow[] = { 0.8f, 0.8f, 0.0f, 0.8f };
+static const float explosion_orange[] = { 1.0f, 0.3f, 0.0f, 0.5f };
+static const float explosion_yellow[] = { 0.8f, 0.8f, 0.0f, 0.5f };
 static const float explosion_basic_radius = 0.13f;
 static const int explosion_decay = 25;
 struct explosion {
@@ -119,9 +119,9 @@ void spawnAllCubes()
 void spawnExplosion(evil& cube)
 {
 	explosion x;
-	x.x = cube.x;
-	x.y = cube.y;
-	x.z = cube.z;
+	x.x = 0.5f * (cube.x + _blt.x);
+	x.y = 0.5f * (cube.y + _blt.y);
+	x.z = 0.5f * (cube.z + _blt.z);
 	x.decay = explosion_decay;
 	_explosions.push_back(x);
 }

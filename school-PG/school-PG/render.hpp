@@ -337,6 +337,57 @@ void crossHairs() {
 	glPopMatrix();
 }
 
+void drawExplosion(explosion& e)
+{
+	glPushMatrix();
+
+	switch(e.decay % 6) {
+		case 0:
+		case 1:
+		case 2:
+			glMaterialfv(GL_FRONT, GL_EMISSION, explosion_orange);
+			break;
+		case 3:
+		case 4:
+		case 5:
+			glMaterialfv(GL_FRONT, GL_EMISSION, explosion_yellow);
+			break;
+	}
+
+	glTranslatef(e.x, e.y, e.z);
+	float axis[3];
+	axis[0] = getRandomFloat() * 2.0f - 1.0f;
+	axis[1] = getRandomFloat() * 2.0f - 1.0f;
+	axis[2] = getRandomFloat() * 2.0f - 1.0f;
+	normalizeVector(axis);
+	glRotatef(
+		getRandomFloat() * 180.0f,
+		axis[0], axis[1], axis[2]);
+	glutSolidSphere(explosion_basic_radius * (explosion_decay - e.decay), 16, 16);
+	
+
+	switch(e.decay % 6) {
+		case 0:
+		case 1:
+		case 2:
+			glMaterialfv(GL_FRONT, GL_EMISSION, explosion_yellow);
+			break;
+		case 3:
+		case 4:
+		case 5:
+			glMaterialfv(GL_FRONT, GL_EMISSION, explosion_orange);
+			break;
+	}
+	glutSolidCube(PI_2 * 0.86f * explosion_basic_radius * (explosion_decay - e.decay));
+
+	glPopMatrix();
+}
+
+void drawExplosions()
+{
+	std::for_each(_explosions.begin(), _explosions.end(), drawExplosion);
+}
+
 void drawScene()
 {
 	prologue();
@@ -357,6 +408,8 @@ void drawScene()
 	drawDirectors();
 
 	drawCubes();
+
+	drawExplosions();
 
 	epilogue();
 }

@@ -42,6 +42,7 @@ void collision(evil& cube)
 	for(int i = 0; i < 3; ++i) m += v[i] * v[i];
 	if(m < 10.0f - sbullet_size) {
 		cube.dead = true;
+		spawnExplosion(cube);
 	}
 }
 
@@ -93,6 +94,23 @@ void updateCubes()
 	if(_evilCubes.empty()) spawnAllCubes();
 }
 
+void decreaseDecay(explosion& e)
+{
+	e.decay--;
+}
+
+inline bool isExplosionDone(explosion& e)
+{
+	return e.decay <= 0;
+}
+
+void updateExplosions()
+{
+	if(!_animation) return;
+	std::for_each(_explosions.begin(), _explosions.end(), decreaseDecay);
+	_explosions.remove_if(isExplosionDone);
+}
+
 void update(int value)
 {
 	updateAnimations();
@@ -100,6 +118,7 @@ void update(int value)
 	updatePlayer();
 	updateBullet();
 	updateCubes();
+	updateExplosions();
 
 	sprintf_s(_windowTitle, 39, "JakCube - %d cubes left", _evilCubes.size());
 	_windowTitle[39] = NULL;

@@ -8,6 +8,18 @@ static const float MAX_CUBES = 42;
 	} \
 }while(0)
 
+static const float environment_colors[][4] =
+{
+	{ .5f, .2f, .2f, 1.0f },
+	{ .2f, .5f, .2f, 1.0f },
+	{ .2f, .2f, .5f, 1.0f },
+	{ .5f, .5f, .2f, 1.0f },
+	{ .2f, .5f, .5f, 1.0f },
+	{ .5f, .2f, .5f, 1.0f }
+};
+static const int environment_colors_N = 6;
+static int _colorIndex = 0;
+
 static const float sbullet_accel_scalar = 2.0;
 static const int sbullet_decay = 32;//16;
 static const float sbullet_size = 2.0f;
@@ -115,6 +127,7 @@ void spawnCube()
 void spawnAllCubes()
 {
 	_evilCubes.clear();
+	_colorIndex = (_colorIndex + 1) % environment_colors_N;
 	for(int i = 0; i < MAX_CUBES; ++i) spawnCube();
 }
 

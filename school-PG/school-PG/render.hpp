@@ -1,7 +1,6 @@
 void prologue()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//crossHairs();
 	glMatrixMode(GL_MODELVIEW); 
 	glLoadIdentity(); 
 	glEnable(GL_DEPTH_TEST);
@@ -16,7 +15,7 @@ void epilogue()
 void drawFloor()
 {
 	glBegin(GL_QUADS); {
-		GLfloat floorC[] = {.2f, .5f, .2f, 1.0f};
+		const GLfloat* floorC = environment_colors[_colorIndex];
 		glMaterialfv(GL_FRONT, GL_EMISSION, floorC);
 
 		static const float ydepth = -1.3f;
@@ -312,29 +311,42 @@ void drawCubes()
 	glutSolidCube(.5f);*/
 }
 
-void crossHairs() { 
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity ();
-	glOrtho (0, 800, 600, 0, 0, 1);
-	glMatrixMode (GL_MODELVIEW); 
-	glDisable(GL_DEPTH_TEST);
-	glPushMatrix();
+void crossHairs()
+{
+	glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, 100.0f, 100.0f, 0);
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_COLOR_MATERIAL);
+    glPushMatrix();
+    glLoadIdentity();
 
-	int viewport[4];
-	float cx, cy, cross_len = 5.0f;
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	cx = (viewport[2] - viewport[0])/2.f;
-	cy = (viewport[3] - viewport[1])/2.f;
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
 
-	glBegin(GL_LINES); {
-		glColor3f(.8f, .8f, .8f);
-		glLineWidth(1.0);
-		glVertex2f(cx - cross_len, cy);
-		glVertex2f(cx + cross_len, cy);
-		glVertex2f(cx, cy - cross_len);
-		glVertex2f(cx, cy + cross_len);
+	GLfloat c[] = { 1.0f, 1.0f, 1.0f, 0.5f };
+	glMaterialfv(GL_FRONT, GL_EMISSION, c);
+	glLineWidth(1.0f);
+	glPointSize(2.0f);
+	glBegin(GL_POINTS); {
+		glVertex2f(50.0f, 50.0f);
 	} glEnd();
-	glPopMatrix();
+
+	// hi score
+	glBegin(GL_LINES); {
+	} glEnd();
+
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 }
 
 void drawExplosion(explosion& e)
@@ -400,9 +412,9 @@ void drawScene()
 	glRotatef(-_headAngle, 1.0f, 0.0f, 0.0f); // yCamera
 	glRotatef(-_cameraAngle, 0.0f, 1.0f, 0.0f); //Roteste camera
 	// TODO glMultMatrix
-	glTranslatef(-p.first, 0.0f, p.second); //Muta inapoi cu 5 unitati
-	//glTranslatef(0.f, 0.f, -5.0f);
-	glPushMatrix(); //Salveaza transformarea
+	glTranslatef(-p.first, 0.0f, p.second);
+
+	//glPushMatrix(); //Salveaza transformarea
 
 	drawFloor();
 
@@ -415,6 +427,8 @@ void drawScene()
 	drawCubes();
 
 	drawExplosions();
+
+	crossHairs();
 
 	epilogue();
 }

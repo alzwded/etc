@@ -27,19 +27,6 @@ void handleMouse(int button, int state, int x, int y)
 		_blt.y = 0.f;
 		_blt.z = -p.second;
 
-		// default direction is 0, 0, -1
-/*translationVector.x :=
-          x * cosY * cosZ
-        - y * (cosX * sinZ - sinX * sinY * cosZ)
-        + z * (sinX * sinZ + cosX * sinY * cosZ);
-  translationVector.y :=
-          x * (cosY * sinZ)
-        + y * (cosX * cosZ + sinX * sinY * sinZ)
-        - z * (sinX * cosZ - cosX * sinY * sinZ);
-  translationVector.z :=
-        - x * sinY
-        + y * sinX * cosY
-        + z * cosX * cosY;*/
 		float hrad = _headAngle * PI / 180.f;
 		float crad = _cameraAngle * PI / 180.f;
 		_blt.dx = (-1) * (cos(hrad) * sin(crad));

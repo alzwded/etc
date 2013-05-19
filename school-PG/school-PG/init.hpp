@@ -1,3 +1,26 @@
+void initGL()
+{
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(1000, 1000); 
+
+	glutCreateWindow("Windur");
+}
+
+void initGL2()
+{
+	glutSetCursor(GLUT_CURSOR_NONE);
+
+	glutDisplayFunc(drawScene);
+	glutKeyboardFunc(handleKeypress);
+	glutMouseFunc(handleMouse);
+	glutPassiveMotionFunc(doRotate);
+	glutMotionFunc(doRotate);
+	glutReshapeFunc(handleResize);
+	glutKeyboardUpFunc(handleKeyRelease);
+
+	glutTimerFunc(25, update, 0); //Adauga timpul
+}
+
 void initLight()
 {
 	glEnable(GL_LIGHTING);

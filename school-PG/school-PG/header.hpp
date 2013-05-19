@@ -85,9 +85,9 @@ void normalizeVector(float* v)
 float* normalOf(float p01, float p02, float p03, float p11, float p12, float p13, float p21, float p22, float p23)
 {
 	float* ret = (float*)calloc(3, sizeof(float));
-	float p1[3];// = { first, va_arg(p, float), va_arg(p, float) };
-	float p2[3];// = { va_arg(p, float), va_arg(p, float), va_arg(p, float) };
-	float p3[3];// = { va_arg(p, float), va_arg(p, float), va_arg(p, float) };
+	float p1[3];
+	float p2[3];
+	float p3[3];
 	p1[0] = p01; p1[1] = p02; p1[2] = p03;
 	p2[0] = p11; p2[1] = p12; p2[2] = p13;
 	p3[0] = p21; p3[1] = p22; p3[2] = p23;

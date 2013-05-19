@@ -158,28 +158,8 @@ void drawBullet()
 	GLfloat c[] = {1.f, .0f, .0f, 1.0f};
 	glMaterialfv(GL_FRONT, GL_EMISSION, c);
 
-	//glutSolidCube(sbullet_size);
 	glutSolidSphere(sbullet_size, 16, 16);
 	
-	/*glBegin(GL_TRIANGLES); {
-
-		static const float down = 0.15f;
-		static const float left = 0.3f;
-
-		float* n = normalOf(0, 0, 0,
-			-left, -down, 0,
-			+left, -down, 0);
-		glNormal3d(n[0], n[1], n[2]);
-
-		glVertex3f(0, 0, 0);
-		glVertex3f(-left, -down, 0);
-		glVertex3f(+left, -down, 0);
-
-		glVertex3f(0, 0, 0);
-		glVertex3f(+left, -down, 0);
-		glVertex3f(-left, -down, 0);
-		delete[] n;
-	} glEnd(); */
 	glPopMatrix();
 }
 
@@ -274,26 +254,9 @@ void drawDirectors()
 
 void drawCube(evil& cube)
 {
-	// remind me to fix this later
 	glPushMatrix();
 	glTranslatef(cube.x, cube.y, cube.z);
 	gluLookAt(0, 0, 0, cube.dx, cube.dy, cube.dz, 0, 1, 0);
-	/*float target[3];
-	target[0] = cube.dx; target[1] = cube.dy; target[2] = cube.dz;
-	normalizeVector(target);
-	float z[3] = { 0, 0, 1 };
-	float prod = 0;
-	for(int i = 0; i < 3; ++i) {
-		prod += target[i] * z[i];
-	}
-	float angle = acos(prod);
-	if(fabs(angle) > 1.0e-5) {
-		float cross[3];
-		for(int i = 0; i < 3; ++i) {
-			cross[i] = target[(i + 1) % 3] * z[(i + 2) % 3] - target[(i + 2) % 3] * z[(i + 1) % 3];
-		}
-		glRotatef(angle, cross[0], cross[1], cross[2]);
-	}*/
 
 	glutSolidCube(5.0f);
 
@@ -306,9 +269,6 @@ void drawCubes()
 	glMaterialfv(GL_FRONT, GL_EMISSION, c);
 
 	std::for_each(_evilCubes.begin(), _evilCubes.end(), drawCube);
-	/*glTranslatef(0.f, 0.f, 0.f);
-	glRotatef(45, 0.0f, 1.0f, 0.0f);
-	glutSolidCube(.5f);*/
 }
 
 void crossHairs()
@@ -361,7 +321,6 @@ void drawExplosion(explosion& e)
 {
 	glPushMatrix();
 	
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
 
 	switch(e.decay % 6) {

@@ -2,10 +2,6 @@
 Proiect PG
 author: Vlad Mesco
 date: 17/05/2013 19:05:33
-
-TODO
-* crosshair
-* points
 */
 
 // ad-hoc include files

@@ -284,7 +284,6 @@ void crossHairs()
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
 
 	GLfloat c[] = { 1.0f, 1.0f, 1.0f, 0.5f };
@@ -307,7 +306,7 @@ void crossHairs()
 	}
 	glPopMatrix();
 
-    glDisable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ZERO);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 

@@ -41,6 +41,7 @@ void collision(evil& cube)
 	float m = 0;
 	for(int i = 0; i < 3; ++i) m += v[i] * v[i];
 	if(m < 10.0f * sqrtf(3.0f) + sbullet_size) {
+		_score += 2u + _bonus++;
 		cube.dead = true;
 		spawnExplosion(cube);
 	}
@@ -56,6 +57,10 @@ void updateBullet()
 		--_blt.rounds;
 
 		std::for_each(_evilCubes.begin(), _evilCubes.end(), collision);
+
+		if(!_blt.rounds && !_bonus) {
+			_score--;
+		}
 
 		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 	} else {
@@ -116,6 +121,23 @@ void updateExplosions()
 	_explosions.remove_if(isExplosionDone);
 }
 
+void updateScore()
+{
+	if(!_animation) return;
+	if(!_blt.rounds) {
+		if(_framesSinceLastShot++ >= score_framesWithoutShooting) {
+			_framesSinceLastShot = 0;
+			_score--;
+		}
+	}
+
+	if(_score < 0) {
+		_colorIndex = 0;
+		spawnAllCubes();
+		_score = 0;
+	}
+}
+
 void update(int value)
 {
 	updateAnimations();
@@ -124,6 +146,7 @@ void update(int value)
 	updateBullet();
 	updateCubes();
 	updateExplosions();
+	updateScore();
 
 	sprintf_s(_windowTitle, 39, "JakCube - %d cubes left", _evilCubes.size());
 	_windowTitle[39] = NULL;

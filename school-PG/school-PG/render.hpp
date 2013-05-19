@@ -336,8 +336,16 @@ void crossHairs()
 	} glEnd();
 
 	// hi score
-	glBegin(GL_LINES); {
-	} glEnd();
+	char s[6];
+	sprintf_s(s, 6, "%5d", _score);
+	glPushMatrix();
+	glTranslatef(score_leftMost, score_cellSize, 0.0f);
+	glLineWidth(3.0f);
+	glScalef(0.09f, -0.09f, 0.0f);
+	for(int i = 0; s[i] != '\0'; ++i) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, s[i]);
+	}
+	glPopMatrix();
 
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
@@ -405,16 +413,18 @@ void drawExplosions()
 	std::for_each(_explosions.begin(), _explosions.end(), drawExplosion);
 }
 
+void moveWorldAccordingToMe()
+{
+	glRotatef(-_headAngle, 1.0f, 0.0f, 0.0f); // yCamera
+	glRotatef(-_cameraAngle, 0.0f, 1.0f, 0.0f); //Roteste camera
+	glTranslatef(-p.first, 0.0f, p.second);
+}
+
 void drawScene()
 {
 	prologue();
-	
-	glRotatef(-_headAngle, 1.0f, 0.0f, 0.0f); // yCamera
-	glRotatef(-_cameraAngle, 0.0f, 1.0f, 0.0f); //Roteste camera
-	// TODO glMultMatrix
-	glTranslatef(-p.first, 0.0f, p.second);
 
-	//glPushMatrix(); //Salveaza transformarea
+	moveWorldAccordingToMe();
 
 	drawFloor();
 

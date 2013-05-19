@@ -20,6 +20,8 @@ void handleMouse(int button, int state, int x, int y)
 	case GLUT_LEFT_BUTTON: {
 		if(_blt.rounds) break;
 
+		_bonus = 0u;
+
 		_blt.rounds = sbullet_decay;
 		_blt.x = p.first;
 		_blt.y = 0.f;

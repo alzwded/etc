@@ -8,6 +8,14 @@ static const float MAX_CUBES = 42;
 	} \
 }while(0)
 
+static const signed short score_start = 10u;
+static signed short _bonus;
+static signed short _score;
+static const float score_cellSize = 10.0f;
+static const float score_leftMost = 50.0f - 2.5f * score_cellSize;
+static const int score_framesWithoutShooting = 60;
+static int _framesSinceLastShot;
+
 static const float environment_colors[][4] =
 {
 	{ .5f, .2f, .2f, 1.0f },

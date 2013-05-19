@@ -56,6 +56,8 @@ void initLight()
 void initModel()
 {
 	_blt.rounds = 0;
+	_score = score_start;
+	_framesSinceLastShot = 0;
 }
 
 void initBlending()

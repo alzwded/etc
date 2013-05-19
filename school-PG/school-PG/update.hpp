@@ -134,7 +134,7 @@ void updateScore()
 	if(_score < 0) {
 		_colorIndex = 0;
 		spawnAllCubes();
-		_score = 0;
+		_score = score_start;
 	}
 }
 

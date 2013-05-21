@@ -55,7 +55,7 @@ date:        Tue May 21 16:44:37 EEST 2013
     print_dec(N, SIZE, VALIDdEC, DEC); if(*VALIDdEC) printf("\t"); print_bin(N, SIZE); \
 }while(0)
 
-void printHex(int64_t* hex, size_t size, const char* s)
+inline void printHex(int64_t* hex, size_t size, const char* s)
 {
     char sizeSeal[3] = "";
     // 6 .. 16 5 .. 8 4 .. 1 3 .. 1 2 .. 1 0 .. 1

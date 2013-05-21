@@ -9,6 +9,7 @@ date:        Tue May 21 16:44:37 EEST 2013
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #define HI 1u
 #define LO 0u
@@ -111,7 +112,7 @@ void generate(const char* p)
         unsigned char validDec = FALSE;
         print(n, size, &dec, &validDec);
         if(validHex && validDec && dec < sizeof(int64_t) * 8) {
-            hex |= (1 << dec);
+            hex |= ((int64_t)1 << dec);
         } else {
             validHex = FALSE;
         }
@@ -119,7 +120,7 @@ void generate(const char* p)
         if(!increment(n, size)) break;
     }
     if(validHex) {
-        printf("composed HEX: %8X\n", hex);
+        printf("composed HEX: %16" PRIx64 "\n", hex);
     }
 
     printf("\n");

@@ -51,11 +51,31 @@ date:        Tue May 21 16:44:37 EEST 2013
     print_dec(N, SIZE, VALIDdEC, DEC); if(*VALIDdEC) printf("\t"); print_bin(N, SIZE); \
 }while(0)
 
+void printHex(int64_t* hex, size_t size, const char* s)
+{
+    char sizeSeal[3] = "";
+    // 6 .. 16 5 .. 8 4 .. 1 3 .. 1 2 .. 1 0 .. 1
+    size_t sizeInBytes = (size > 3) ? 2 << (size - 3) : 2;
+    sizeSeal[0] = sizeInBytes / 10u + '0';
+    sizeSeal[1] = sizeInBytes % 10u + '0';
+    char format[80] = "";
+    strcpy(format, s);
+    strcat(format, " HEX: %0");
+    strcat(format, sizeSeal);
+    strcat(format, PRIX64 "\n");
+    printf(format, *hex);
+}
+
 typedef struct element_s {
     int bit:1;
     int mutable:1;
 } element_t;
 typedef element_t* element_a;
+
+unsigned char superValidHex = TRUE;
+size_t superHexWidth = 0;
+unsigned char superFirst = TRUE;
+int64_t superHex = 0x0u;
 
 unsigned char increment(element_a n, size_t size)
 {
@@ -81,7 +101,7 @@ void generate(const char* p)
     size_t i = 0;
     size_t size = strlen(p);
     int64_t hex = 0x0u;
-    unsigned long validHex = TRUE;
+    unsigned char validHex = TRUE;
     element_a n = (element_a)malloc(sizeof(element_t) * size);
     for(; i < size; ++i) {
         switch(p[i]) {
@@ -105,6 +125,13 @@ void generate(const char* p)
         }
     }
 
+    if(superFirst) {
+        superFirst = FALSE;
+        superHexWidth = size;
+    } else if(superHexWidth != size) {
+        superValidHex = FALSE;
+    }
+
     printf("combinations for %s:\n", p);
 
     while(TRUE) {
@@ -120,16 +147,12 @@ void generate(const char* p)
         if(!increment(n, size)) break;
     }
     if(validHex) {
-        char sizeSeal[3] = "";
-        // 6 .. 16 5 .. 8 4 .. 1 3 .. 1 2 .. 1 0 .. 1
-        size_t sizeInBytes = (size > 3) ? 2 << (size - 3) : 2;
-        sizeSeal[0] = sizeInBytes / 10u + '0';
-        sizeSeal[1] = sizeInBytes % 10u + '0';
-        char format[80] = "";
-        strcpy(format, "composed HEX: %0");
-        strcat(format, sizeSeal);
-        strcat(format, PRIX64 "\n");
-        printf(format, hex);
+        printHex(&hex, size, "composed");
+        if(superValidHex) {
+            superHex |= hex;
+        }
+    } else {
+        superValidHex = FALSE;
     }
 
     printf("\n");
@@ -144,10 +167,16 @@ int main(int argc, char* argv[])
     if(argc < 2) {
         printf("usage: %s pattern1 pattern2 ...\n", argv[0]);
         return 1;
+    } else if(argc == 2) {
+        superValidHex = FALSE;
     }
 
     for(p = &argv[1]; p != last; ++p) {
         generate(*p);
+    }
+
+    if(superValidHex) {
+        printHex(&superHex, superHexWidth, "all or'd");
     }
 
     return 0;

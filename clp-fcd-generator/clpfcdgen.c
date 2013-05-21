@@ -22,6 +22,10 @@ date:        Tue May 21 16:44:37 EEST 2013
 # define FALSE 0
 #endif
 
+#ifndef BOOL
+# define BOOL unsigned char
+#endif
+
 #define print_atom(B) do{ \
     if(B.bit) putc('1', stdout); \
     else putc('0', stdout); \
@@ -72,12 +76,12 @@ typedef struct element_s {
 } element_t;
 typedef element_t* element_a;
 
-unsigned char superValidHex = TRUE;
+BOOL superValidHex = TRUE;
 size_t superHexWidth = 0;
-unsigned char superFirst = TRUE;
+BOOL superFirst = TRUE;
 int64_t superHex = 0x0u;
 
-unsigned char increment(element_a n, size_t size)
+BOOL increment(element_a n, size_t size)
 {
     element_a p = &n[size - 1];
     while(p >= n) {
@@ -101,7 +105,7 @@ void generate(const char* p)
     size_t i = 0;
     size_t size = strlen(p);
     int64_t hex = 0x0u;
-    unsigned char validHex = TRUE;
+    BOOL validHex = TRUE;
     element_a n = (element_a)malloc(sizeof(element_t) * size);
     for(; i < size; ++i) {
         switch(p[i]) {
@@ -136,7 +140,7 @@ void generate(const char* p)
 
     while(TRUE) {
         unsigned long dec = 0;
-        unsigned char validDec = FALSE;
+        BOOL validDec = FALSE;
         print(n, size, &dec, &validDec);
         if(validHex && validDec && dec < sizeof(int64_t) * 8) {
             hex |= ((int64_t)1 << dec);

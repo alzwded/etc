@@ -33,20 +33,21 @@ date:        Tue May 21 16:44:37 EEST 2013
     } \
 }while(0)
 
-#define print_dec(n, size, fail) do{ \
+#define print_dec(N, SIZE, VALID, ODEC) do{ \
     size_t i = 0; \
-    unsigned long dec = 0; \
-    if(size >= 8u*sizeof(unsigned long)) { *fail = 1; break; } \
-    for(; i < size; ++i) { \
-        dec <<= 1; \
-        if(n[i].bit) dec++; \
+    unsigned long DEC = 0; \
+    if(SIZE >= 8u*sizeof(unsigned long)) { *VALID = FALSE; break; } \
+    else *VALID = TRUE; \
+    for(; i < SIZE; ++i) { \
+        DEC <<= 1; \
+        if(n[i].bit) DEC++; \
     } \
-    printf("%d", dec); \
+    printf("%lu", DEC); \
+    *ODEC = DEC; \
 }while(0)
 
-#define print(n, size) do{ \
-    unsigned char fail = 0; \
-    print_dec(n, size, &fail); if(!fail) printf("\t"); print_bin(n, size); \
+#define print(N, SIZE, DEC, VALIDdEC) do{ \
+    print_dec(N, SIZE, VALIDdEC, DEC); if(*VALIDdEC) printf("\t"); print_bin(N, SIZE); \
 }while(0)
 
 typedef struct element_s {
@@ -78,6 +79,9 @@ void generate(const char* p)
 {
     size_t i = 0;
     size_t size = strlen(p);
+    unsigned char validDec = FALSE;
+    int64_t hex = 0x0u;
+    unsigned long validHex = TRUE;
     element_a n = (element_a)malloc(sizeof(element_t) * size);
     for(; i < size; ++i) {
         switch(p[i]) {
@@ -104,9 +108,18 @@ void generate(const char* p)
     printf("combinations for %s:\n", p);
 
     while(TRUE) {
-        print(n, size);
+        unsigned long dec = 0;
+        print(n, size, &dec, &validDec);
+        if(validHex && validDec && dec <= sizeof(int64_t) * 8) {
+            hex |= (1 << dec);
+        } else {
+            validHex = FALSE;
+        }
         printf("\n");
         if(!increment(n, size)) break;
+    }
+    if(validHex) {
+        printf("composed HEX: %8X\n", hex);
     }
 
     printf("\n");

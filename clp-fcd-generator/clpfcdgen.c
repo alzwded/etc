@@ -36,7 +36,7 @@ date:        Tue May 21 16:44:37 EEST 2013
 #define print_dec(n, size, fail) do{ \
     size_t i = 0; \
     unsigned long dec = 0; \
-    if(size >= sizeof(unsigned long)) { *fail = 1; break; } \
+    if(size >= 8u*sizeof(unsigned long)) { *fail = 1; break; } \
     for(; i < size; ++i) { \
         dec <<= 1; \
         if(n[i].bit) dec++; \

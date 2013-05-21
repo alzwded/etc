@@ -99,7 +99,7 @@ void generate(const char* p)
                 n[i].mutable = TRUE;
                 break;
             default:
-                fprintf(stderr, "unknown character %c in pattern %s\n", p[i], p);
+                fprintf(stderr, "unknown character %c (0x%X) in pattern %s\n", p[i], p[i], p);
                 exit(2);
         }
     }

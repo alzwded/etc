@@ -79,7 +79,6 @@ void generate(const char* p)
 {
     size_t i = 0;
     size_t size = strlen(p);
-    unsigned char validDec = FALSE;
     int64_t hex = 0x0u;
     unsigned long validHex = TRUE;
     element_a n = (element_a)malloc(sizeof(element_t) * size);
@@ -109,6 +108,7 @@ void generate(const char* p)
 
     while(TRUE) {
         unsigned long dec = 0;
+        unsigned char validDec = FALSE;
         print(n, size, &dec, &validDec);
         if(validHex && validDec && dec < sizeof(int64_t) * 8) {
             hex |= (1 << dec);

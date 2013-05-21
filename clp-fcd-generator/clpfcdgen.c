@@ -110,7 +110,7 @@ void generate(const char* p)
     while(TRUE) {
         unsigned long dec = 0;
         print(n, size, &dec, &validDec);
-        if(validHex && validDec && dec <= sizeof(int64_t) * 8) {
+        if(validHex && validDec && dec < sizeof(int64_t) * 8) {
             hex |= (1 << dec);
         } else {
             validHex = FALSE;

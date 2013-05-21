@@ -46,7 +46,7 @@ date:        Tue May 21 16:44:37 EEST 2013
 
 #define print(n, size) do{ \
     unsigned char fail = 0; \
-    print_dec(n, size, &fail); if(!fail) printf(" "); print_bin(n, size); \
+    print_dec(n, size, &fail); if(!fail) printf("\t"); print_bin(n, size); \
 }while(0)
 
 typedef struct element_s {

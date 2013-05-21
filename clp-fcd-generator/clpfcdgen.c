@@ -120,7 +120,16 @@ void generate(const char* p)
         if(!increment(n, size)) break;
     }
     if(validHex) {
-        printf("composed HEX: %016" PRIx64 "\n", hex);
+        char sizeSeal[3] = "";
+        // 6 .. 16 5 .. 8 4 .. 1 3 .. 1 2 .. 1 0 .. 1
+        size_t sizeInBytes = (size > 3) ? 2 << (size - 3) : 2;
+        sizeSeal[0] = sizeInBytes / 10u + '0';
+        sizeSeal[1] = sizeInBytes % 10u + '0';
+        char format[80] = "";
+        strcpy(format, "composed HEX: %0");
+        strcat(format, sizeSeal);
+        strcat(format, PRIX64 "\n");
+        printf(format, hex);
     }
 
     printf("\n");

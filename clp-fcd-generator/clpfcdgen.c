@@ -94,10 +94,10 @@ BOOL increment(element_a n, size_t size)
             continue;
         } else {
             p->bit = HI;
-            return TRUE;
+            return FALSE;
         }
     }
-    return FALSE;
+    return TRUE;
 }
 
 void generate(const char* p)
@@ -148,7 +148,7 @@ void generate(const char* p)
             validHex = FALSE;
         }
         printf("\n");
-        if(!increment(n, size)) break;
+        if(increment(n, size)) break;
     }
     if(validHex) {
         printHex(&hex, size, "composed");

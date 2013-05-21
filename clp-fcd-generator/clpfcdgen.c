@@ -120,7 +120,7 @@ void generate(const char* p)
         if(!increment(n, size)) break;
     }
     if(validHex) {
-        printf("composed HEX: %16" PRIx64 "\n", hex);
+        printf("composed HEX: %016" PRIx64 "\n", hex);
     }
 
     printf("\n");

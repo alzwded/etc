@@ -12,7 +12,7 @@
    line ::= SLECTOR<XBITS> SPACE OUTPUT<XBITS> SPACE OUTPUT<HEX> ;
    XBITS ::= 0 | 1 ;
    SPACE ::= ' ' ;
-   HEX ::= [0-9A-Z]{2} ;
+   HEX ::= [0-9A-Z]+ ; // big endian
 */
 #include <stdio.h>
 #include <stdlib.h>

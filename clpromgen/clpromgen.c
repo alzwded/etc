@@ -4,13 +4,14 @@
 
    format of input:
    line ::= SELECTOR<BITS> WHITESPACE OUTPUT<BITS> ;
-   BITS ::= BITS BIT ;
-   BIT ::= 0 | 1 | x ;
+   BITS ::= BITS BIT | BIT ;
+   BIT ::= '0' | '1' | 'x' ;
    WHITESPACE ::= (as per isspace() cstdlib function) ;
 
    format of output:
    line ::= SLECTOR<XBITS> SPACE OUTPUT<XBITS> SPACE OUTPUT<HEX> ;
-   XBITS ::= 0 | 1 ;
+   XBITS ::= XBITS XBIT | XBIT ;
+   XBIT ::= '0' | '1' ;
    SPACE ::= ' ' ;
    HEX ::= [0-9A-Z]+ ; // big endian
 */

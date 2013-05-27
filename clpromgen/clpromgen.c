@@ -169,10 +169,12 @@ void printHex(node_p* p)
 {
     unsigned int hex = 0x0;
     int bits = 0;
-    while(*p && bits++ < 4) {
+    while(bits++ < 4) {
         hex <<= 1;
-        hex |= (*p)->number;
-        *p = (*p)->next;
+        if(*p) {
+            hex |= (*p)->number;
+            *p = (*p)->next;
+        }
     }
     printf("%1X", hex);
 }

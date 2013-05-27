@@ -18,7 +18,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <assert.h>
+
+#define READ(P) do{\
+    if(!readNum( (P) )) {\
+        del_node(root);\
+        del_node(wroot);\
+        del_mat(mat);\
+        exit(10);\
+    }\
+}while(0)
 
 typedef struct node_s {
     unsigned int number:1;
@@ -66,72 +74,49 @@ mat_t new_mat()
     return ret;
 }
 
+int readNum(node_p* p)
+{
+    char c;
+    while(!isspace(c = getchar()) && !feof(stdin)) {
+        switch(c) {
+            case '0':
+                (*p)->next = new_node();
+                (*p) = (*p)->next;
+                (*p)->number = 0;
+                (*p)->mutable = 0;
+                break;
+            case '1':
+                (*p)->next = new_node();
+                (*p) = (*p)->next;
+                (*p)->number = 1;
+                (*p)->mutable = 0;
+                break;
+            case 'x':
+                (*p)->next = new_node();
+                (*p) = (*p)->next;
+                (*p)->number = 0;
+                (*p)->mutable = 1;
+                break;
+            default:
+                fprintf(stderr, "unknown character %c\n", c);
+                return 0;
+        }
+    }
+    return 1;
+}
+
 mat_t readStuff()
 {
     mat_t mat = new_mat();
     mat_t pMat = mat;
     while(!feof(stdin)) {
-        char c;
         node_p root = new_node();
-        node_p p = root;
         node_p wroot = new_node();
-        while(!isspace(c = getchar()) && !feof(stdin)) {
-            switch(c) {
-                case '0':
-                    p->next = new_node();
-                    p = p->next;
-                    p->number = 0;
-                    p->mutable = 0;
-                    break;
-                case '1':
-                    p->next = new_node();
-                    p = p->next;
-                    p->number = 1;
-                    p->mutable = 0;
-                    break;
-                case 'x':
-                    p->next = new_node();
-                    p = p->next;
-                    p->number = 0;
-                    p->mutable = 1;
-                    break;
-                default:
-                    fprintf(stderr, "unknown character %c\n", c);
-                    del_node(root);
-                    del_node(wroot);
-                    del_mat(mat);
-                    exit(10);
-            }
-        }
+        node_p p = root;
+        READ(&p);
         p = wroot;
-        while(!isspace(c = getchar()) && !feof(stdin)) {
-            switch(c) {
-                case '0':
-                    p->next = new_node();
-                    p = p->next;
-                    p->number = 0;
-                    p->mutable = 0;
-                    break;
-                case '1':
-                    p->next = new_node();
-                    p = p->next;
-                    p->number = 1;
-                    p->mutable = 0;
-                    break;
-                case 'x':
-                    p->next = new_node();
-                    p = p->next;
-                    p->number = 0;
-                    p->mutable = 1;
-                    break;
-                default:
-                    fprintf(stderr, "unknown character %c\n", c);
-                    del_node(root);
-                    del_node(wroot);
-                    del_mat(mat);
-                    exit(10);
-            }
-        }
+        READ(&p);
+
         if(!feof(stdin)) {
             pMat->next = new_mat();
             pMat = pMat->next;
@@ -148,7 +133,6 @@ mat_t readStuff()
 
 int increment(node_p p)
 {
-    assert(p);
     while(p) {
         if(!p->mutable) {
             p = p->next;
@@ -180,21 +164,23 @@ void printHex(node_p* p)
     printf("%1X", hex);
 }
 
-void print(mat_t p)
+void printNum(node_p pAddr)
 {
-    node_p pAddr = p->addrroot;
-    node_p pWord = p->word;
     for(pAddr = pAddr->next; pAddr; pAddr = pAddr->next) {
         printf("%1d", pAddr->number);
     }
+}
+
+void print(mat_t p)
+{
+    node_p pWord = p->word->next;
+    printNum(p->addrroot);
     printf(" ");
     fflush(stdout);
-    for(pWord = pWord->next; pWord; pWord = pWord->next) {
-        printf("%1d", pWord->number);
-    }
+    printNum(p->word);
     printf(" ");
     fflush(stdout);
-    for(pWord = p->word->next; pWord; printHex(&pWord));
+    for(; pWord; printHex(&pWord));
     printf("\n");
     fflush(stdout);
 }
@@ -202,13 +188,9 @@ void print(mat_t p)
 void f()
 {
     mat_t mat = readStuff();
-    mat_t p = mat;
+    mat_t p = mat->next;
     
-    for(p = p->next; p; p = p->next) {
-        do {
-            print(p);
-        } while(increment(p->addrroot));
-    }
+    for(; p; print(p), increment(p->addrroot) || (p = p->next));
 
     del_mat(mat);
 }

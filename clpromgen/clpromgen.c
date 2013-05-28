@@ -74,28 +74,28 @@ mat_t new_mat()
     return ret;
 }
 
-int readNum(node_p* p)
+int readNum(node_p p)
 {
     char c;
     while(!isspace(c = getchar()) && !feof(stdin)) {
         switch(c) {
             case '0':
-                (*p)->next = new_node();
-                (*p) = (*p)->next;
-                (*p)->number = 0;
-                (*p)->mutable = 0;
+                p->next = new_node();
+                p = p->next;
+                p->number = 0;
+                p->mutable = 0;
                 break;
             case '1':
-                (*p)->next = new_node();
-                (*p) = (*p)->next;
-                (*p)->number = 1;
-                (*p)->mutable = 0;
+                p->next = new_node();
+                p = p->next;
+                p->number = 1;
+                p->mutable = 0;
                 break;
             case 'x':
-                (*p)->next = new_node();
-                (*p) = (*p)->next;
-                (*p)->number = 0;
-                (*p)->mutable = 1;
+                p->next = new_node();
+                p = p->next;
+                p->number = 0;
+                p->mutable = 1;
                 break;
             default:
                 fprintf(stderr, "unknown character %c\n", c);
@@ -112,10 +112,8 @@ mat_t readStuff()
     while(!feof(stdin)) {
         node_p root = new_node();
         node_p wroot = new_node();
-        node_p p = root;
-        READ(&p);
-        p = wroot;
-        READ(&p);
+        READ(root);
+        READ(wroot);
 
         if(!feof(stdin)) {
             pMat->next = new_mat();

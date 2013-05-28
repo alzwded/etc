@@ -125,7 +125,6 @@ mat_t readStuff()
             del_node(wroot);
         }
     }
-    fclose(stdin);
     return mat;
 }
 

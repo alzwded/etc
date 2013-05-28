@@ -19,15 +19,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define READ(P) do{\
-    if(!readNum( (P) )) {\
-        del_node(root);\
-        del_node(wroot);\
-        del_mat(mat);\
-        exit(10);\
-    }\
-}while(0)
-
 typedef struct node_s {
     unsigned int number:1;
     unsigned int mutable:1;
@@ -112,8 +103,16 @@ mat_t readStuff()
     while(!feof(stdin)) {
         node_p root = new_node();
         node_p wroot = new_node();
-        READ(root);
-        READ(wroot);
+#define READNUM(P) do{\
+    if(!readNum( (P) )) {\
+        del_node(root);\
+        del_node(wroot);\
+        del_mat(mat);\
+        exit(10);\
+    }\
+}while(0)
+        READNUM(root);
+        READNUM(wroot);
 
         if(!feof(stdin)) {
             pMat->next = new_mat();

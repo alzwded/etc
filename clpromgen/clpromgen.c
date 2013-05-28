@@ -70,18 +70,15 @@ char readNum(node_p p)
     while(!isspace(c = getchar()) && !feof(stdin)) {
         switch(c) {
             case '0':
-                p->next = new_node();
-                p = p->next;
+                p = p->next = new_node();
                 p->number = p->mutable = 0;
                 break;
             case '1':
-                p->next = new_node();
-                p = p->next;
+                p = p->next = new_node();
                 p->number = !(p->mutable = 0);
                 break;
             case 'x':
-                p->next = new_node();
-                p = p->next;
+                p = p->next = new_node();
                 p->number = !(p->mutable = 1);
                 break;
             default:

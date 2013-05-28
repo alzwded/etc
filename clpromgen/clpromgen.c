@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+// linked list to store a trit
+//    mutable means a DC value
 typedef struct node_s {
     char number:1;
     char mutable:1;
@@ -28,6 +30,7 @@ typedef struct node_s {
 
 typedef node_t* node_p;
 
+// store the input table
 typedef struct mat_line_s {
     node_p addrroot;
     node_p word;
@@ -36,6 +39,7 @@ typedef struct mat_line_s {
 
 typedef mat_line_t* mat_t;
 
+// memory management of the table
 __inline__ void del_node(node_p p)
 {
     if(p->next) del_node(p->next);
@@ -64,23 +68,22 @@ __inline__ mat_t new_mat()
     return ret;
 }
 
+// read a trinary number
 char readNum(node_p p)
 {
     char c;
+    // read a continuous sequence of trits
     while(!isspace(c = getchar()) && !feof(stdin)) {
         switch(c) {
+            // spawn a new trit and move to it, assigning meaningful values
             case '0':
-                p = p->next = new_node();
-                p->number = p->mutable = 0;
-                break;
             case '1':
-                p = p->next = new_node();
-                p->number = !(p->mutable = 0);
-                break;
             case 'x':
                 p = p->next = new_node();
-                p->number = !(p->mutable = 1);
+                p->number = (c == '1');
+                p->mutable = (c == 'x');
                 break;
+            // input sanity check
             default:
                 fprintf(stderr, "unknown character %c\n", c);
                 return 0;
@@ -94,6 +97,7 @@ mat_t readStuff()
     mat_t mat = new_mat();
     mat_t pMat = mat;
     while(!feof(stdin)) {
+        // spawn two numbers
         node_p root = new_node();
         node_p wroot = new_node();
 #define READNUM(P) do{\
@@ -104,9 +108,14 @@ mat_t readStuff()
         exit(10);\
     }\
 }while(0)
+        // read two nums
         READNUM(root);
         READNUM(wroot);
 
+        // if end of input was reached and it was not EOL terminated,
+        //     then the input was probably created on windows and we
+        //     don't like that, so we reject the last line
+        // either that, or there was an error
         if(!feof(stdin)) {
             pMat = (pMat->next = new_mat());
             pMat->addrroot = root;
@@ -119,11 +128,14 @@ mat_t readStuff()
     return mat;
 }
 
+// increment the mutable part of the number
+// returns 0 on overflow or on bad input or if there was nothing to increment
 __inline__ char increment(node_p p)
 {
     return (p != NULL) && (!((!p->mutable) || !(p->number = !p->number)) ? 1 : increment(p->next));
 }
 
+// squash 4bits into a hex reprezentation and print it
 void printHex(node_p* p)
 {
     char hex = 0x0;
@@ -137,11 +149,13 @@ void printHex(node_p* p)
     printf("%1X", hex);
 }
 
+// print a binary number
 __inline__ void printNum(node_p pAddr)
 {
     for(; pAddr->next; printf("%1d", pAddr->next->number), pAddr = pAddr->next);
 }
 
+// print a line of the output table
 void print(mat_t p)
 {
     node_p pWord = p->word->next;
@@ -158,6 +172,9 @@ __inline__ void f()
     mat_t mat = readStuff();
     mat_t p = mat->next;
     
+    // while we have not reached the end of the input table,
+    //     print out a line of the output table and then
+    //     either increment the address part or move to the next line
     for(; p; print(p), increment(p->addrroot) || (p = p->next));
 
     del_mat(mat);

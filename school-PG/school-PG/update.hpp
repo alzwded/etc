@@ -8,6 +8,9 @@ void updateAnimations()
 	}
 }
 
+/**
+ * pastreaza cursorul in interiorul ferestrei
+ */
 void updatePointer()
 {
 	lastMouseF = false;
@@ -15,6 +18,9 @@ void updatePointer()
 	lastMouseF = true;
 }
 
+/**
+ * executa miscarea jucatorului in lumea virtuala
+ */
 void updatePlayer()
 {
 	static const float scaleM = 0.2f;
@@ -32,6 +38,9 @@ void updatePlayer()
 	LIMIT(p.second, playFieldLength, >);
 }
 
+/**
+ * check if a cube's bounding sphre intersects the bullet's
+ */
 void collision(evil& cube)
 {
 	float v[3];
@@ -41,12 +50,16 @@ void collision(evil& cube)
 	float m = 0;
 	for(int i = 0; i < 3; ++i) m += v[i] * v[i];
 	if(m < 10.0f * sqrtf(3.0f) + sbullet_size) {
-		_score += 2u + _bonus++;
+		_score += 2u + _bonus++; // acorda scor si bonus jucatorului daca a nimerit ceva
 		cube.dead = true;
 		spawnExplosion(cube);
 	}
 }
 
+/**
+ * misca glontul
+ * daca a ratat, depuncteaza jucatorul
+ */
 void updateBullet()
 {
 	if(!_animation) return;
@@ -68,6 +81,9 @@ void updateBullet()
 	}
 }
 
+/**
+ * misca un cub
+ */
 void updateOneCube(evil& cube)
 {
 	float newX = cube.x + cube.dx;
@@ -100,8 +116,8 @@ void updateCubes()
 {
 	if(!_animation) return;
 	std::for_each(_evilCubes.begin(), _evilCubes.end(), updateOneCube);
-	_evilCubes.remove_if(isDead);
-	if(_evilCubes.empty()) spawnAllCubes();
+	_evilCubes.remove_if(isDead); // sterge cuburile tintite
+	if(_evilCubes.empty()) spawnAllCubes(); // incepe nivel nou daca nu mai sunt rautati
 }
 
 void decreaseDecay(explosion& e)
@@ -114,24 +130,30 @@ inline bool isExplosionDone(explosion& e)
 	return e.decay <= 0;
 }
 
+/**
+ * updateaza exploziile
+ */
 void updateExplosions()
 {
 	if(!_animation) return;
 	std::for_each(_explosions.begin(), _explosions.end(), decreaseDecay);
-	_explosions.remove_if(isExplosionDone);
+	_explosions.remove_if(isExplosionDone); // elimina exploziile care au stat prea mult pe ecran
 }
 
+/**
+ * updateaza scorul
+ */
 void updateScore()
 {
 	if(!_animation) return;
 	if(!_blt.rounds) {
-		if(_framesSinceLastShot++ >= score_framesWithoutShooting) {
+		if(_framesSinceLastShot++ >= score_framesWithoutShooting) { // depuncteaza jucatorul daca leneveste
 			_framesSinceLastShot = 0;
 			_score--;
 		}
 	}
 
-	if(_score < 0) {
+	if(_score < 0) { // incepe joc nou daca scorul scade sub 0
 		_colorIndex = 0;
 		spawnAllCubes();
 		_score = score_start;
@@ -148,6 +170,7 @@ void update(int value)
 	updateExplosions();
 	updateScore();
 
+	// comunica cata cuburi mai sunt
 	sprintf_s(_windowTitle, 39, "JakCube - %d cubes left", _evilCubes.size());
 	_windowTitle[39] = NULL;
 	glutSetWindowTitle(_windowTitle);

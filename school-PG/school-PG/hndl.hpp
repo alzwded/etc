@@ -1,3 +1,6 @@
+/**
+ * roteste camera pe x respective pe y si normalizeaza unghiurile
+ */
 void doRotate(int x, int y)
 {
 	if(!lastMouseF) return;
@@ -6,14 +9,18 @@ void doRotate(int x, int y)
 
 	_cameraAngle += (dx / wSize.first) * 90.0f;
 	float tentativeHeadAngle = _headAngle + (dy / wSize.second) * 90.f;
+	// limiteaza camera pe axa X -- nu putem sa ne sucim gaturile, totusi
 	if(tentativeHeadAngle <= 90.f && tentativeHeadAngle >= -90.f) {
 		_headAngle = tentativeHeadAngle;
 	}
 
 	while(_cameraAngle < -360.0f) _cameraAngle += 360.0f;
-	while(_cameraAngle > 460.0f) _cameraAngle -= 360.0f;
+	while(_cameraAngle > 360.0f) _cameraAngle -= 360.0f;
 }
 
+/**
+ * trateaza butoanele mausului
+ */
 void handleMouse(int button, int state, int x, int y)
 {
 	switch(button) {
@@ -37,6 +44,9 @@ void handleMouse(int button, int state, int x, int y)
 	}
 }
 
+/**
+ * trateaza butoanele tastaturii
+ */
 void handleKeypress(unsigned char key, int x, int y)
 { 
 	switch (key) {
@@ -63,6 +73,9 @@ void handleKeypress(unsigned char key, int x, int y)
 	}
 }
 
+/**
+ * trateaza butoanele tastaturii
+ */
 void handleKeyRelease(unsigned char key, int x, int y)
 {
 	switch (key) {
@@ -77,6 +90,9 @@ void handleKeyRelease(unsigned char key, int x, int y)
 	}
 }
 
+/**
+ * adapteaza fereastra in urma redimensiunarii
+ */
 void handleResize(int w, int h)
 {
 	glViewport(0, 0, w, h);

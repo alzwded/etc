@@ -2,7 +2,6 @@
  # this proves why bash is uh... awesome?
  # lines begining with spaces are meta
  # prints a non-meta line from this file and executes it
- l=''
  sed -e '1 d ; /^  *[^ ].*/d' $0 | \
      while read line ; do \
          [ "$line" != '' ] \

@@ -22,7 +22,10 @@ echo ${a#*/} # :-??
 echo ${a%/*} # dir
 
 echo ${a//\//\\\\}
-echo ${a/\//\\\\}
+ # meta line mid-file
+ # ??? this is really weird and something or another doesn't read this
+ # line as it should. sigh :-<'
+echo ${a/\\\//\\\\}
 
 b=AAaa
 echo ${b,,*}

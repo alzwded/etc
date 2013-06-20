@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # you have three critics defined by (sweetness, saltiness, spicyness)
 # you have a list of ingredients which have modifiers for each thing
@@ -94,3 +94,48 @@ while($dish[0]-- > 0) {
 }
 
 print "final dish: ", $dish[1], " ", $dish[2], " ", $dish[3], "\n";
+print "\nfinal scores:\n";
+my $median = 0;
+my @costs = ();
+for(my $j = 0; $j < 3; ++$j) {
+    print "ciritic ", $j + 1, ": ";
+    my $cost = sqrt(($dish[1] - $critics[$j * 3 + 0])**2 +
+        ($dish[2] - $critics[$j * 3 + 1])**2 +
+        ($dish[3] - $critics[$j * 3 + 2])**2);
+    printf "-%.2f\n", $cost;
+    push @costs, $cost;
+    $median += $cost / 3.0;
+}
+printf "med: -%.2f\n", $median;
+my $sfinal = 0;
+for(my $i = 0; $i < 3; ++$i) {
+    $sfinal += ($costs[$i] - $median)**2;
+}
+printf "sigma: %.2f\n", $sfinal;
+
+print "--------- experiments ---------\n";
+my @medCritic = (
+        (($critics[0] + $critics[3] + $critics[6]) / 3),
+        (($critics[1] + $critics[4] + $critics[7]) / 3),
+        (($critics[2] + $critics[5] + $critics[8]) / 3));
+my $critMedCost = 0;
+my @critMedCosts = ();
+for(my $i = 0; $i < 3; ++$i) {
+    my $cost = sqrt(($medCritic[0] - $critics[$i * 3 + 0])**2 +
+        ($medCritic[1] - $critics[$i * 3 + 1])**2 +
+        ($medCritic[2] - $critics[$i * 3 + 2])**2);
+    $critMedCost += $cost / 3;
+    push @critMedCosts, $cost;
+}
+print "medCritic: ";
+for my $i (@medCritic) { print "$i "; }
+print "\n";
+printf "critMedCost: %.2f\n", $critMedCost;
+my $criticDiv = 0;
+for(my $i = 0; $i < 3; ++$i) {
+    $criticDiv += ($critMedCosts[$i] - $critMedCost)**2;
+}
+printf "criticDiv: %.2f\n", $criticDiv;
+my $dsigma = $sfinal * $criticDiv;
+printf "dampened avg: -%.2f\n", $median - $median * $criticDiv;
+printf "dampened sigma: %.2f\n", $dsigma;

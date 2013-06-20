@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ./simpleSedScriptTest.sh
 
 cat "$0"

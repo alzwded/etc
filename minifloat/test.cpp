@@ -7,6 +7,16 @@ int main()
     Minifloat o8(8);
     printf("7 + 8 = %d\n", (int)(o8 + o7));
     printf("12 + 7 = %d\n", (int)(Minifloat(12) + Minifloat(7)));
+    printf("18 - 5 = %d\n", (int)(Minifloat(18) - Minifloat(5)));
+    printf("36 - 9 = %d\n", (int)(Minifloat(36) - Minifloat(9)));
+    printf("1 - 3 = %d\n", (int)(Minifloat(1) - Minifloat(3)));
+    printf("20 * 40 = %d\n", (int)(Minifloat(20) * Minifloat(40)));
+    printf("60 / 20 = %d\n", (int)(Minifloat(60) / Minifloat(20)));
+    printf("6 / 2 = %d\n", (int)(Minifloat(6) / Minifloat(2)));
+    printf("1 / 0 = %d\n", (int)(Minifloat(1) / Minifloat(0)));
+    printf("-1 / 0 = %d\n", (int)(Minifloat(-1) / Minifloat(0)));
+    printf("1 / -0 = %d\n", (int)(Minifloat(1) / Minifloat(Minifloat::NEG_ZERO)));
+    printf("-1 / -0 = %d\n", (int)(Minifloat(-1) / Minifloat(Minifloat::NEG_ZERO)));
     Minifloat inf(Minifloat::INF);
     Minifloat ninf(Minifloat::NEG_INF);
     Minifloat nan(Minifloat::NAN);

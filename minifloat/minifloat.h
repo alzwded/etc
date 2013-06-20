@@ -13,7 +13,7 @@ class Minifloat {
 private:
     Minifloat() {}
 public:
-    enum SPECIAL { NAN, INF, NEG_INF };
+    enum SPECIAL { NAN, INF, NEG_INF, ZERO, NEG_ZERO };
     Minifloat(const Minifloat::SPECIAL& flags)
     {
         switch(flags) {
@@ -31,6 +31,17 @@ public:
                 _data.sign = 0;
                 _data.exponent = 0xF;
                 _data.mantissa = 0x7;
+                break;
+            case ZERO:
+                _data.sign = 0;
+                _data.exponent = 0x0;
+                _data.mantissa = 0x0;
+                break;
+            case NEG_ZERO:
+                _data.sign = 1;
+                _data.exponent = 0x0;
+                _data.mantissa = 0x0;
+                break;
         }
     }
     Minifloat(int x)
@@ -120,7 +131,75 @@ public:
         return Minifloat(((int)(*this)) + ((int)o));
     }
 
+    Minifloat operator-() const
+    {
+        Minifloat ret;
+        ret._data.sign = ~_data.sign;
+        ret._data.exponent = _data.exponent;
+        ret._data.mantissa = _data.mantissa;
+        return ret;
+    }
+
+    Minifloat operator-(Minifloat o) const
+    {
+        return operator+(-o);
+    }
+
+    Minifloat operator*(Minifloat o) const
+    {
+        if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
+        if(IsInfinity() && !o.IsInfinity()) {
+            if((int)o == 0) return Minifloat(NAN);
+            return Minifloat( ((_data.sign ^ o._data.sign) ? NEG_INF : INF) );
+        }
+        if(!IsInfinity() && o.IsInfinity()) {
+            if((int)(*this) == 0) return Minifloat(NAN);
+            return Minifloat( ((_data.sign ^ o._data.sign) ? NEG_INF : INF) );
+        }
+        if(IsInfinity() && o.IsInfinity()) {
+            if(_data.sign ^ o._data.sign) return Minifloat(NAN);
+            else return *this;
+        }
+        Minifloat ret(((int)(*this)) * ((int)o));
+        ret._data.sign = _data.sign ^ o._data.sign;
+        return ret;
+    }
+
+    Minifloat operator/(Minifloat o) const
+    {
+        if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
+        if(IsInfinity() && !o.IsInfinity()) {
+            if((int)o == 0) return Minifloat(NAN);
+            return Minifloat( ((_data.sign ^ o._data.sign) ? NEG_INF : INF) );
+        }
+        if(!IsInfinity() && o.IsInfinity()) {
+            if((int)(*this) == 0) return Minifloat(NAN);
+            return Minifloat( ((_data.sign ^ o._data.sign) ? NEG_ZERO : ZERO) );
+        }
+        if(IsInfinity() && o.IsInfinity()) {
+            if(_data.sign ^ o._data.sign) return Minifloat(NAN);
+            else return Minifloat( ((_data.sign ^ o._data.sign) ? NEG_ZERO : ZERO) );
+        }
+        if((_data.exponent ^ 0x0) == 0x0 && (_data.mantissa ^ 0x0) == 0x0
+                && (o._data.exponent ^ 0x0) == 0x0
+                && (o._data.mantissa ^ 0x0) == 0x0)
+        {
+            return Minifloat(NAN);
+        }
+        if((o._data.exponent ^ 0x0) == 0x0
+                && (o._data.mantissa ^ 0x0) == 0x0)
+        {
+            return Minifloat( ((_data.sign ^ o._data.sign) ? NEG_INF : INF) );
+        }
+
+        Minifloat ret(((int)(*this)) / ((int)o));
+        ret._data.sign = _data.sign ^ o._data.sign;
+        return ret;
+    }
+
+    // TODO also take into account #inf and #-inf and #nan
     //friend ostream& operator<<(ostream& o, const Minifloat&);
+    //friend istream& operator>>(ostream& o, const Minifloat&);
 
 };
 

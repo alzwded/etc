@@ -13,13 +13,13 @@ int main()
     Minifloat ref(1);
     Minifloat inf2(122881 << 3);
     Minifloat ninf2(-122881 << 3);
-    printf("inf: %d\n", inf.IsInfinity());
-    printf("neginf: %d\n", ninf.IsInfinity());
+    printf("inf: %d\n", inf.IsInfinity() && inf.IsInf());
+    printf("neginf: %d\n", ninf.IsInfinity() && ninf.IsNegInf());
     printf("nan: %d\n", nan.IsNaN());
     printf("ref not inf: %d\n", !ref.IsInfinity());
     printf("ref not nan: %d\n", !ref.IsNaN());
-    printf("inf from conversion: %d\n", inf2.IsInfinity());
-    printf("neginf from conversion: %d\n", ninf2.IsInfinity());
+    printf("inf from conversion: %d\n", inf2.IsInfinity() && inf2.IsInf());
+    printf("neginf from conversion: %d\n", ninf2.IsInfinity() && ninf2.IsNegInf());
     for(int i = -122880; i <= 122880; ++i) {
         Minifloat m(i);
         printf("int %7d minifloat %7d\n", i, (int)m);

@@ -113,29 +113,17 @@ for(my $i = 0; $i < 3; ++$i) {
 }
 printf "sigma: %.2f\n", $sfinal;
 
-print "--------- experiments ---------\n";
+print "--------- experiments ----------\n";
 my @medCritic = (
         (($critics[0] + $critics[3] + $critics[6]) / 3),
         (($critics[1] + $critics[4] + $critics[7]) / 3),
         (($critics[2] + $critics[5] + $critics[8]) / 3));
-my $critMedCost = 0;
-my @critMedCosts = ();
-for(my $i = 0; $i < 3; ++$i) {
-    my $cost = sqrt(($medCritic[0] - $critics[$i * 3 + 0])**2 +
-        ($medCritic[1] - $critics[$i * 3 + 1])**2 +
-        ($medCritic[2] - $critics[$i * 3 + 2])**2);
-    $critMedCost += $cost / 3;
-    push @critMedCosts, $cost;
-}
-print "medCritic: ";
-for my $i (@medCritic) { print "$i "; }
+print "averaged out critic: ";
+for my $i (@medCritic) { printf "%.2f ", $i; }
 print "\n";
-printf "critMedCost: %.2f\n", $critMedCost;
-my $criticDiv = 0;
-for(my $i = 0; $i < 3; ++$i) {
-    $criticDiv += ($critMedCosts[$i] - $critMedCost)**2;
-}
-printf "criticDiv: %.2f\n", $criticDiv;
-my $dsigma = $sfinal * $criticDiv;
-printf "dampened avg: -%.2f\n", $median - $median * $criticDiv;
-printf "dampened sigma: %.2f\n", $dsigma;
+my $medCriticAvg = sqrt(($dish[1] - $medCritic[0])**2 +
+        ($dish[2] - $medCritic[1])**2 +
+        ($dish[3] - $medCritic[2])**2);
+printf "dampened average: %.2f\n", -$medCriticAvg;
+printf "divergence from this?: %.2f\n", abs($median - $medCriticAvg) / ($median + $medCriticAvg);
+#printf "divergence from this?: %.2f\n", (1 - $medCriticAvg / $median) ** 2;

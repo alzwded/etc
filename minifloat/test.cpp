@@ -17,6 +17,10 @@ int main()
     printf("-1 / 0 = %d\n", (int)(Minifloat(-1) / Minifloat(0)));
     printf("1 / -0 = %d\n", (int)(Minifloat(1) / Minifloat(Minifloat::NEG_ZERO)));
     printf("-1 / -0 = %d\n", (int)(Minifloat(-1) / Minifloat(Minifloat::NEG_ZERO)));
+    o8 = Minifloat::NEG_INF;
+    printf("neginf assignation %d\n", (int)(o8));
+    o8 = 8;
+    printf("int 8 assignation %d\n", (int)(o8));
     Minifloat inf(Minifloat::INF);
     Minifloat ninf(Minifloat::NEG_INF);
     Minifloat nan(Minifloat::NAN);

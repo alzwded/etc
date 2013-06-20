@@ -4,6 +4,9 @@
 #define MAX_INT (0x7FFFFFFF)
 
 class Minifloat {
+public:
+    enum SPECIAL { NAN, INF, NEG_INF, ZERO, NEG_ZERO };
+private:
     typedef struct {
         unsigned sign:1;
         unsigned exponent:4;
@@ -12,11 +15,35 @@ class Minifloat {
     data_t _data;
 private:
     Minifloat() {}
-public:
-    enum SPECIAL { NAN, INF, NEG_INF, ZERO, NEG_ZERO };
-    Minifloat(const Minifloat::SPECIAL& flags)
+
+    void Assign(const int X)
     {
-        switch(flags) {
+        int x = X;
+        if(x < 0) {
+            _data.sign = 1;
+            x = -x;
+        } else {
+            _data.sign = 0;
+        }
+        if(x <= 7) {
+            _data.exponent = 0;
+            _data.mantissa = x;
+            return;
+        }
+        _data.exponent = 1;
+        while(x > 0xF) {
+            x >>= 1;
+            _data.exponent++;
+            if((_data.exponent ^ 0xF) == 0x0) {
+                _data.mantissa = 0;
+                return;
+            }
+        }
+        _data.mantissa = 0x7 & x;
+    }
+    void Assign(const Minifloat::SPECIAL& flag)
+    {
+        switch(flag) {
             case NEG_INF:
                 _data.sign = 1;
                 _data.exponent = 0xF;
@@ -44,29 +71,14 @@ public:
                 break;
         }
     }
-    Minifloat(int x)
+public:
+    Minifloat(const Minifloat::SPECIAL& flag)
     {
-        if(x < 0) {
-            _data.sign = 1;
-            x = -x;
-        } else {
-            _data.sign = 0;
-        }
-        if(x <= 7) {
-            _data.exponent = 0;
-            _data.mantissa = x;
-            return;
-        }
-        _data.exponent = 1;
-        while(x > 0xF) {
-            x >>= 1;
-            _data.exponent++;
-            if((_data.exponent ^ 0xF) == 0x0) {
-                _data.mantissa = 0;
-                return;
-            }
-        }
-        _data.mantissa = 0x7 & x;
+        Assign(flag);
+    }
+    Minifloat(const int x)
+    {
+        Assign(x);
     }
 
     bool IsInfinity() const
@@ -113,6 +125,7 @@ public:
         else return magic;
     }
 
+    // TODO investigate this can be implemented in any other way
     Minifloat operator+(Minifloat o) const
     {
         if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
@@ -197,10 +210,25 @@ public:
         return ret;
     }
 
+    Minifloat& operator=(const int x)
+    {
+        Assign(x);
+        return *this;
+    }
+
+    Minifloat& operator=(const Minifloat::SPECIAL& flag)
+    {
+        Assign(flag);
+        return *this;
+    }
+
+
     // TODO also take into account #inf and #-inf and #nan
     //friend ostream& operator<<(ostream& o, const Minifloat&);
     //friend istream& operator>>(ostream& o, const Minifloat&);
 
 };
+
+typedef Minifloat minifloat_t;
 
 #endif

@@ -94,7 +94,13 @@ public:
 
     Minifloat operator+(Minifloat o) const
     {
-        // TODO infinity, NaN
+        if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
+        if(IsInfinity() && !o.IsInfinity()) return *this;
+        if(!IsInfinity() && o.IsInfinity()) return o;
+        if(IsInfinity() && o.IsInfinity()) {
+            if(_data.sign ^ o._data.sign) return Minifloat(NAN);
+            else return *this;
+        }
         return Minifloat(((int)(*this)) + ((int)o));
     }
 

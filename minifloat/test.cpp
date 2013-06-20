@@ -3,6 +3,10 @@
 
 int main()
 {
+    Minifloat o7(7);
+    Minifloat o8(8);
+    printf("7 + 8 = %d\n", (int)(o8 + o7));
+    printf("12 + 7 = %d\n", (int)(Minifloat(12) + Minifloat(7)));
     Minifloat inf(Minifloat::INF);
     Minifloat ninf(Minifloat::NEG_INF);
     Minifloat nan(Minifloat::NAN);

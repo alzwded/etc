@@ -4,11 +4,14 @@
 #define MAX_INT (0x7FFFFFFF)
 
 class Minifloat {
-    struct {
+    typedef struct {
         unsigned sign:1;
         unsigned exponent:4;
         unsigned mantissa:3;
-    } _data;
+    } data_t;
+    data_t _data;
+private:
+    Minifloat() {}
 public:
     enum SPECIAL { NAN, INF, NEG_INF };
     Minifloat(const Minifloat::SPECIAL& flags)
@@ -55,12 +58,12 @@ public:
         _data.mantissa = 0x7 & x;
     }
 
-    bool IsInfinity()
+    bool IsInfinity() const
     {
         return (_data.exponent ^ 0xF) == 0x0 && (_data.mantissa ^ 0x0) == 0x0;
     }
 
-    bool IsNaN()
+    bool IsNaN() const
     {
         return (_data.exponent ^ 0xF) == 0x0 && (_data.mantissa ^ 0x0) != 0x0;
     }
@@ -69,7 +72,7 @@ public:
     {
     }
 
-    operator int()
+    operator int() const
     {
         /* n = (sign ? -1 : 1) * 2^exp * 1.(mantissa); */
         /* subnormal number: mantissa is extended with 0. instead */
@@ -87,6 +90,12 @@ public:
                  << ((_data.exponent) ? _data.exponent - 1 : 0));
         if(_data.sign) return -magic;
         else return magic;
+    }
+
+    Minifloat operator+(Minifloat o) const
+    {
+        // TODO infinity, NaN
+        return Minifloat(((int)(*this)) + ((int)o));
     }
 
     //friend ostream& operator<<(ostream& o, const Minifloat&);

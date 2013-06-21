@@ -16,6 +16,9 @@ int main()
 {
     Minifloat o7(7);
     Minifloat o8(8);
+    iTEST("130 + 20 = ", (int)(Minifloat(130) + Minifloat(20)), 144); // exp 5, sig 1
+    iTEST("20 + 130 = ", (int)(Minifloat(20) + Minifloat(130)), 144); // exp 4 (why???), sig 1
+    iTEST("10 - 128 = ", (int)(Minifloat(10) - Minifloat(128)), -104);
     iTEST("8 + 7 = ", (int)(o8 + o7), 15);
     iTEST("7 + 8 = ", (int)(o7 + o8), 15);
     iTEST("12 + 7 = ", (int)(Minifloat(12) + Minifloat(7)), 18);
@@ -26,6 +29,12 @@ int main()
     iTEST("18 - 5 = ", (int)(Minifloat(18) - Minifloat(5)), 13);
     iTEST("36 - 9 = ", (int)(Minifloat(36) - Minifloat(9)), 26);
     iTEST("1 - 3 = ", (int)(Minifloat(1) - Minifloat(3)), -2);
+    iTEST("10 + 65 = ", (int)(Minifloat(10) + Minifloat(65)), 72);
+    iTEST("65 + 10 = ", (int)(Minifloat(65) + Minifloat(10)), 72);
+    iTEST("1 - 18 = ", (int)(Minifloat(1) - Minifloat(18)), -16);
+    iTEST("1 - 20 = ", (int)(Minifloat(1) - Minifloat(20)), -18);
+    iTEST("-104 + 128 = ", (int)(Minifloat(-124) + Minifloat(128)), 36);
+    iTEST("-128 + 10 = ", (int)(Minifloat(-128) + Minifloat(10)), -112);
     // TODO to be determined what this should result, right now it
     //    depends on int-conversion and _real_ hard-core minifloat
     //    math might cause round-off errors beyond those caused by the

@@ -133,6 +133,7 @@ public:
             else return *this;
         }
         //return Minifloat(((int)(*this)) + ((int)o));
+        unsigned char signs;
         unsigned char left = _data.mantissa;
         unsigned char right = o._data.mantissa;
         unsigned char rExponent = o._data.exponent;
@@ -142,7 +143,13 @@ public:
         if(rExponent > 0) right |= 0x8, rExponent--;
         left <<= MF_GUARD_BITS; // guard
         right <<= MF_GUARD_BITS; // guard
-        while(rExponent < lExponent) rExponent++, right >>= 1;
+        if(rExponent < lExponent) {
+            rExponent ^= lExponent, lExponent ^= rExponent, rExponent ^= lExponent;
+            right ^= left, left ^= right, right ^= left;
+            signs = (_data.sign << 1) | o._data.sign;
+        } else {
+            signs = (o._data.sign << 1) | _data.sign;
+        }
         while(rExponent > lExponent) {
             rExponent--;
             rCarry <<= 1;
@@ -163,26 +170,31 @@ public:
         } else if(left > right) {
             if(rCarry) {
                 rCarry -= 1;
-                unsigned char mask = 0x80;
+                /*unsigned char mask = 0x80;
                 while(!(mask & left)) {
                     right ^= mask;
                     mask >>= 1;
                 }
-                if(_data.sign) ret._data.sign = 0;
+                right ^= mask;*/
+                left = right - left;
+                if(signs & 0x1) ret._data.sign = 0;
                 else ret._data.sign = 1;
             } else {
                 left -= right;
-                if(_data.sign) ret._data.sign = 1;
+                if(signs & 0x1) ret._data.sign = 1;
                 else ret._data.sign = 0;
             }
         } else {
             left = right - left;
-            if(_data.sign) ret._data.sign = 0;
+            if(signs & 0x1) ret._data.sign = 0;
             else ret._data.sign = 1;
         }
 
         // remove guard and adapt exponent
         if(rCarry) lExponent++;
+        /*unsigned char diff = _data.exponent - o._data.exponent;
+        if(diff < 0) diff = -diff;
+        if(diff >= MF_GUARD_BITS) lExponent++;*/
         unsigned char shifted = 0;
         while((0x1 & left) == 0x0 && (left ^ 0xFF) != 0x0 && shifted < MF_GUARD_BITS) {
             left >>= 1;

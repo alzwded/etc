@@ -182,6 +182,7 @@ public:
         }
 
         // remove guard and adapt exponent
+        if(rCarry) lExponent++;
         unsigned char shifted = 0;
         while((0x1 & left) == 0x0 && (left ^ 0xFF) != 0x0 && shifted < MF_GUARD_BITS) {
             left >>= 1;
@@ -189,8 +190,10 @@ public:
             rCarry >>= 1;
             shifted++;
         }
-        if(shifted < MF_GUARD_BITS) lExponent -= MF_GUARD_BITS - shifted - 1;
-        while(lExponent < 0) lExponent++, left <<= 1;
+        if(shifted < MF_GUARD_BITS) {
+            lExponent -= (MF_GUARD_BITS - 1) - shifted;
+            while(lExponent < 0) lExponent++, left <<= 1;
+        }
 
         ret._data.exponent = lExponent;
 #define MF_RETURN_STATEMENT return ret

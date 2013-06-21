@@ -12,7 +12,7 @@ representing integers as 8bit floating point numbers
 
 http://en.wikipedia.org/wiki/Minifloat
 
-from the message of commit # 7a96e41dde :
+from the message of commit # 7a96e41dde7be5d6f8758b0bcba22b0f4e5fede0 :
 * currently, tests pass, however there might be cases where they don't
 * ergo, TODO: write tests where +/- fails before moving on to removing the int-conversion dependency in multiply and divide.
 * note for above: test when then exponent difference is greater than what's currently tested. Right now it tests for diff=0,1,2

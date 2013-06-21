@@ -1,7 +1,8 @@
 #ifndef _MINIFLOAT_H
 #define _MINIFLOAT_H
 
-#define MAX_INT (0x7FFFFFFF)
+#define MF_INF_INT (0x7FFFFFFF)
+#define MF_GUARD_BITS 3
 
 class Minifloat {
 public:
@@ -25,21 +26,11 @@ private:
         } else {
             _data.sign = 0;
         }
-        if(x <= 7) {
-            _data.exponent = 0;
-            _data.mantissa = x;
-            return;
-        }
-        _data.exponent = 1;
-        while(x > 0xF) {
-            x >>= 1;
-            _data.exponent++;
-            if((_data.exponent ^ 0xF) == 0x0) {
-                _data.mantissa = 0;
-                return;
-            }
-        }
-        _data.mantissa = 0x7 & x;
+        _data.exponent = 0;
+#define MF_RETURN_STATEMENT return
+#define MF_DATA _data
+#define MF_X x
+#include "minifloat_reduce.h"
     }
     void Assign(const Minifloat::SPECIAL& flag)
     {
@@ -114,8 +105,8 @@ public:
            0 0000 111 = 0.111 * 2^3 = 7
            0 0010 001 = 1.001 * 2^4 = 18
            */
-        if(IsInfinity()) if(_data.sign) return -MAX_INT;
-                         else return MAX_INT;
+        if(IsInfinity()) if(_data.sign) return -MF_INF_INT;
+                         else return MF_INF_INT;
         if(IsNaN()) return 0;
         unsigned int magic = 
             (((((_data.exponent ^ 0x0) == 0x0) ? 0x0 : 0x8)
@@ -141,7 +132,54 @@ public:
             if(_data.sign ^ o._data.sign) return Minifloat(NAN);
             else return *this;
         }
-        return Minifloat(((int)(*this)) + ((int)o));
+        //return Minifloat(((int)(*this)) + ((int)o));
+        unsigned char left = _data.mantissa;
+        unsigned char right = o._data.mantissa;
+        unsigned char rExponent = o._data.exponent;
+        unsigned char lExponent = _data.exponent;
+        unsigned char rCarry = 0;
+        if(lExponent > 0) left |= 0x8, lExponent--;
+        if(rExponent > 0) right |= 0x8, rExponent--;
+        left <<= MF_GUARD_BITS; // guard
+        right <<= MF_GUARD_BITS; // guard
+        while(rExponent < lExponent) rExponent++, right >>= 1;
+        while(rExponent > lExponent) {
+            rExponent--;
+            rCarry = 0x80 & right;
+            right <<= 1;
+        }
+
+        Minifloat ret;
+
+        if(!o._data.sign && !_data.sign) (rCarry ^= (0x80 & left) & (0x80 & right)), left += right, ret._data.sign = 0;
+        else if(_data.sign && o._data.sign) (rCarry ^= (0x80 & left) & (0x80 & right)), left += right, ret._data.sign = 1;
+        else if(left > right) {
+            left -= right;
+            if(_data.sign) ret._data.sign = 1;
+            else ret._data.sign = 0;
+        } else {
+            left = right - left;
+            if(_data.sign) ret._data.sign = 0;
+            else ret._data.sign = 1;
+        }
+
+        // remove guard and adapt exponent
+        unsigned char shifted = 0;
+        while((0x1 & left) == 0x0 && (left ^ 0xFF) != 0x0 && shifted < MF_GUARD_BITS) {
+            left >>= 1;
+            left |= rCarry;
+            rCarry = 0;
+            shifted++;
+        }
+        if(shifted < MF_GUARD_BITS) lExponent -= MF_GUARD_BITS - shifted - 1;
+        while(lExponent < 0) lExponent++, left <<= 1;
+
+        ret._data.exponent = lExponent;
+#define MF_RETURN_STATEMENT return ret
+#define MF_DATA ret._data
+#define MF_X left
+# include "minifloat_reduce.h"
+        return ret;
     }
 
     Minifloat operator-() const

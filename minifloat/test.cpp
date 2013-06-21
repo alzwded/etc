@@ -5,8 +5,13 @@ int main()
 {
     Minifloat o7(7);
     Minifloat o8(8);
-    printf("7 + 8 = %d\n", (int)(o8 + o7));
+    printf("8 + 7 = %d\n", (int)(o8 + o7));
+    printf("7 + 8 = %d\n", (int)(o7 + o8));
     printf("12 + 7 = %d\n", (int)(Minifloat(12) + Minifloat(7)));
+    printf("9 + 20 = %d\n", (int)(Minifloat(9) + Minifloat(20)));
+    printf("20 + 9 = %d\n", (int)(Minifloat(20) + Minifloat(9)));
+    printf("10 + 36 = %d\n", (int)(Minifloat(10) + Minifloat(36)));
+    printf("36 + 10 = %d\n", (int)(Minifloat(36) + Minifloat(10)));
     printf("18 - 5 = %d\n", (int)(Minifloat(18) - Minifloat(5)));
     printf("36 - 9 = %d\n", (int)(Minifloat(36) - Minifloat(9)));
     printf("1 - 3 = %d\n", (int)(Minifloat(1) - Minifloat(3)));
@@ -18,9 +23,9 @@ int main()
     printf("1 / -0 = %d\n", (int)(Minifloat(1) / Minifloat(Minifloat::NEG_ZERO)));
     printf("-1 / -0 = %d\n", (int)(Minifloat(-1) / Minifloat(Minifloat::NEG_ZERO)));
     o8 = Minifloat::NEG_INF;
-    printf("neginf assignation %d\n", (int)(o8));
+    printf("neginf assignation: %d\n", (int)(o8));
     o8 = 8;
-    printf("int 8 assignation %d\n", (int)(o8));
+    printf("int 8 assignation: %d\n", (int)(o8));
     Minifloat inf(Minifloat::INF);
     Minifloat ninf(Minifloat::NEG_INF);
     Minifloat nan(Minifloat::NAN);

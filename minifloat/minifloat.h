@@ -133,6 +133,7 @@ public:
             else return *this;
         }
         //return Minifloat(((int)(*this)) + ((int)o));
+        unsigned char signs;
         unsigned char left = _data.mantissa;
         unsigned char right = o._data.mantissa;
         unsigned char rExponent = o._data.exponent;
@@ -142,37 +143,69 @@ public:
         if(rExponent > 0) right |= 0x8, rExponent--;
         left <<= MF_GUARD_BITS; // guard
         right <<= MF_GUARD_BITS; // guard
-        while(rExponent < lExponent) rExponent++, right >>= 1;
+        if(rExponent < lExponent) {
+            rExponent ^= lExponent, lExponent ^= rExponent, rExponent ^= lExponent;
+            right ^= left, left ^= right, right ^= left;
+            signs = (_data.sign << 1) | o._data.sign;
+        } else {
+            signs = (o._data.sign << 1) | _data.sign;
+        }
         while(rExponent > lExponent) {
             rExponent--;
-            rCarry = 0x80 & right;
+            rCarry <<= 1;
+            rCarry |= (0x80 & right) != 0;
             right <<= 1;
         }
 
         Minifloat ret;
 
-        if(!o._data.sign && !_data.sign) (rCarry ^= (0x80 & left) & (0x80 & right)), left += right, ret._data.sign = 0;
-        else if(_data.sign && o._data.sign) (rCarry ^= (0x80 & left) & (0x80 & right)), left += right, ret._data.sign = 1;
-        else if(left > right) {
-            left -= right;
-            if(_data.sign) ret._data.sign = 1;
-            else ret._data.sign = 0;
+        if(!o._data.sign && !_data.sign) {
+            rCarry += (left & 0x80) && (right & 0x80);
+            left += right;
+            ret._data.sign = 0;
+        } else if(_data.sign && o._data.sign) {
+            rCarry += (left & 0x80) && (right & 0x80);
+            left += right;
+            ret._data.sign = 1;
+        } else if(left > right) {
+            if(rCarry) {
+                rCarry -= 1;
+                /*unsigned char mask = 0x80;
+                while(!(mask & left)) {
+                    right ^= mask;
+                    mask >>= 1;
+                }
+                right ^= mask;*/
+                left = right - left;
+                if(signs & 0x1) ret._data.sign = 0;
+                else ret._data.sign = 1;
+            } else {
+                left -= right;
+                if(signs & 0x1) ret._data.sign = 1;
+                else ret._data.sign = 0;
+            }
         } else {
             left = right - left;
-            if(_data.sign) ret._data.sign = 0;
+            if(signs & 0x1) ret._data.sign = 0;
             else ret._data.sign = 1;
         }
 
         // remove guard and adapt exponent
+        if(rCarry) lExponent++;
+        /*unsigned char diff = _data.exponent - o._data.exponent;
+        if(diff < 0) diff = -diff;
+        if(diff >= MF_GUARD_BITS) lExponent++;*/
         unsigned char shifted = 0;
         while((0x1 & left) == 0x0 && (left ^ 0xFF) != 0x0 && shifted < MF_GUARD_BITS) {
             left >>= 1;
-            left |= rCarry;
-            rCarry = 0;
+            left |= (rCarry & 0x1) << 7;
+            rCarry >>= 1;
             shifted++;
         }
-        if(shifted < MF_GUARD_BITS) lExponent -= MF_GUARD_BITS - shifted - 1;
-        while(lExponent < 0) lExponent++, left <<= 1;
+        if(shifted < MF_GUARD_BITS) {
+            lExponent -= (MF_GUARD_BITS - 1) - shifted;
+            while(lExponent < 0) lExponent++, left <<= 1;
+        }
 
         ret._data.exponent = lExponent;
 #define MF_RETURN_STATEMENT return ret

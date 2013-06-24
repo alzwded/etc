@@ -217,7 +217,6 @@ public:
         unsigned char right = o._data.mantissa;
         unsigned char rExponent = o._data.exponent;
         unsigned char lExponent = _data.exponent;
-        unsigned char rCarry = 0;
 
         if(lExponent > rExponent) {
             if(lExponent > 0) {
@@ -258,14 +257,16 @@ public:
                     mask >>= 1;
                 }
                 // normalize?
+                while(rExponent && mask > 0x8) {
+                    mask >>= 1;
+                    rExponent--;
+                }
                 while(rExponent && mask <= 0x8) {
                     mask <<= 1;
                     left <<= 1;
                 }
-                //if(mask <= 0x4 && left >= 0x8) rExponent++;
-                //if(shifted >= rExponent && rExponent > 0 && left > 0x7) rExponent--, left <<= 1;
             } else if(MF_GUARD_BITS <= (lExponent - rExponent)) {
-                if(left > 0x7) rExponent++;
+                if(left < 0xF && left > 0x7) rExponent++;
             }
             ret._data.exponent = rExponent;
         } else {

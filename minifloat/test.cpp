@@ -114,6 +114,7 @@ TESTSTART(substraction)
     iTEST("(?) 128 - 96 = ", (int)(Minifloat(128) - Minifloat(96)), 32);
     iTEST("128 - 88 = ", (int)(Minifloat(128) - Minifloat(88)), 40);
     iTEST("128 - 80 = ", (int)(Minifloat(128) - Minifloat(80)), 48);
+    iTEST("128 - 10 = ", (int)(Minifloat(128) - Minifloat(10)), 112);
     iTEST("-128 + 10 = ", (int)(Minifloat(-128) + Minifloat(10)), -112);
     iTEST("-128 + 128 = ", (int)(Minifloat(-128) + Minifloat(128)), 0);
     iTEST("10 - 128 = ", (int)(Minifloat(10) - Minifloat(128)), -112);

@@ -116,7 +116,6 @@ public:
         else return magic;
     }
 
-    // TODO investigate this can be implemented in any other way
     Minifloat operator+(Minifloat o) const
     {
         if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
@@ -132,7 +131,99 @@ public:
             if(_data.sign ^ o._data.sign) return Minifloat(NAN);
             else return *this;
         }
+
+        if(_data.sign && !o._data.sign) return o.operator-(*this);
+        if(!_data.sign && o._data.sign) return operator-(o);
+
         //return Minifloat(((int)(*this)) + ((int)o));
+        unsigned char signs;
+        unsigned char left = _data.mantissa;
+        unsigned char right = o._data.mantissa;
+        unsigned char rExponent = o._data.exponent;
+        unsigned char lExponent = _data.exponent;
+        unsigned char rCarry = 0;
+        if(lExponent > 0) left |= 0x8, lExponent--;
+        if(rExponent > 0) right |= 0x8, rExponent--;
+        left <<= MF_GUARD_BITS; // guard
+        right <<= MF_GUARD_BITS; // guard
+        if(rExponent < lExponent) {
+            rExponent ^= lExponent, lExponent ^= rExponent, rExponent ^= lExponent;
+            right ^= left, left ^= right, right ^= left;
+            signs = (_data.sign << 1) | o._data.sign;
+        } else {
+            signs = (o._data.sign << 1) | _data.sign;
+        }
+        while(rExponent > lExponent) {
+            rExponent--;
+            rCarry <<= 1;
+            rCarry |= (0x80 & right) != 0;
+            right <<= 1;
+        }
+
+        Minifloat ret;
+
+        if(!o._data.sign && !_data.sign) {
+            rCarry += (left & 0x80) && (right & 0x80);
+            left += right;
+            ret._data.sign = 0;
+        } else if(_data.sign && o._data.sign) {
+            rCarry += (left & 0x80) && (right & 0x80);
+            left += right;
+            ret._data.sign = 1;
+        }
+
+        // remove guard and adapt exponent
+        if(rCarry) lExponent++;
+        /*unsigned char diff = _data.exponent - o._data.exponent;
+        if(diff < 0) diff = -diff;
+        if(diff >= MF_GUARD_BITS) lExponent++;*/
+        unsigned char shifted = 0;
+        while((0x1 & left) == 0x0 && (left ^ 0xFF) != 0x0 && shifted < MF_GUARD_BITS) {
+            left >>= 1;
+            left |= (rCarry & 0x1) << 7;
+            rCarry >>= 1;
+            shifted++;
+        }
+        if(shifted < MF_GUARD_BITS) {
+            lExponent -= (MF_GUARD_BITS - 1) - shifted;
+            while(lExponent < 0) lExponent++, left <<= 1;
+        }
+
+        ret._data.exponent = lExponent;
+#define MF_RETURN_STATEMENT return ret
+#define MF_DATA ret._data
+#define MF_X left
+# include "minifloat_reduce.h"
+        return ret;
+    }
+
+    Minifloat operator-() const
+    {
+        Minifloat ret;
+        ret._data.sign = ~_data.sign;
+        ret._data.exponent = _data.exponent;
+        ret._data.mantissa = _data.mantissa;
+        return ret;
+    }
+
+    Minifloat operator-(Minifloat o) const
+    {
+        if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
+        if(IsInfinity() && !o.IsInfinity()) {
+            if((int)o == 0) return Minifloat(NAN);
+            return *this;
+        }
+        if(!IsInfinity() && o.IsInfinity()) {
+            if((int)(*this) == 0) return Minifloat(NAN);
+            return o;
+        }
+        if(IsInfinity() && o.IsInfinity()) {
+            if(_data.sign ^ o._data.sign) return Minifloat(NAN);
+            else return *this;
+        }
+
+        if((_data.sign ^ o._data.sign) == 0) return operator+(o);
+        
         unsigned char signs;
         unsigned char left = _data.mantissa;
         unsigned char right = o._data.mantissa;
@@ -213,20 +304,6 @@ public:
 #define MF_X left
 # include "minifloat_reduce.h"
         return ret;
-    }
-
-    Minifloat operator-() const
-    {
-        Minifloat ret;
-        ret._data.sign = ~_data.sign;
-        ret._data.exponent = _data.exponent;
-        ret._data.mantissa = _data.mantissa;
-        return ret;
-    }
-
-    Minifloat operator-(Minifloat o) const
-    {
-        return operator+(-o);
     }
 
     Minifloat operator*(Minifloat o) const

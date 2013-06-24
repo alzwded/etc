@@ -132,7 +132,7 @@ public:
             else return *this;
         }
 
-        if(_data.sign && !o._data.sign) return o.operator-(*this);
+        if(_data.sign && !o._data.sign) return o.operator-(-*this);
         if(!_data.sign && o._data.sign) return operator-(o);
 
         //return Minifloat(((int)(*this)) + ((int)o));
@@ -232,24 +232,37 @@ public:
             }
             left <<= MF_GUARD_BITS;
             right <<= MF_GUARD_BITS;
-            ret._data.exponent = rExponent;
             while(rExponent < lExponent) {
                 right >>= 1;
                 rExponent++;
             }
+
+            unsigned char mask = 0x80;
+            rExponent = lExponent;
+            while(!(mask & left)) {
+                mask >>= 1;
+            }
             left -= right;
+            while(!(mask & left) && mask > 0x7 && rExponent) {
+                mask >>= 1;
+                rExponent--;
+            }
+
             ret._data.sign = _data.sign;
 
             unsigned char shifted = 0;
-            for(; shifted < MF_GUARD_BITS && left != 0 && !(0x1 & left);
-                    shifted++)
-            {
-                left >>= 1;
+            if(MF_GUARD_BITS > (lExponent - rExponent)) {
+                for(; shifted < MF_GUARD_BITS && left != 0 && !(0x1 & left);
+                        shifted++)
+                {
+                    left >>= 1;
+                }
+                //printf("    %x=left\n", left);
+                //if(shifted < MF_GUARD_BITS && left > 0xF) rExponent++;
+            } else if(MF_GUARD_BITS - (lExponent - rExponent) <= 0) {
+                if(left > 0x7) rExponent++;
             }
-            while(shifted < MF_GUARD_BITS - 1 && ret._data.exponent) {
-                ret._data.exponent--;
-                shifted++;
-            }
+            ret._data.exponent = rExponent;
         } else {
             return Minifloat(NAN);
         }

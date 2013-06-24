@@ -16,7 +16,7 @@ static size_t ofN = 0;
     int got = (WHAT); \
     int f = (got != EXPECTED_VALUE); \
     failed += f; \
-    printf("%3d. (%c) " STR "%d (expecting %d)\n", ofN, (f ? 'x' : 'v'), got, (EXPECTED_VALUE)); \
+    printf("%3d. (%c) " STR "%d (expecting %d)\n", ofN - currentofN, (f ? 'x' : 'v'), got, (EXPECTED_VALUE)); \
 }while(0)
 
 #define TESTSTART(name) \
@@ -92,14 +92,14 @@ TESTEND(addition)
 TESTSTART(substraction)
     iTEST("36 - 9 = ", (int)(Minifloat(36) - Minifloat(9)), 26);
     iTEST("18 - 5 = ", (int)(Minifloat(18) - Minifloat(5)), 13);
-    iTEST("-128 + 10 = ", (int)(Minifloat(-128) + Minifloat(10)), -112);
-    iTEST("-128 + 128 = ", (int)(Minifloat(-128) + Minifloat(128)), 0);
+    iTEST("-9 + 36 = ", (int)(Minifloat(-9) + Minifloat(36)), 26);
     /* test to see if extra 1 bit set for normal numbers is still there
        after substraction */
-    iTEST("??? -104 + 128 = ", (int)(Minifloat(-124) + Minifloat(128)), 24); // or 24?
-    iTEST("??? -112 + 128 = ", (int)(Minifloat(-112) + Minifloat(128)), 16); // or 24?
+    iTEST("-124 + 128 = ", (int)(Minifloat(-124) + Minifloat(128)), 4);
+    iTEST("-112 + 128 = ", (int)(Minifloat(-112) + Minifloat(128)), 16);
+    iTEST("-128 + 10 = ", (int)(Minifloat(-128) + Minifloat(10)), -112);
+    iTEST("-128 + 128 = ", (int)(Minifloat(-128) + Minifloat(128)), 0);
     iTEST("10 - 128 = ", (int)(Minifloat(10) - Minifloat(128)), -112);
-    iTEST("-9 + 36 = ", (int)(Minifloat(-9) + Minifloat(36)), 26);
     iTEST("1 - 3 = ", (int)(Minifloat(1) - Minifloat(3)), -2);
     iTEST("1 - 18 = ", (int)(Minifloat(1) - Minifloat(18)), -16);
     iTEST("1 - 20 = ", (int)(Minifloat(1) - Minifloat(20)), -18);

@@ -179,6 +179,7 @@ TESTSTART(conversion)
         if(f.IsNaN()) printf(" #nan\n");
         else if(f.IsNegInf()) printf("-#inf\n");
         else if(f.IsInf()) printf(" #inf\n");
+        else if(f.raw().raw == 0x80) printf("     -0\n");
         else printf("%7d\n", (int)f);
     }
 TESTEND(conversion)

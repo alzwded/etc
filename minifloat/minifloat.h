@@ -390,6 +390,13 @@ otherway:
 
     Minifloat operator*(Minifloat o) const
     {
+        /*
+           it should be something like
+                sr = sl ^ sr
+                er = el + er
+                mr = ml * mr
+                normalize(sr, er, mr)
+           */
         if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
         if(IsInfinity() && !o.IsInfinity()) {
             if((int)o == 0) return Minifloat(NAN);
@@ -405,6 +412,24 @@ otherway:
         }
         Minifloat ret(((int)(*this)) * ((int)o));
         ret._data.sign = _data.sign ^ o._data.sign;
+        unsigned char le = _data.exponent;
+        unsigned char re = o._data.exponent;
+        unsigned char l = _data.mantissa;
+        unsigned char r = o._data.mantissa;
+        if(le) l |= 0x8, le--;
+        if(re) r |= 0x8, re--;
+        if(le + re + (le || re) > 0xF) {
+            ret._data.exponent = 0xF;
+            ret._data.mantissa = 0;
+            return ret;
+        } else {
+            ret._data.exponent = le + re + (le || re);
+        }
+        l *= r;
+#define MF_DATA ret._data
+#define MF_RETURN_STATEMENT return ret
+#define MF_X l
+# include "minifloat_reduce.h"
         return ret;
     }
 

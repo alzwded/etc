@@ -146,7 +146,25 @@ TESTSTART(multiplication)
     //    depends on int-conversion and _real_ hard-core minifloat
     //    math might cause round-off errors beyond those caused by the
     //    conversion. Will see
-    printf("20 * 40 = %d\n", (int)(Minifloat(20) * Minifloat(40)));
+    iTEST("0 * 3 = ", (int)(Minifloat(0) * Minifloat(3)), 0);
+    bTEST("0 * inf = nan", (Minifloat(0) * Minifloat(Minifloat::INF)).IsNaN());
+    bTEST("4096 * -9999 = -inf", (Minifloat(4096) * Minifloat(-9999)).IsNegInf());
+    bTEST("4096 * 2048 = inf", (Minifloat(4096) * Minifloat(2048)).IsInf());
+    iTEST("20 * 40 = ", (int)(Minifloat(20) * Minifloat(40)), 768);
+    iTEST("10 * 10 = ", (int)(Minifloat(10) * Minifloat(10)), 96);
+    iTEST("2 * 3 = ", (int)(Minifloat(2) * Minifloat(3)), 6);
+    iTEST("8 * 8 = ", (int)(Minifloat(8) * Minifloat(8)), 64);
+    iTEST("2 * 20 = ", (int)(Minifloat(2) * Minifloat(20)), 40);
+    iTEST("2 * 40 = ", (int)(Minifloat(2) * Minifloat(40)), 80);
+    iTEST("2 * 60 = ", (int)(Minifloat(2) * Minifloat(60)), 120);
+    iTEST("2 * 80 = ", (int)(Minifloat(2) * Minifloat(80)), 160);
+    iTEST("3 * 20 = ", (int)(Minifloat(3) * Minifloat(20)), 60);
+    iTEST("4 * 20 = ", (int)(Minifloat(4) * Minifloat(20)), 80);
+    iTEST("13 * 13 = ", (int)(Minifloat(13) * Minifloat(13)), 160);
+    iTEST("14 * 14 = ", (int)(Minifloat(14) * Minifloat(14)), 192);
+    iTEST("9 * 20 = ", (int)(Minifloat(9) * Minifloat(20)), 176);
+    iTEST("9 * 40 = ", (int)(Minifloat(9) * Minifloat(40)), 352);
+    iTEST("32 * 128 = ", (int)(Minifloat(32) * Minifloat(128)), 4096);
 TESTEND(multiplication)
 
 TESTSTART(division)

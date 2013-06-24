@@ -219,6 +219,9 @@ public:
         unsigned char lExponent = _data.exponent;
 
         if(lExponent > rExponent) {
+            ret._data.sign = _data.sign;
+
+otherway:
             if(lExponent > 0) {
                 left |= 0x8;
                 lExponent--;
@@ -245,8 +248,6 @@ public:
                 rExponent--;
             }
 
-            ret._data.sign = _data.sign;
-
             unsigned char shifted = 0;
             if(MF_GUARD_BITS > (lExponent - rExponent)) {
                 for(; shifted < MF_GUARD_BITS
@@ -270,6 +271,10 @@ public:
             }
             ret._data.exponent = rExponent;
         } else {
+            left ^= right; right ^= left; left ^= right;
+            lExponent ^= rExponent; rExponent ^= lExponent; lExponent ^= rExponent;
+            ret._data.sign = !_data.sign;
+            goto otherway;
             return Minifloat(NAN);
         }
 

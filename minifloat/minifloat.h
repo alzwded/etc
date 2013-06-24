@@ -136,7 +136,6 @@ public:
         if(!_data.sign && o._data.sign) return operator-(o);
 
         //return Minifloat(((int)(*this)) + ((int)o));
-        unsigned char signs;
         unsigned char left = _data.mantissa;
         unsigned char right = o._data.mantissa;
         unsigned char rExponent = o._data.exponent;
@@ -149,9 +148,6 @@ public:
         if(rExponent < lExponent) {
             rExponent ^= lExponent, lExponent ^= rExponent, rExponent ^= lExponent;
             right ^= left, left ^= right, right ^= left;
-            signs = (_data.sign << 1) | o._data.sign;
-        } else {
-            signs = (o._data.sign << 1) | _data.sign;
         }
         while(rExponent > lExponent) {
             rExponent--;
@@ -162,15 +158,9 @@ public:
 
         Minifloat ret;
 
-        if(!o._data.sign && !_data.sign) {
-            rCarry += (left & 0x80) && (right & 0x80);
-            left += right;
-            ret._data.sign = 0;
-        } else if(_data.sign && o._data.sign) {
-            rCarry += (left & 0x80) && (right & 0x80);
-            left += right;
-            ret._data.sign = 1;
-        }
+        rCarry += (left & 0x80) && (right & 0x80);
+        left += right;
+        ret._data.sign = _data.sign;
 
         // remove guard and adapt exponent
         if(rCarry) lExponent++;

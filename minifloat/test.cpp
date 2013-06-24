@@ -90,16 +90,16 @@ TESTSTART(addition)
 TESTEND(addition)
 
 TESTSTART(substraction)
+    iTEST("36 - 9 = ", (int)(Minifloat(36) - Minifloat(9)), 26);
+    iTEST("18 - 5 = ", (int)(Minifloat(18) - Minifloat(5)), 13);
+    iTEST("-128 + 10 = ", (int)(Minifloat(-128) + Minifloat(10)), -112);
     iTEST("-128 + 128 = ", (int)(Minifloat(-128) + Minifloat(128)), 0);
     /* test to see if extra 1 bit set for normal numbers is still there
        after substraction */
     iTEST("??? -104 + 128 = ", (int)(Minifloat(-124) + Minifloat(128)), 24); // or 24?
     iTEST("??? -112 + 128 = ", (int)(Minifloat(-112) + Minifloat(128)), 16); // or 24?
-    iTEST("-128 + 10 = ", (int)(Minifloat(-128) + Minifloat(10)), -112);
     iTEST("10 - 128 = ", (int)(Minifloat(10) - Minifloat(128)), -112);
-    iTEST("36 - 9 = ", (int)(Minifloat(36) - Minifloat(9)), 26);
     iTEST("-9 + 36 = ", (int)(Minifloat(-9) + Minifloat(36)), 26);
-    iTEST("18 - 5 = ", (int)(Minifloat(18) - Minifloat(5)), 13);
     iTEST("1 - 3 = ", (int)(Minifloat(1) - Minifloat(3)), -2);
     iTEST("1 - 18 = ", (int)(Minifloat(1) - Minifloat(18)), -16);
     iTEST("1 - 20 = ", (int)(Minifloat(1) - Minifloat(20)), -18);
@@ -127,9 +127,9 @@ TESTEND(conversion)
 
 int main()
 {
+    TEST(substraction);
     TEST(meta);
     TEST(addition);
-    TEST(substraction);
     TEST(multiplication);
     TEST(division);
 

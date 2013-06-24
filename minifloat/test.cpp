@@ -69,6 +69,7 @@ TESTSTART(meta)
     bTEST("nan == 8", !(nan == o8));
     bTEST("nan == nan", !(nan == nan));
     bTEST("8 >= ninf", o8 >= ninf);
+    bTEST("8 <= ninf", !(o8 <= ninf));
     iTEST("1 / 0 = ", (int)(Minifloat(1) / Minifloat(0)), MF_INF_INT);
     iTEST("-1 / 0 = ", (int)(Minifloat(-1) / Minifloat(0)), -MF_INF_INT);
     iTEST("1 / -0 = ", (int)(Minifloat(1) / Minifloat(Minifloat::NEG_ZERO)), -MF_INF_INT);

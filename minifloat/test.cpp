@@ -11,6 +11,14 @@ static size_t ofN = 0;
     printf("-----------------------------------------------------------------------\n"); \
 }while(0)
 
+#define bTEST(STR, WHAT) do{ \
+    ofN++; \
+    int got = (WHAT); \
+    failed += !got; \
+    printf("%3d. (%c) " STR "\n", ofN - currentofN, (!got ? 'x' : 'v'), got); \
+}while(0)
+
+
 #define iTEST(STR, WHAT, EXPECTED_VALUE) do{ \
     ofN++; \
     int got = (WHAT); \
@@ -62,6 +70,9 @@ TESTSTART(meta)
     iTEST("ref not nan: ", !ref.IsNaN(), 1);
     iTEST("inf from conversion: ", inf2.IsInfinity() && inf2.IsInf(), 1);
     iTEST("neginf from conversion: ", ninf2.IsInfinity() && ninf2.IsNegInf(), 1);
+    bTEST("anything + nan = nan", (o8 + nan).IsNaN());
+    bTEST("inf + anything = inf", (inf + o8).IsInf());
+    bTEST("inf - inf = nan", (inf - inf).IsNaN());
 TESTEND(meta)
 
 TESTSTART(addition)
@@ -87,16 +98,22 @@ TESTSTART(addition)
     iTEST("36 + 10 = ", (int)(Minifloat(36) + Minifloat(10)), 44);
     iTEST("10 + 65 = ", (int)(Minifloat(10) + Minifloat(65)), 72);
     iTEST("65 + 10 = ", (int)(Minifloat(65) + Minifloat(10)), 72);
+    iTEST("-2 + (-2) = ", (int)(Minifloat(-2) + Minifloat(-2)), -4);
+    iTEST("-2 - 2 = ", (int)(Minifloat(-2) - Minifloat(2)), -4);
 TESTEND(addition)
 
 TESTSTART(substraction)
     iTEST("36 - 9 = ", (int)(Minifloat(36) - Minifloat(9)), 26);
     iTEST("18 - 5 = ", (int)(Minifloat(18) - Minifloat(5)), 13);
     iTEST("-9 + 36 = ", (int)(Minifloat(-9) + Minifloat(36)), 26);
+    iTEST("128 - 104 = ", (int)(Minifloat(128) - Minifloat(104)), 24);
     /* test to see if extra 1 bit set for normal numbers is still there
        after substraction */
     iTEST("-124 + 128 = ", (int)(Minifloat(-124) + Minifloat(128)), 4);
     iTEST("-112 + 128 = ", (int)(Minifloat(-112) + Minifloat(128)), 16);
+    iTEST("(?) 128 - 96 = ", (int)(Minifloat(128) - Minifloat(96)), 32);
+    iTEST("128 - 88 = ", (int)(Minifloat(128) - Minifloat(88)), 40);
+    iTEST("128 - 80 = ", (int)(Minifloat(128) - Minifloat(80)), 48);
     iTEST("-128 + 10 = ", (int)(Minifloat(-128) + Minifloat(10)), -112);
     iTEST("-128 + 128 = ", (int)(Minifloat(-128) + Minifloat(128)), 0);
     iTEST("10 - 128 = ", (int)(Minifloat(10) - Minifloat(128)), -112);

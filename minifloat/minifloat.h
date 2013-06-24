@@ -1,7 +1,9 @@
 #ifndef _MINIFLOAT_H
 #define _MINIFLOAT_H
 
-#define MF_INF_INT (0x7FFFFFFF)
+#define MF_INF_INT      (0x7FFFFFFF)
+#define MF_NEG_INF_INT  (0x80000001)
+#define MF_NAN_INT      (0x80000000)
 #define MF_GUARD_BITS 3
 
 class Minifloat {
@@ -105,9 +107,9 @@ public:
            0 0000 111 = 0.111 * 2^3 = 7
            0 0010 001 = 1.001 * 2^4 = 18
            */
-        if(IsInfinity()) if(_data.sign) return -MF_INF_INT;
+        if(IsInfinity()) if(_data.sign) return MF_NEG_INF_INT;
                          else return MF_INF_INT;
-        if(IsNaN()) return -MF_INF_INT - 1;
+        if(IsNaN()) return MF_NAN_INT;
         unsigned int magic = 
             (((((_data.exponent ^ 0x0) == 0x0) ? 0x0 : 0x8)
               | _data.mantissa)
@@ -120,11 +122,9 @@ public:
     {
         if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
         if(IsInfinity() && !o.IsInfinity()) {
-            if((int)o == 0) return Minifloat(NAN);
             return *this;
         }
         if(!IsInfinity() && o.IsInfinity()) {
-            if((int)(*this) == 0) return Minifloat(NAN);
             return o;
         }
         if(IsInfinity() && o.IsInfinity()) {
@@ -200,19 +200,17 @@ public:
     {
         if(IsNaN() || o.IsNaN()) return Minifloat(NAN);
         if(IsInfinity() && !o.IsInfinity()) {
-            if((int)o == 0) return Minifloat(NAN);
             return *this;
         }
         if(!IsInfinity() && o.IsInfinity()) {
-            if((int)(*this) == 0) return Minifloat(NAN);
             return o;
         }
-        if(IsInfinity() && o.IsInfinity()) {
-            if(_data.sign ^ o._data.sign) return Minifloat(NAN);
-            else return *this;
-        }
-
         if(o._data.sign) return operator+(-o);
+        else if(_data.sign) return operator+(-o);
+
+        if(IsInfinity() && o.IsInfinity()) {
+            return Minifloat(NAN);
+        }
         
         Minifloat ret;
         unsigned char left = _data.mantissa;
@@ -252,14 +250,21 @@ public:
 
             unsigned char shifted = 0;
             if(MF_GUARD_BITS > (lExponent - rExponent)) {
-                for(; shifted < MF_GUARD_BITS && left != 0 && !(0x1 & left);
+                for(; shifted < MF_GUARD_BITS
+                        && left != 0 && !(0x1 & left);
                         shifted++)
                 {
                     left >>= 1;
+                    mask >>= 1;
                 }
-                //printf("    %x=left\n", left);
-                //if(shifted < MF_GUARD_BITS && left > 0xF) rExponent++;
-            } else if(MF_GUARD_BITS - (lExponent - rExponent) <= 0) {
+                // normalize?
+                while(rExponent && mask <= 0x8) {
+                    mask <<= 1;
+                    left <<= 1;
+                }
+                //if(mask <= 0x4 && left >= 0x8) rExponent++;
+                //if(shifted >= rExponent && rExponent > 0 && left > 0x7) rExponent--, left <<= 1;
+            } else if(MF_GUARD_BITS <= (lExponent - rExponent)) {
                 if(left > 0x7) rExponent++;
             }
             ret._data.exponent = rExponent;

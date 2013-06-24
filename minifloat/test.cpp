@@ -71,11 +71,11 @@ TESTSTART(meta)
     bTEST("8 >= ninf", o8 >= ninf);
     bTEST("8 <= ninf", !(o8 <= ninf));
     iTEST("1 / 0 = ", (int)(Minifloat(1) / Minifloat(0)), MF_INF_INT);
-    iTEST("-1 / 0 = ", (int)(Minifloat(-1) / Minifloat(0)), -MF_INF_INT);
+    iTEST("-1 / 0 = ", (int)(Minifloat(-1) / Minifloat(0)), MF_NEG_INF_INT);
     iTEST("1 / -0 = ", (int)(Minifloat(1) / Minifloat(Minifloat::NEG_ZERO)), -MF_INF_INT);
     iTEST("-1 / -0 = ", (int)(Minifloat(-1) / Minifloat(Minifloat::NEG_ZERO)), MF_INF_INT);
     o8 = Minifloat::NEG_INF;
-    iTEST("neginf assignation: ", (int)(o8), -MF_INF_INT);
+    iTEST("neginf assignation: ", (int)(o8), MF_NEG_INF_INT);
     o8 = 8;
     iTEST("int 8 assignation: ", (int)(o8), 8);
     Minifloat ref(1);

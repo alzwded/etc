@@ -159,6 +159,28 @@ TESTSTART(conversion)
         Minifloat m(i);
         cTEST(i, (int)(Minifloat(i)) == (int)(Minifloat((int)Minifloat(i))));
     }
+
+    printf("printing entire range of values: \n");
+    printf("idx. hex. decimal\n");
+    printf(" -1. %02Xh. #nan\n", Minifloat(Minifloat::NAN).raw().raw);
+    printf("  0. %02Xh.-#inf\n", Minifloat(Minifloat::NEG_INF).raw().raw);
+    int idx = 1;
+    for(Minifloat i(-122880); !i.IsInf(); ++i) {
+        printf("%3d. %02Xh.%7d\n", idx++, i.raw().raw, (int)i);
+    }
+    printf("255. %02Xh. #inf\n", Minifloat(Minifloat::NEG_INF).raw().raw);
+    printf("\n");
+
+    Minifloat f(Minifloat::NAN);
+    for(idx = 0; idx <= 0xFF; ++idx) {
+        printf("for hex %02Xh, f = ", idx);
+        f.raw().raw = idx;
+        // TODO implement << and >> ostreamistream operators
+        if(f.IsNaN()) printf(" #nan\n");
+        else if(f.IsNegInf()) printf("-#inf\n");
+        else if(f.IsInf()) printf(" #inf\n");
+        else printf("%7d\n", (int)f);
+    }
 TESTEND(conversion)
 
 int main(int argc, char* argv[])

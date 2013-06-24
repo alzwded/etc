@@ -10,10 +10,19 @@ class Minifloat {
 public:
     enum SPECIAL { NAN, INF, NEG_INF, ZERO, NEG_ZERO };
 private:
-    typedef struct {
-        unsigned sign:1;
-        unsigned exponent:4;
-        unsigned mantissa:3;
+    typedef union {
+        struct {
+#ifdef MF_BIG_ENDIAN
+            unsigned sign:1;
+            unsigned exponent:4;
+            unsigned mantissa:3;
+#else
+            unsigned mantissa:3;
+            unsigned exponent:4;
+            unsigned sign:1;
+#endif
+        };
+        unsigned raw:8;
     } data_t;
     data_t _data;
 private:
@@ -131,6 +140,66 @@ public:
     {
         return operator==(other) || !operator<(other);
     }
+
+    Minifloat& operator++()
+    {
+        if(IsNaN()) return *this;
+        if(IsInfinity()) return *this;
+        if(_data.sign) {
+            if(_data.mantissa == 0x0) {
+                if(_data.exponent == 0x0) {
+                    _data.sign = 0;
+                    _data.mantissa = 1;
+                } else {
+                    _data.exponent--;
+                    _data.mantissa = 0x7;
+                }
+            } else {
+                _data.mantissa--;
+            }
+        } else {
+            if(_data.mantissa == 0x7) {
+                _data.exponent++;
+                _data.mantissa = 0;
+            } else {
+                _data.mantissa++;
+            }
+        }
+
+        return *this;
+    }
+
+    Minifloat& operator++(int) { return operator++(); }
+
+    Minifloat& operator--()
+    {
+        if(IsNaN()) return *this;
+        if(IsInfinity()) return *this;
+        if(!_data.sign) {
+            if(_data.mantissa == 0x0) {
+                if(_data.exponent == 0x0) {
+                    _data.sign = 0;
+                    _data.mantissa = 1;
+                } else {
+                    _data.exponent--;
+                    _data.mantissa = 0x7;
+                }
+            } else {
+                _data.mantissa--;
+            }
+        } else {
+            if(_data.mantissa == 0x7) {
+                _data.exponent++;
+                _data.mantissa = 0;
+            } else {
+                _data.mantissa++;
+            }
+        }
+
+        return *this;
+    }
+
+    Minifloat& operator--(int) { return operator--(); }
 
     operator int() const
     {
@@ -383,6 +452,15 @@ otherway:
         return *this;
     }
 
+    data_t& raw()
+    {
+        return _data;
+    }
+
+    const data_t& raw() const
+    {
+        return const_cast<const data_t&>(_data);
+    }
 
     // TODO also take into account #inf and #-inf and #nan
     //friend ostream& operator<<(ostream& o, const Minifloat&);

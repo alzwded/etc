@@ -55,7 +55,20 @@ void name () \
 #define TEST(name) name();
 
 TESTSTART(meta)
+    Minifloat inf(Minifloat::INF);
+    Minifloat ninf(Minifloat::NEG_INF);
+    Minifloat nan(Minifloat::NAN);
+    Minifloat o7(7);
     Minifloat o8(8);
+    Minifloat on2(-2);
+    bTEST("7 < 8", o7 < o8);
+    bTEST("8 < 7", !(o8 < o7));
+    bTEST("-2 < 7", on2 < o7);
+    bTEST("8 == 8", o8 == o8);
+    bTEST("8 >= 8", o8 >= o8);
+    bTEST("nan == 8", !(nan == o8));
+    bTEST("nan == nan", !(nan == nan));
+    bTEST("8 >= ninf", o8 >= ninf);
     iTEST("1 / 0 = ", (int)(Minifloat(1) / Minifloat(0)), MF_INF_INT);
     iTEST("-1 / 0 = ", (int)(Minifloat(-1) / Minifloat(0)), -MF_INF_INT);
     iTEST("1 / -0 = ", (int)(Minifloat(1) / Minifloat(Minifloat::NEG_ZERO)), -MF_INF_INT);
@@ -64,9 +77,6 @@ TESTSTART(meta)
     iTEST("neginf assignation: ", (int)(o8), -MF_INF_INT);
     o8 = 8;
     iTEST("int 8 assignation: ", (int)(o8), 8);
-    Minifloat inf(Minifloat::INF);
-    Minifloat ninf(Minifloat::NEG_INF);
-    Minifloat nan(Minifloat::NAN);
     Minifloat ref(1);
     Minifloat inf2(122881 << 3);
     Minifloat ninf2(-122881 << 3);

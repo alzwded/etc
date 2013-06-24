@@ -94,8 +94,42 @@ public:
         return (_data.exponent ^ 0xF) == 0x0 && (_data.mantissa ^ 0x0) != 0x0;
     }
 
-    bool operator<(const Minifloat& other)
+    bool operator<(const Minifloat& other) const
     {
+        if(IsNaN() || other.IsNaN()) return false;
+        if(_data.sign && !other._data.sign) return true;
+        else if(!_data.sign && other._data.sign) return false;
+        else if(_data.exponent != other._data.exponent) {
+            return _data.exponent < other._data.exponent;
+        } else return _data.mantissa < other._data.mantissa;
+    }
+
+    bool operator==(const Minifloat& other) const
+    {
+        if(IsNaN() || other.IsNaN()) return false;
+        return _data.sign == other._data.sign
+            && _data.exponent == other._data.exponent
+            && _data.mantissa == other._data.mantissa;
+    }
+
+    bool operator!=(const Minifloat& other) const
+    {
+        return !operator==(other);
+    }
+
+    bool operator<=(const Minifloat& other) const
+    {
+        return operator==(other) || operator<(other);
+    }
+
+    bool operator>(const Minifloat& other) const
+    {
+        return !operator<=(other);
+    }
+
+    bool operator>=(const Minifloat& other) const
+    {
+        return operator==(other) || !operator<(other);
     }
 
     operator int() const

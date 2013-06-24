@@ -150,7 +150,7 @@ TESTSTART(conversion)
     }
 TESTEND(conversion)
 
-int main()
+int main(int argc, char* argv[])
 {
     TEST(substraction);
     TEST(meta);
@@ -158,7 +158,7 @@ int main()
     TEST(multiplication);
     TEST(division);
 
-    TEST(conversion);
+    if(argc > 1) TEST(conversion);
 
     EPILOGUE();
 

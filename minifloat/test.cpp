@@ -11,11 +11,18 @@ static size_t ofN = 0;
     printf("-----------------------------------------------------------------------\n"); \
 }while(0)
 
+#define cTEST(i, WHAT) do{ \
+    ofN++; \
+    int got = (WHAT); \
+    failed += !got; \
+    printf("%6d. (%c) roundtrip of %7d = %7d\n", ofN - currentofN, (!got ? 'x' : 'v'), i, (int)Minifloat(i)); \
+}while(0)
+
 #define bTEST(STR, WHAT) do{ \
     ofN++; \
     int got = (WHAT); \
     failed += !got; \
-    printf("%3d. (%c) " STR "\n", ofN - currentofN, (!got ? 'x' : 'v'), got); \
+    printf("%3d. (%c) " STR "\n", ofN - currentofN, (!got ? 'x' : 'v') ); \
 }while(0)
 
 
@@ -111,7 +118,7 @@ TESTSTART(substraction)
        after substraction */
     iTEST("-124 + 128 = ", (int)(Minifloat(-124) + Minifloat(128)), 4);
     iTEST("-112 + 128 = ", (int)(Minifloat(-112) + Minifloat(128)), 16);
-    iTEST("(?) 128 - 96 = ", (int)(Minifloat(128) - Minifloat(96)), 32);
+    iTEST("128 - 96 = ", (int)(Minifloat(128) - Minifloat(96)), 32);
     iTEST("128 - 88 = ", (int)(Minifloat(128) - Minifloat(88)), 40);
     iTEST("128 - 80 = ", (int)(Minifloat(128) - Minifloat(80)), 48);
     iTEST("128 - 10 = ", (int)(Minifloat(128) - Minifloat(10)), 112);
@@ -139,7 +146,7 @@ TESTEND(division)
 TESTSTART(conversion) 
     for(int i = -122880; i <= 122880; ++i) {
         Minifloat m(i);
-        printf("int %7d minifloat %7d\n", i, (int)m);
+        cTEST(i, (int)(Minifloat(i)) == (int)(Minifloat((int)Minifloat(i))));
     }
 TESTEND(conversion)
 

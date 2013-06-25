@@ -184,6 +184,8 @@ TESTSTART(division)
     iTEST("1 / 2 = ", (int)(Minifloat(1) / Minifloat(2)), 0);
     iTEST("468 / 468 = ", (int)(Minifloat(468) / Minifloat(468)), 1);
     iTEST("-468 / 468 = ", (int)(Minifloat(-468) / Minifloat(468)), -1);
+    iTEST("4096 / -2048 = ", (int)(Minifloat(4096) / Minifloat(-2048)), -2);
+    bTEST("inf / -1 = -inf", (Minifloat(Minifloat::INF) / Minifloat(-1)).IsNegInf());
 TESTEND(division)
     
 TESTSTART(conversion) 

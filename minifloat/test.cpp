@@ -155,9 +155,9 @@ TESTSTART(multiplication)
     iTEST("2 * 3 = ", (int)(Minifloat(2) * Minifloat(3)), 6);
     iTEST("8 * 8 = ", (int)(Minifloat(8) * Minifloat(8)), 64);
     iTEST("2 * 20 = ", (int)(Minifloat(2) * Minifloat(20)), 40);
-    iTEST("2 * 40 = ", (int)(Minifloat(2) * Minifloat(40)), 80);
-    iTEST("2 * 60 = ", (int)(Minifloat(2) * Minifloat(60)), 120);
-    iTEST("2 * 80 = ", (int)(Minifloat(2) * Minifloat(80)), 160);
+    iTEST("2 * -40 = ", (int)(Minifloat(2) * Minifloat(-40)), -80);
+    iTEST("-2 * 60 = ", (int)(Minifloat(-2) * Minifloat(60)), -120);
+    iTEST("-2 * -80 = ", (int)(Minifloat(-2) * Minifloat(-80)), 160);
     iTEST("3 * 20 = ", (int)(Minifloat(3) * Minifloat(20)), 60);
     iTEST("4 * 20 = ", (int)(Minifloat(4) * Minifloat(20)), 80);
     iTEST("13 * 13 = ", (int)(Minifloat(13) * Minifloat(13)), 160);
@@ -220,10 +220,10 @@ TESTEND(conversion)
 
 int main(int argc, char* argv[])
 {
-    TEST(substraction);
     TEST(meta);
     TEST(addition);
     TEST(multiplication);
+    TEST(substraction);
     TEST(division);
 
     if(argc > 1) TEST(conversion);

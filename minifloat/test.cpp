@@ -171,8 +171,19 @@ TESTSTART(multiplication)
 TESTEND(multiplication)
 
 TESTSTART(division)
-    printf("60 / 20 = %d\n", (int)(Minifloat(60) / Minifloat(20)));
-    printf("6 / 2 = %d\n", (int)(Minifloat(6) / Minifloat(2)));
+    iTEST("128 / 2 = ", (int)(Minifloat(128) / Minifloat(2)), 64);
+    iTEST("128 / 4 = ", (int)(Minifloat(128) / Minifloat(4)), 32);
+    iTEST("60 / 20 = ", (int)(Minifloat(60) / Minifloat(20)), 3);
+    iTEST("6 / 2 = ", (int)(Minifloat(6) / Minifloat(2)), 3);
+    iTEST("-6 / 2 = ", (int)(Minifloat(-6) / Minifloat(2)), -3);
+    iTEST("-6 / -2 = ", (int)(Minifloat(-6) / Minifloat(-2)), 3);
+    iTEST("6 / -2 = ", (int)(Minifloat(6) / Minifloat(-2)), -3);
+    bTEST("1 / 0 = inf", (Minifloat(1) / Minifloat(Minifloat::ZERO)).IsInf());
+    bTEST("-1 / 0 = -inf", (Minifloat(-1) / Minifloat(Minifloat::ZERO)).IsNegInf());
+    bTEST("-0 / 0 = nan", (Minifloat(Minifloat::NEG_ZERO) / Minifloat(Minifloat::ZERO)).IsNaN());
+    iTEST("1 / 2 = ", (int)(Minifloat(1) / Minifloat(2)), 0);
+    iTEST("468 / 468 = ", (int)(Minifloat(468) / Minifloat(468)), 1);
+    iTEST("-468 / 468 = ", (int)(Minifloat(-468) / Minifloat(468)), -1);
 TESTEND(division)
     
 TESTSTART(conversion) 

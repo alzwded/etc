@@ -342,7 +342,7 @@ otherway:
 
             unsigned char mask = 0x80;
             rExponent = lExponent;
-            while(!(mask & left)) {
+            while(mask && !(mask & left)) {
                 mask >>= 1;
             }
             left -= right;
@@ -410,7 +410,7 @@ otherway:
             if(_data.sign ^ o._data.sign) return Minifloat(NAN);
             else return *this;
         }
-        Minifloat ret(((int)(*this)) * ((int)o));
+        Minifloat ret;
         ret._data.sign = _data.sign ^ o._data.sign;
         unsigned char le = _data.exponent;
         unsigned char re = o._data.exponent;
@@ -431,6 +431,23 @@ otherway:
 #define MF_X l
 # include "minifloat_reduce.h"
         return ret;
+    }
+
+    static void divide(const Minifloat& N, const Minifloat& D, Minifloat& Q, Minifloat& R)
+    {
+        /* 
+           I couldn't figure out a better way to compensate for round-off
+           errors
+        */
+        Q._data.raw &= 0;
+        R._data.raw &= 0;
+        while(Q * D < N) {
+            Q++;
+        }
+        if(Q * D > N) {
+            Q--;
+            R = (N - Q * D);
+        }
     }
 
     Minifloat operator/(Minifloat o) const
@@ -457,12 +474,65 @@ otherway:
         if((o._data.exponent ^ 0x0) == 0x0
                 && (o._data.mantissa ^ 0x0) == 0x0)
         {
+            if(IsInfinity()) return Minifloat(NAN);
             return Minifloat( ((_data.sign ^ o._data.sign) ? NEG_INF : INF) );
         }
+        if((_data.exponent ^ 0x0) == 0x0 && (_data.mantissa ^ 0x0) == 0x0
+                && o.IsInfinity())
+        {
+            return Minifloat(NAN);
+        }
 
-        Minifloat ret(((int)(*this)) / ((int)o));
-        ret._data.sign = _data.sign ^ o._data.sign;
-        return ret;
+        if(((_data.raw ^ o._data.raw) & 0x7F) == 0x0) {
+            Minifloat ret(1);
+            ret._data.sign = _data.sign ^ o._data.sign;
+            return ret;
+        }
+
+        Minifloat q, r;
+        q._data.raw &= 0x0;
+        r._data.raw &= 0x0;
+        Minifloat absThis;
+        Minifloat absO;
+        absThis._data.raw &= 0;
+        absO._data.raw &= 0;
+        absThis._data.raw |= _data.raw & 0x7F;
+        absO._data.raw |= o._data.raw & 0x7F;
+        divide(absThis, absO, q, r);
+        q._data.sign = _data.sign ^ o._data.sign;
+        return q;
+    }
+
+    Minifloat& operator-=(const Minifloat& other)
+    {
+        Minifloat sub = (*this) - other;
+        _data.raw &= 0x0;
+        _data.raw |= sub._data.raw;
+        return *this;
+    }
+
+    Minifloat& operator+=(const Minifloat& other)
+    {
+        Minifloat sub = (*this) + other;
+        _data.raw &= 0x0;
+        _data.raw |= sub._data.raw;
+        return *this;
+    }
+
+    Minifloat& operator*=(const Minifloat& other)
+    {
+        Minifloat sub = (*this) * other;
+        _data.raw &= 0x0;
+        _data.raw |= sub._data.raw;
+        return *this;
+    }
+
+    Minifloat& operator/=(const Minifloat& other)
+    {
+        Minifloat sub = (*this) / other;
+        _data.raw &= 0x0;
+        _data.raw |= sub._data.raw;
+        return *this;
     }
 
     Minifloat& operator=(const int x)

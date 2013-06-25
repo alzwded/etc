@@ -165,6 +165,9 @@ TESTSTART(multiplication)
     iTEST("9 * 20 = ", (int)(Minifloat(9) * Minifloat(20)), 176);
     iTEST("9 * 40 = ", (int)(Minifloat(9) * Minifloat(40)), 352);
     iTEST("32 * 128 = ", (int)(Minifloat(32) * Minifloat(128)), 4096);
+    iTEST("5 * 25 = ", (int)(Minifloat(5) * Minifloat(25)), 120);
+    iTEST("4 * 25 = ", (int)(Minifloat(4) * Minifloat(25)), 96);
+    iTEST("3 * 25 = ", (int)(Minifloat(3) * Minifloat(25)), 72);
 TESTEND(multiplication)
 
 TESTSTART(division)

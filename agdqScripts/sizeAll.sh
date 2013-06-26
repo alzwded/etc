@@ -1,6 +1,10 @@
 #!/bin/bash
 
-a=`\du $@ | cut -f 1`
+if [[ $# -gt 0 ]] ; then
+    a=`\du $@ | cut -f 1`
+else
+    a=`\du -s | cut -f 1`
+fi
 c=`echo "$a" | wc -l`
 
 pluses=""

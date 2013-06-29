@@ -1,0 +1,39 @@
+OBJS = obj/model.o obj/stlCWrapper.o
+CC = g++
+CFLAGS = -g
+LIBOPT = -fPIC -c
+
+lib: $(OBJS)
+	mkdir -p lib
+	$(CC) $(CFLAGS) $(OBJS) -shared -o lib/libstlCWrapper.so
+
+obj/model.o: src/model.cpp
+	mkdir -p obj
+	$(CC) $(CFLAGS) $(LIBOPT) -o obj/model.o src/model.cpp
+	
+obj/stlCWrapper.o: src/stlCWrapper.cpp
+	mkdir -p obj
+	$(CC) $(CFLAGS) $(LIBOPT) -o obj/stlCWrapper.o src/stlCWrapper.cpp
+
+test: lib test.o
+	mkdir -p bin
+	gcc -g -Isrc -Wl,-rpath-link=../lib,-rpath=../lib -Llib -lstlCWrapper -o bin/test obj/test.o
+	cd bin && ./test
+
+test.o: test/test.c
+	gcc -g -c -Isrc -o obj/test.o test/test.c
+
+dist: lib test
+	mkdir -p dist/lib
+	mkdir -p dist/inc/stl
+	cp lib/libstlCWrapper.so -t dist/lib/
+	cp src/stl/* -t dist/inc/stl/
+	chmod -w dist/inc/stl/*
+
+clean:
+	rm -rf obj lib bin
+
+dist-clean:
+	rm -rf dist
+
+mrproper: clean dist-clean

@@ -33,3 +33,12 @@ UpgradeReport.xslt
 UpgradeReport_Minus.gif
 UpgradeReport_Plus.gif
 school-PG.sln.old
+
+bin
+lib
+dist
+obj
+**/bin
+**/lib
+**/dist
+**/obj

@@ -1,0 +1,1 @@
+instead of using INT handles, convert them to void* and have that be the actual instance (lol; I don't know why I didn't do that to begin with)

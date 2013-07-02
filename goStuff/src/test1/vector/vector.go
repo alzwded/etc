@@ -57,14 +57,18 @@ func (v *vectorlol) Set(i int, val interface{}) {
     } else if i >= len(v.a) {
         v.a = v.a[:i+1]
     }
-    v.a[i] = val.(int)
+    var ok bool
+    v.a[i], ok = val.(int)
+    if(!ok) {
+        _ = "some error"
+    }
 }
 
 func (v *vectorlol) PushBack(val interface{}) {
     p := 0
     accumulated := 0
     ptr := v
-    var iVal int = val.(int)
+    iVal, _ := val.(int)
     for {
         if p - accumulated >= len(ptr.a) {
             if ptr.next != nil {

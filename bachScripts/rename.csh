@@ -13,8 +13,8 @@ echo "[renames]" > rename.log
 
 set idx=1000
 foreach i (*mp3)
-    echo ". $i:q -"'>'" $idx:qq.mp3"
-    echo "$i:q -"'>'" $idx:qq.mp3" >> rename.log
+    echo ". $i:q -"'>'" $idx:q.mp3"
+    echo "$i:q -"'>'" $idx:q.mp3" >> rename.log
     mv $i:q $idx.mp3
     @ idx ++
 end

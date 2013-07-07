@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -gt 0 ]] ; then
-    a=`\du -- $@ | cut -f 1`
+    a=`\du -- "$@" | cut -f 1`
 else
     a=`\du -s | cut -f 1`
 fi

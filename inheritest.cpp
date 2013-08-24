@@ -19,6 +19,7 @@ struct c : public a {
 
 int main()
 {
+    printf("on auto variables\n");
     b var;
     c C;
     var.f();
@@ -26,6 +27,12 @@ int main()
 
     new((void*)&var) c();
     var.f();
+
+    printf("on pointers\n");
+    a* ptr1 = new b();
+    ptr1->f();
+    new( (void*)ptr1 ) c();
+    ptr1->f();
 
     return 0;
 }

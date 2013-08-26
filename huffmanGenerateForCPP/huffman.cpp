@@ -1,3 +1,7 @@
+/*
+   original code taken from http://rosettacode.org/wiki/Huffman_coding#C.2B.2B
+   modified to work with full strings and to read input from stdin
+   */
 #include <iostream>
 #include <assert.h>
 #include <cstdlib>
@@ -34,7 +38,7 @@ static char const* keywords[] = {
     "for",
     "if",
     "int",
-    "ling",
+    "long",
     "new",
     "operator",
     "or",
@@ -64,6 +68,11 @@ static char const* keywords[] = {
     "#define",
     "#ifdef",
     "#ifndef",
+    "inline",
+    "namespace",
+    "friend",
+    "goto",
+    "auto",
     NULL
 };
  

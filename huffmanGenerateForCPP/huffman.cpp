@@ -55,6 +55,11 @@ static char const* keywords[] = {
     "virtual",
     "void",
     "while",
+    "const_cast",
+    "static_cast",
+    "dynamic_cast",
+    "reinterpret_cast",
+    "std::",
     NULL
 };
  
@@ -222,13 +227,17 @@ doneFor: ;
     HuffCodeMap codes;
     GenerateCodes(root, HuffCode(), codes);
     delete root;
+
+    size_t longestPrefix = 0;
  
     for (HuffCodeMap::const_iterator it = codes.begin(); it != codes.end(); ++it)
     {
         print(it->first);
         std::copy(it->second.begin(), it->second.end(),
                   std::ostream_iterator<bool>(std::cout));
+        longestPrefix = std::max(it->second.size(), longestPrefix);
         std::cout << std::endl;
     }
+    std::cout << std::endl << "Longest prefix is " << longestPrefix << " bits." << std::endl;
     return 0;
 }

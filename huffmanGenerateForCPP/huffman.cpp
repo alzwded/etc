@@ -60,6 +60,10 @@ static char const* keywords[] = {
     "dynamic_cast",
     "reinterpret_cast",
     "std::",
+    "#include",
+    "#define",
+    "#ifdef",
+    "#ifndef",
     NULL
 };
  

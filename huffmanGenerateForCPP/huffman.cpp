@@ -16,7 +16,7 @@ typedef std::map<std::string, int> fm_t;
 const char* SampleString = "this is an example for huffman encoding";
 
 static char const* keywords[] = {
-    "\r\n",
+    "\r\n"
     "bool",
     "break",
     "case",
@@ -141,18 +141,19 @@ void GenerateCodes(const INode* node, const HuffCode& prefix, HuffCodeMap& outCo
 void readData(std::stringstream& p)
 {
 #ifdef DEBUG_HF
-    freopen("huffman.cpp", "r", stdin);
+    freopen("Makefile", "r", stdin);
+    FILE* f = stdin;
 #else
     FILE* f = fdopen(0, "rb");
 #endif
-    while(!feof(stdin)) {
+    while(!feof(f)) {
         union {
             struct {
                 char c1, c2;
             };
             short s;
         } u;
-        int read = getc(stdin);
+        int read = getc(f);
         if(read == EOF) return;
         u.c1 = 0xFF & read;
         u.c2 = '\0';
@@ -182,35 +183,36 @@ int main()
 
     readData(input);
 
-    const char* ptr = input.str().c_str();
+    std::string ffs = input.str();
+    int p = 0;
 
-    while (*ptr != '\0') {
+    while (p < ffs.size()) {
         for(int i = 0; keywords[i] != NULL; ++i) {
-            if(strncmp(ptr, keywords[i], strlen(keywords[i])) == 0) {
+            if(strncmp(ffs.c_str() + p, keywords[i], strlen(keywords[i])) == 0) {
                 fm_t::iterator f = frequencies.find(std::string(keywords[i]));
                 if(f != frequencies.end()) {
                     f->second++;
                 } else {
                     frequencies[std::string(keywords[i])] = 1;
                 }
-                ptr += strlen(keywords[i]);
+                p += strlen(keywords[i]) - 1;
                 goto doneFor;
             }
         }
-        if(!isprint(*ptr) && !isblank(*ptr) && *ptr != 0xa) { ptr++; continue; }
+        if(iscntrl(ffs[p]) && !(ffs[p] == 0xa || ffs[p] == 0xd || ffs[p] == '\t')) { printf("hit %X\n", ffs[p]); p++; continue; }
         // nothing
         {
             std::stringstream s;
-            assert(*ptr);
-            assert(*ptr >= 10);
-            s << *ptr;
+            assert(ffs[p]);
+            char c = ffs[p];
+            s << c;
             fm_t::iterator f = frequencies.find(s.str());
             if(f != frequencies.end()) {
                 f->second++;
             } else {
                 frequencies[s.str()] = 1;
             }
-            ptr++;
+            p++;
         }
 doneFor: ;
     }

@@ -153,13 +153,15 @@ void GenerateCodes(const INode* node, const HuffCode& prefix, HuffCodeMap& outCo
         HuffCode rightPrefix = prefix;
         rightPrefix.push_back(true);
         GenerateCodes(in->right, rightPrefix, outCodes);
+    } else {
+        abort();
     }
 }
 
 void readData(std::stringstream& p)
 {
 #ifdef DEBUG_HF
-    freopen("Makefile", "r", stdin);
+    freopen("Makefile", "rb", stdin);
     FILE* f = stdin;
 #else
     FILE* f = fdopen(0, "rb");

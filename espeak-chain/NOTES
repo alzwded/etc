@@ -1,0 +1,2 @@
+./mini-chain.csh test.txt test
+cd test && ../report.csh

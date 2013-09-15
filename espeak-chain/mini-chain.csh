@@ -1,0 +1,31 @@
+#!/bin/csh
+
+if($#argv < 2) then
+    \echo "usage: $0 filename name"
+    exit 1
+endif
+
+set file=$1
+shift
+
+set out=$1
+shift
+
+mkdir -p $out
+
+csh ./espeak.csh "$file" "$out/$out.wav" 
+if($? == 0) then
+    foreach i ("$out"/*)
+        #ffmpeg -i "$i" -acodec wmav2 -ab 32000 "$i:r.wma"
+        #set ofile="$i:r.ogg"
+        #ffmpeg -i "$i" -acodec libvorbis -ab 32000 "$ofile"
+        set ofile="$i:r.mp3"
+        ffmpeg -i "$i" -ab 32000 "$ofile"
+        #set ofile="$i:r.mp4"
+        #ffmpeg -i "$i" -acodec aac -ab 32000 "$ofile"
+        if($? == 0) then
+            rm "$i"
+            id3v2 -a "$out" -A "$out" -t "$ofile:t" "$ofile"
+        endif
+    end
+endif

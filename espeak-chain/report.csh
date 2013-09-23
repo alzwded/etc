@@ -5,7 +5,7 @@ onintr finish
 
 while(1 == 1)
     clear
-    ls -lh
+    ls -sh
     df -h .
     sleep 2
 end

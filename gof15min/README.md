@@ -19,6 +19,8 @@ I'm pretty sure it reads some 0/random values by accident because I don't check 
 
 Also, I didn't reset the bounds (oups!) This means min/maxes were init with 0, 0 in the even generations...
 
+Missing return statement in main (oups)
+
 Working version
 ===============
 

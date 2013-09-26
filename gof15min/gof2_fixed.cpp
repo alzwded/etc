@@ -112,4 +112,5 @@ int main()
         evolve(generation);
         print(generation);
     }
+    return 0;
 }

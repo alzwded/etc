@@ -16,3 +16,10 @@ Bugs
 ====
 
 I'm pretty sure it reads some 0/random values by accident because I don't check that scanf actually read what it was supposed to. Oups.
+
+Also, I didn't reset the bounds (oups!) This means min/maxes were init with 0, 0 in the even generations...
+
+Working version
+===============
+
+Bugs were fixed in gof2_fixed.cpp, but this took longer than 15 minutes.

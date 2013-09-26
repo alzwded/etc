@@ -103,6 +103,8 @@ int main()
         // make sure we've actually read something useful
         if(2 == fscanf(stdin, "%d %d", &x, &y))
             a.set(x, y);
+        else
+            break;
     }
     // keep track of the current generation
     // it's okay if it overflows, since INT_MAX is odd and INT_MIN is even

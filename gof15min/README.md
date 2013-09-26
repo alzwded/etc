@@ -32,12 +32,12 @@ Compiling
 =========
 
 ```sh
-g++ -O3 --std=gnu++11 gof2.cpp && ./a.out < test > log & killall -9 a.out
+g++ -O3 --std=gnu++11 gof2.cpp && ./a.out < test > log & sleep 10 && killall -9 a.out
 ```
 
 or
 ```sh
-g++ -O3 --std=gnu++11 gof2_fixed.cpp && a.out < test > log & killall -9 a.out
+g++ -O3 --std=gnu++11 gof2_fixed.cpp && a.out < test > log & sleep 10 && killall -9 a.out
 ```
 
 If you're curious about version one

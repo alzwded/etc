@@ -24,7 +24,9 @@ Missing return statement in main (oups)
 Working version
 ===============
 
-Bugs were fixed in gof2_fixed.cpp, but this took longer than 15 minutes.
+The original `gof2.cpp` also works, but it's buggy and someone bent on making it crash can do so with intelligent input.
+
+Bugs were fixed in `gof2_fixed.cpp`, but this took longer than 15 minutes.
 
 Also, this version has comments.
 

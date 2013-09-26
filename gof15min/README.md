@@ -5,12 +5,12 @@ This is an implementation of Conway's Game of Life done in less than 15 minutes.
 
 This was the second attempt.
 
-Tactics:
-1.  Implement a quick sparse matrix class of booleans. Quickest way was with a set of pairs representing the _true_ values.
-2.  Use two SparseMatrix's that alternate between odd and even generations. This required a clear() method and a generation counter.
-3.  Implement the iterative algorithm. Pretty straight forward with the SparseMatrix. Since we don't know any bounds, the matrix needs to keep track of them. This is done in the set() method.
-4.  Implement printing. This is easy.
-5.  Done.
+Tactics:  
+1.  Implement a quick sparse matrix class of booleans. Quickest way was with a set of pairs representing the _true_ values.  
+2.  Use two SparseMatrix's that alternate between odd and even generations. This required a clear() method and a generation counter.  
+3.  Implement the iterative algorithm. Pretty straight forward with the SparseMatrix. Since we don't know any bounds, the matrix needs to keep track of them. This is done in the set() method.  
+4.  Implement printing. This is easy.  
+5.  Done.  
 
 Bugs
 ====

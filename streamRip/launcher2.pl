@@ -32,7 +32,7 @@ while(<$fh>) {
 close $fh;
 
 while(1) {
-    exit 255 if scalar(@children) == 0;
+    exit 0 if scalar(@children) == 0;
     sleep 5;
 }
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-codec=mp3
+codec=libmp3lame
 br=96000
 extension=mp3
 avconv_bin=avconv

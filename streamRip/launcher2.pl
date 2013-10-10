@@ -10,6 +10,8 @@ $SIG{'CHLD'} = "reap";
 
 my @children = ();
 
+my $maxSize = 150; # MiB
+
 print "spawning tasks\n";
 while(<$fh>) {
     chomp;
@@ -20,7 +22,7 @@ while(<$fh>) {
         killChildren();
         die 'failed to fork';
     } elsif($pid == 0) {
-        exec "streamripper '$link' -M 500" or die 'failed to exec';
+        exec "streamripper '$link' -M $maxSize" or die 'failed to exec';
     } else {
         print "    spawned process $pid for $link\n";
         push @children, $pid;

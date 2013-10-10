@@ -16,7 +16,7 @@ print "spawning tasks\n";
 while(<$fh>) {
     chomp;
     my $link = $_;
-    print "    forking for $link";
+    print "    forking for $link\n";
     my $pid = fork();
     if($pid < 0) {
         killChildren();

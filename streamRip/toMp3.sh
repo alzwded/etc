@@ -1,8 +1,8 @@
 #!/bin/bash
 
-codec=wmav2
+codec=mp3
 br=96000
-extension=wma
+extension=mp3
 avconv_bin=avconv
 
 for i in */*aac ;

@@ -73,6 +73,7 @@ ReadMode 0;
 
 my $idx = 0;
 foreach my $bucket (@buckets) {
+    print "processing bucket-". $bucketNumbers[$idx] ."\n";
     system("mkdir -p \"bucket-" . $bucketNumbers[$idx] . "\"") == 0 or die 'cannot create directory';
 
     foreach my $file (@{ $bucket }) {

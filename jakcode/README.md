@@ -19,3 +19,11 @@ I need to take time one day to re-figure out what it does.
 I remember working on this during lunch breaks in belgium.
 
 I like the Makefile, though.
+
+I think this was supposed to be some encryption thingy.
+
+...
+
+...
+
+=)) xD yeah right

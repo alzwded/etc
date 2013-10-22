@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "jakcode.h"
 
 const unsigned char* text = "Hello\nHello";
@@ -24,6 +25,9 @@ int main()
     jakcode_mem_encode(text, stext, &output, &soutput);
     jakcode_mem_decode(output, soutput, &redone, &sdone);
     printf("output:\n%s\n(end of output)\n", redone);
+
+    free(output);
+    free(redone);
 
     return 0;
 }

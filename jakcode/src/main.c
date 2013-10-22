@@ -67,9 +67,12 @@ void decode_fout(const char* s)
     jakcode_stream_decode(g, f);
 }
 
+static const char* USAGE = "usage: %s -edEDfFGgh\ne - encode stdin to stdout\nd - decode stdin to stdout\nEfile - encode file to stdout\nDpath - decode file to stdout\nfpath,path - encode file to file\nFpath,path - decode file to file\ngpath - encode stdin to file\nGpath - decode stdin to path\n";
+
 int main(int argc, char* argv[]) {
-    if(argc != 2) { abort(); }
-    if(strlen(argv[1]) < 2) { abort(); }
+    if(argc <= 1) { printf(USAGE, argv[0]); return 255; }
+    if(argc != 2) { printf(USAGE, argv[0]); return 255; }
+    if(strlen(argv[1]) < 2) { printf(USAGE, argv[0]); return 255; }
     if(argv[1][1] == 'e') {
         jakcode_stream_encode(fdopen(0, "rb"), fdopen(1, "ab"));
     } else if(argv[1][1] == 'd') {
@@ -87,10 +90,11 @@ int main(int argc, char* argv[]) {
     } else if(argv[1][1] == 'G') {
         decode_fout(&argv[1][2]);
     } else if(argv[1][1] == 'h') {
-        printf("usage: %s -edEDfFGgh\ne - encode stdin to stdout\nd - decode stdin to stdout\nEfile - encode file to stdout\nDpath - decode file to stdout\nfpath,path - encode file to file\nFpath,path - decode file to file\ngpath - encode stdin to file\nGpath - decode stdin to path\n", argv[0]);
-        return 1;
+        printf(USAGE, argv[0]);
+        return 255;
     } else {
-        abort();
+        printf(USAGE, argv[0]);
+        return 255;
     }
     return 0;
 }

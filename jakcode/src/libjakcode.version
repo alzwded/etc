@@ -1,0 +1,4 @@
+jakcode {
+    global: jakcode_stream_encode; jakcode_stream_decode; jakcode_mem_encode; jakcode_mem_decode;
+    local: *;
+};

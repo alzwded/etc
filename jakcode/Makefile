@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -O3 -fPIC
 #CFLAGS = -g -fPIC
 MAKEDEPEND = $(CC) -MM
-HACK_FIXDEPEND = sed -r -i $(@:.o=.d) -e 's.*:$@:'
+HACK_FIXDEPEND = sed -r -i $(@:.o=.d) -e '1 s.*:$@:'
 OBJS = obj/encoder.o obj/decoder.o obj/main.o obj/common.o
 LIBOBJS = obj/libmain.o obj/encoder.o obj/decoder.o obj/common.o
 TESTSTUFF = test.csh test.in test2.in test3.in

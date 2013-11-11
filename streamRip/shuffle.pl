@@ -77,7 +77,7 @@ foreach my $bucket (@buckets) {
     system("mkdir -p \"bucket-" . $bucketNumbers[$idx] . "\"") == 0 or die 'cannot create directory';
 
     foreach my $file (@{ $bucket }) {
-        system("mv \"$file\" \"bucket-". $bucketNumbers[$idx] ."\"") == 0 or die "cannot move file $file";
+        system("mv ". quotemeta($file) ." \"bucket-". $bucketNumbers[$idx] ."\"") == 0 or die "cannot move file $file";
     }
 
     ++$idx;

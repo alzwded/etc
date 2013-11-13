@@ -1,11 +1,8 @@
-%_unittest.o: %_unittest.cpp $(GTEST_HEADERS)
-	echo rule 1
+%_unittest.o: $(USER_DIR)/%_unittest.cpp $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/%_unittest.cpp
 
-%.o: %.cpp $(GTEST_HEADERS)
-	echo rule 2
+%.o: $(USER_DIR)/%.cpp $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/%.cpp -o %.o
 
 %_unittest: %.o %_unittest.o gtest_main.a
-	echo rule 3
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@

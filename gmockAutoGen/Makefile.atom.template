@@ -1,0 +1,5 @@
+%_test.o: $(USER_DIR)/%_test.cpp $(GMOCK_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/%_test.cpp
+
+%_test : %_test.o gmock_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@

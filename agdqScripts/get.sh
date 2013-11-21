@@ -1,3 +1,3 @@
 #!/bin/sh
 
-wget -t inf "$@"
+wget -c -t inf "$@"

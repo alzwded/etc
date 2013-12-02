@@ -69,6 +69,10 @@ sub binary_page {
         }
     }
 
+    if(defined $offset && $length > $offset + 4 * 1024 * 1024) {
+        $length = $offset + 4 * 1024 * 1024;
+    }
+
     if(defined $length && $length < $fileSize) {
         print "HTTP/1.1 206 Partial Content\n" if defined $length && $length < $fileSize;
         if(defined $offset) {

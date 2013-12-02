@@ -13,3 +13,4 @@ TODO
 * refractor the code because it's a bit of a clusterfuck in the `binary_page` sub department.
 * sort directory entries in a nice way (directories first, case insensitive, alphabetically)
 * switch to monospaced font
+* send header's in directory listing html page response as well (don't let people guess)

@@ -31,3 +31,103 @@ would pass
 * I'm pretty much done here
 * if there really is a need for bonus points, I could just finish off implementing the stream operators, and maybe some C-like FILEptr functions that accomplish the same thing. Those would be cool
 * tests are awesome
+
+agdqScripts
+===========
+
+scripts used to transfer stuff off of archive.org. Also, `sizeAll.sh` which does a sum of multiple `du` outputs.
+
+bachScripts
+===========
+
+scripts used to extract archives which contain names in dubious code pages to an ntfs fs that doesn't support said code pages.
+
+clpfcdgen & clpromgen
+=====================
+
+generate combinations of bits. These were used to finish a school project that involved writing down said combinations.
+
+espeak-chain
+============
+
+I consider these some of my most important scripts. These drive espeak to output audio books just the way I like them.
+
+fsHttp
+======
+
+cgi script that runs on lighttpd/fastcgi. Used to access my main computer through any browser to transfer files and/or crudely stream stuff.
+
+gmockAutoGen & gstestAutoGen
+============================
+
+wrote these for a code retreat event. They generate Makefiles for a project that uses gmock or gtest or something like that. Whatever.
+
+goStuff
+=======
+
+this is where my experiments in golang were supposed to go, but didn't.
+
+gof15min
+========
+
+I have implemented Conwell's Game of Life in 15 minutes. However, I got the rules wrong. Oups!
+
+greedyfood
+==========
+
+I don't remember. Something in perl.
+
+huffmanGenerateForCPP
+=====================
+
+I used this to generate a huffman dictionary from cpp files for a LMS Training Center event.
+
+jakcode
+=======
+
+Some form of proto encryption or something like that. This will be most useful for a school project that will be due soon (serendipity)
+
+khathonscripts
+==============
+
+scripts used to rip stuff from youtube and convert them to mp4 and rename them and other stuff.
+
+loopingList
+===========
+
+I honestly don't remember `:-|`. I think this too was for a LMS Traning Center event.
+
+photoProc
+=========
+
+scripts I used once to make a hand laser-scanned book readable.
+
+school-PG
+=========
+
+opengl school project done in a couple of hours while learning openGL 2.
+
+schoolPapersAndWhatnot
+======================
+
+This folder contains school papers and whatnot
+
+sedShenanigans
+==============
+
+useful stuff you can do with sed
+
+stlCWrapper
+===========
+
+A project I've started long ago to use stl containers in C. Meh
+
+streamRip
+=========
+
+script chain used to rip internet radios and then shuffle the ripped contents. I really love the `shuffle.pl` script.
+
+usefulScripts
+=============
+
+define useful

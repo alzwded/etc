@@ -28,7 +28,12 @@ sub binary_page {
         $path = readlink($path);
     }
     my $buffer;
-    open FIN,"<$path" or print "cannot access $path ".`groups`."\n";
+    if(!open FIN,"<$path") {
+        print "HTTP/1.1 404 Not Found\n";
+        print "Content-Type: text/plain\n\n";
+        print "cannot access $path ".`groups`."\n";
+        exit 0;
+    }
     binmode(STDOUT);
     binmode(FIN);
 
@@ -53,6 +58,8 @@ sub binary_page {
     chomp $fileSize;
     if(defined $length && $length > $fileSize) {
         print "HTTP/1.1 400 Bad Request\n";
+        print "Content-Type: text/plain\n\n";
+        print "bad Range: request\n";
         exit 0; # TODO fail more elegantly
     } elsif(!defined $length) {
         if($offset + 4 * 1024 * 1024 < $fileSize) {
@@ -116,7 +123,10 @@ sub index_page {
 EOF
 ;
 
-    opendir A, $path or die 'sorry, can\'t do that';
+    if(!opendir A, $path) {
+        print "<p>Failed to open $path</p></body></html>";
+        exit 0;
+    }
     my @files = readdir A;
     closedir A;
 

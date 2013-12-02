@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 use URI::Escape;
-use CGI;
 
 payload();
 
@@ -29,21 +28,57 @@ sub binary_page {
         $path = readlink($path);
     }
     my $buffer;
-    print "Content-Type: ".`file -L -b --mime-type "$path"`."\n";
-
     open FIN,"<$path" or print "cannot access $path ".`groups`."\n";
     binmode(STDOUT);
     binmode(FIN);
 
     my $offset = 0;
+    my $length = 0;
     undef $offset;
+    undef $length;
     if(defined $args{offset}) {
         $offset = $args{offset};
     }
 
-    # TODO read Accept-Range, send Content-Range: start-end/total, send Content-Length, limit output to 4M or something like that
-    #my $q = CGI->new();
-    #if(defined $q->http(
+    # TODO read Range, send Accept-Range, send Content-Range: start-end/total, send Content-Length, limit output to 4M or something like that
+    if(defined $ENV{HTTP_RANGE}) {
+        my $s = $ENV{HTTP_RANGE};
+        $s =~ m/(\d*)-(\d*)/;
+        $offset = $1;
+        $length = $2;
+        # TODO normalize, validate
+    }
+
+    my $fileSize = `stat -c%s "$path"`;
+    chomp $fileSize;
+    if(defined $length && $length > $fileSize) {
+        print "HTTP/1.1 400 Bad Request\n";
+        exit 0; # TODO fail more elegantly
+    } elsif(!defined $length) {
+        if($offset + 4 * 1024 * 1024 < $fileSize) {
+            $length = 4 * 1024 * 1024;
+        } else {
+            $length = $fileSize;
+        }
+    }
+
+    if(defined $length && $length < $fileSize) {
+        print "HTTP/1.1 206 Partial Content\n" if defined $length && $length < $fileSize;
+        if(defined $offset) {
+            if(defined $length) {
+                print "Content-Range: $offset-$length/$fileSize\n";
+            } else {
+                print "Content-Range: $offset-$fileSize/$fileSize\n";
+            }
+        } else {
+            print "Content-Range: 0-$length/$fileSize\n";
+        }
+    } else {
+        print "HTTP/1.1 200 OK\n";
+        print "Content-Length: $fileSize";
+    }
+    print "Accept-Ranges: bytes\n";
+    print "Content-Type: ".`file -L -b --mime-type "$path"`."\n";
 
     my $read = 0;
     my $br = 0;
@@ -58,6 +93,10 @@ sub binary_page {
                 $buffer = substr $buffer, $offset;
                 undef $offset;
             }
+        }
+        if(defined $length && $read > $length) {
+            print substr $buffer, 0, $length - $offset;
+            last;
         }
 
         print $buffer;

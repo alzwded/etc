@@ -75,7 +75,7 @@ sub binary_page {
         }
     } elsif(!defined $offset && $length == $fileSize) {
         print "HTTP/1.1 200 OK\n";
-        print "Content-Length: $fileSize";
+        print "Content-Length: $fileSize\n";
     } else {
         print "HTTP/1.1 206 Partial Content\n";
         print "Content-Range: $offset-$fileSize/$fileSize\n" if defined $offset;

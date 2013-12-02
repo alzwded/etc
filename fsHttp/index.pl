@@ -73,9 +73,13 @@ sub binary_page {
         } else {
             print "Content-Range: 0-$length/$fileSize\n";
         }
-    } else {
+    } elsif(!defined $offset && $length == $fileSize) {
         print "HTTP/1.1 200 OK\n";
         print "Content-Length: $fileSize";
+    } else {
+        print "HTTP/1.1 206 Partial Content\n";
+        print "Content-Range: $offset-$fileSize/$fileSize\n" if defined $offset;
+        print "Content-Range: 0-$fileSize/$fileSize\n" if !defined $offset;
     }
     print "Accept-Ranges: bytes\n";
     print "Content-Type: ".`file -L -b --mime-type "$path"`."\n";

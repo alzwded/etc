@@ -5,7 +5,7 @@ use URI::Escape;
 payload();
 
 sub payload {
-    my %args = ();
+    our %args = ();
     foreach my $a ( split /&/, $ENV{QUERY_STRING}) {
         $a =~ /^([^=]*)=(.*)$/;
         $args{$1} = $2;
@@ -29,10 +29,32 @@ sub binary_page {
     }
     my $buffer;
     print "Content-Type: ".`file -L -b --mime-type "$path"`."\n";
+
     open FIN,"<$path" or print "cannot access $path ".`groups`."\n";
     binmode(STDOUT);
     binmode(FIN);
-    while (sysread FIN, $buffer, 4096) {
+
+    my $offset = 0;
+    undef $offset;
+    if(defined $args{offset}) {
+        $offset = $args{offset};
+    }
+
+    my $read = 0;
+    my $br = 0;
+    while ($br = read FIN, $buffer, 4096) {
+        if(defined $offset) {
+            $read += $br;
+            if($read <= $offset) {
+                next;
+            } else {
+                $offset -= $read;
+                #$buffer = splice $buffer, $offset;
+                $buffer = substr $buffer, $offset;
+                undef $offset;
+            }
+        }
+
         print $buffer;
     }
     close FIN;

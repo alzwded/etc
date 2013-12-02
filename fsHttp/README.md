@@ -15,4 +15,4 @@ TODO
 * switch to monospaced font
 * send header's in directory listing html page response as well (don't let people guess)
 * give or take, ability to escape out of the current directory through [..] without needing to type in index.pl?p=/ in the address bar
-* OMG it just hit me, please use fseek when processing Range: requests instead of reading in the entire file up to that point FFS
+* ~~OMG it just hit me, please use fseek when processing Range: requests instead of reading in the entire file up to that point FFS~~

@@ -93,18 +93,9 @@ sub binary_page {
 
     my $read = 0;
     my $br = 0;
+    seek FIN, $offset, SEEK_SET if(defined $offset);
+    $read += $offset if defined $offset;
     while ($br = read FIN, $buffer, 4096) {
-        if(defined $offset) {
-            $read += $br;
-            if($read <= $offset) {
-                next;
-            } else {
-                $offset -= $read;
-                #$buffer = splice $buffer, $offset;
-                $buffer = substr $buffer, $offset;
-                undef $offset;
-            }
-        }
         if(defined $length && $read > $length) {
             print substr $buffer, 0, $length - $offset;
             last;

@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use URI::Escape;
+use CGI;
 
 payload();
 
@@ -39,6 +40,10 @@ sub binary_page {
     if(defined $args{offset}) {
         $offset = $args{offset};
     }
+
+    # TODO read Accept-Range, send Content-Range: start-end/total, send Content-Length, limit output to 4M or something like that
+    #my $q = CGI->new();
+    #if(defined $q->http(
 
     my $read = 0;
     my $br = 0;

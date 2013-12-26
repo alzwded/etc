@@ -11,6 +11,6 @@ set extns="mp3"
 set idx=1
 
 foreach i ("$fldr"/*$extns)
-    id3v2 -a "$fldr" -A "$fldr" -t "$fldr"_"$idx" "$i"
+    id3v2 -a "$fldr" -A "$fldr" -t "$fldr"_"$idx" -T "$idx" "$i"
     @ idx ++
 end

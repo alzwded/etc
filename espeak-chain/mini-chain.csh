@@ -15,6 +15,7 @@ mkdir -p $out:q
 
 csh ./espeak.csh "$file" "$out/$out.wav" 
 if($? == 0) then
+    set idx=1
     foreach i ("$out"/*)
         #ffmpeg -i "$i" -acodec wmav2 -ab 32000 "$i:r.wma"
         #set ofile="$i:r.ogg"
@@ -25,7 +26,8 @@ if($? == 0) then
         #ffmpeg -i "$i" -acodec aac -ab 32000 "$ofile"
         if($? == 0) then
             rm "$i"
-            id3v2 -a "$out" -A "$out" -t "$ofile:t" "$ofile"
+            id3v2 -a "$out" -A "$out" -t "$ofile:t" -T "$idx" "$ofile"
+            @ idx ++
         endif
     end
 endif

@@ -32,6 +32,11 @@ would pass
 * if there really is a need for bonus points, I could just finish off implementing the stream operators, and maybe some C-like FILEptr functions that accomplish the same thing. Those would be cool
 * tests are awesome
 
+audio-book-tools
+================
+
+old version of espeak-chain
+
 agdqScripts
 ===========
 
@@ -46,6 +51,11 @@ clpfcdgen & clpromgen
 =====================
 
 generate combinations of bits. These were used to finish a school project that involved writing down said combinations.
+
+CrashProject
+============
+
+scripts used to download many jpegs and to pack them into cbr files (cha cha cha)
 
 espeak-chain
 ============
@@ -131,3 +141,10 @@ usefulScripts
 =============
 
 define useful
+
+vlm
+===
+
+scripts to help use the VLM module in VLC
+
+TODO: use cat stuff - | cvlc

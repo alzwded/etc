@@ -10,6 +10,8 @@ $cfgName = substr $cfgName, 1;
 
 open A, ">$cfgName";
 
+print A "vlm\n";
+
 my $idx = 0;
 foreach $file (@ARGV) {
     print A "new T$idx vod enabled\n";

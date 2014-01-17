@@ -13,4 +13,6 @@
 # TODO
 # set up transcoding to something that fits in 800x600, ~400kbps or something like that
 
-cvlc -I cli --rtsp-host 0.0.0.0 --rtsp-port 5554 --ttl 2
+[ $# -lt 1 ] && echo "usage: $0 configFile" && exit 255
+
+cat "$1" - | cvlc -I cli --rtsp-host 0.0.0.0 --rtsp-port 5554 --ttl 2

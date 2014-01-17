@@ -16,7 +16,8 @@ my $idx = 0;
 foreach $file (@ARGV) {
     print A "new T$idx vod enabled\n";
     print A "setup T$idx input \"$file\"\n";
-    #print A "setup T$idx output #transcode{vcodec=h264,vb=400,width=800}\n";
+    print A "setup T$idx output #transcode{vb=800,width=800}\n";
+    print A "setup T$idx mux mp2t\n";
     ++$idx;
 }
 

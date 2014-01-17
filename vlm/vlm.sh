@@ -15,4 +15,4 @@
 
 [ $# -lt 1 ] && echo "usage: $0 configFile" && exit 255
 
-cat "$1" - | cvlc -I cli --rtsp-host 0.0.0.0 --rtsp-port 5554 --ttl 2
+cat "$1" - | cvlc -I cli --rtsp-host 0.0.0.0 --rtsp-port 5554 --ttl 3

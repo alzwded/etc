@@ -42,3 +42,17 @@ obj
 **/lib
 **/dist
 **/obj
+
+# various
+clp-fcd-generator/clpfcdgen
+clp-fcd-generator/test.sh
+clpromgen/beautyOutput
+clpromgen/beautyOutput2
+clpromgen/clpromgen
+clpromgen/output
+greedyfood/log
+huffmanGenerateForCPP/HuffmanForCPP.txt
+khathonscripts/convert.sh
+minifloat/log
+minifloat/notes
+sedShenanigans/tests/

@@ -107,6 +107,13 @@ loopingList
 
 I honestly don't remember `:-|`. I think this too was for a LMS Traning Center event.
 
+pdfToJpeg.sh
+============
+
+ImageMagick is weird when processing multiple things at once. This script is used to convert/extract the pages from a pdf to NUMPAGES jpegs. It's here because I keep forgetting I need to do it like this.
+
+Always modify the "115" with the exact number of pages in your pdf.
+
 photoProc
 =========
 

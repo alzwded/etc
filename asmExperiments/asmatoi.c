@@ -221,7 +221,7 @@ short satoi10(char const* volatile s)
             "satoi10_end%=:\n\t"
             : "=&r"(ret)             // output ret, W/O random register
             : "r"(s1)               // input s1, R/W random register
-            : "%eax", "%ebx"         // modifying eAX, ebx
+            : "%ax", "%bx"         // modifying eAX, ebx
         );
     return ret;
 }

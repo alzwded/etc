@@ -39,7 +39,7 @@ int matoi16(char const* volatile s)
             "matoi16_end%=:\n\t"
             : "=&a"(ret)
             : "r"(s1)
-            : "%ebx"
+            : "%ebx", "cc"
         );
     return ret;
 }
@@ -71,7 +71,7 @@ int matoi8(char const* volatile s)
             "matoi8_end%=:\n\t"
             : "=&a"(ret)             // output ret, W/O random register
             : "r"(s1)               // input s1, R/W random register
-            : "%ebx"                 // modifying eAX
+            : "%ebx", "cc"           // modifying eAX
         );
     return ret;
 }
@@ -103,7 +103,7 @@ int matoi10(char const* volatile s)
             "matoi10_end%=:\n\t"
             : "=&r"(ret)             // output ret, W/O random register
             : "r"(s1)               // input s1, R/W random register
-            : "%edx", "%ebx"         // modifying eAX, ebx
+            : "%edx", "%ebx", "cc"   // modifying eAX, ebx
         );
     return ret;
 }
@@ -145,7 +145,7 @@ short satoi8(char const* volatile s)
             "satoi8_end%=:\n\t"
             : "=&r"(ret)             // output ret, W/O random register
             : "r"(s1)               // input s1, R/W random register
-            : "%ax"                 // modifying eAX
+            : "%ax", "cc"           // modifying eAX
         );
     return ret;
 }
@@ -189,7 +189,7 @@ short satoi16(char const* volatile s)
             "satoi16_end%=:\n\t"
             : "=&r"(ret)
             : "r"(s1)
-            : "%ax"
+            : "%ax", "cc"
         );
     return ret;
 }
@@ -221,7 +221,7 @@ short satoi10(char const* volatile s)
             "satoi10_end%=:\n\t"
             : "=&r"(ret)             // output ret, W/O random register
             : "r"(s1)               // input s1, R/W random register
-            : "%ax", "%bx"         // modifying eAX, ebx
+            : "%ax", "%bx", "cc"   // modifying eAX, ebx
         );
     return ret;
 }

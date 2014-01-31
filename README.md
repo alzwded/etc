@@ -32,6 +32,11 @@ would pass
 * if there really is a need for bonus points, I could just finish off implementing the stream operators, and maybe some C-like FILEptr functions that accomplish the same thing. Those would be cool
 * tests are awesome
 
+asmExperiments
+==============
+
+collection of routines/experiments written in assembly. (Initially it was asmatoi.c which contains atoi routines for base 8, 10 and 16 written in inline gcc asm)
+
 audio-book-tools
 ================
 

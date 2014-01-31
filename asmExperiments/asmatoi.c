@@ -63,7 +63,6 @@ int matoi8(char const* volatile s)
             "shll $3, %0\n\t"       //      ret <<= 3
 
             "subl $0x30, %%ebx\n\t" //      ebx = *s1 - '0'
-            "matoi8_sum%=:\n\t"
             "addl %%ebx, %0\n\t"    //      ret += ebx
             "inc %1\n\t"            //      s1++
             "jmp matoi8_loop%=\n\t"
@@ -95,7 +94,6 @@ int matoi10(char const* volatile s)
             "addl %%ebx, %0\n\t"
 
             "subl $0x30, %%edx\n\t" //      edx = *s1 - '0'
-            "matoi10_sum%=:\n\t"
             "addl %%edx, %0\n\t"    //      ret += edx
             "inc %1\n\t"            //      s1++
             "jmp matoi10_loop%=\n\t"
@@ -137,7 +135,6 @@ short satoi8(char const* volatile s)
             "shlw $3, %0\n\t"       //      ret <<= 3
 
             "subw $0x30, %%ax\n\t" //      eax = *s1 - '0'
-            "satoi8_sum%=:\n\t"
             "addw %%ax, %0\n\t"    //      ret += eax
             "inc %1\n\t"            //      s1++
             "jmp satoi8_loop%=\n\t"
@@ -213,7 +210,6 @@ short satoi10(char const* volatile s)
             "addw %%bx, %0\n\t"
 
             "subw $0x30, %%ax\n\t" //      eax = *s1 - '0'
-            "satoi10_sum%=:\n\t"
             "addw %%ax, %0\n\t"    //      ret += eax
             "inc %1\n\t"            //      s1++
             "jmp satoi10_loop%=\n\t"

@@ -40,7 +40,6 @@ exit 0;
 
 sub killChildren {
     print "killing all streamrippers\n";
-    #system("killall -INT streamripper");
     foreach my $i (@children) {
         print "    interrupting $i\n";
         kill 2, $i;
@@ -50,7 +49,6 @@ sub killChildren {
 sub interrupt {
     killChildren();
     print "exiting\n";
-    exit 0;
 }
 
 sub reap {

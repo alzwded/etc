@@ -13,14 +13,14 @@ int matoi16(char const* volatile s)
 
             "matoi16_loop%=:\n\t"     // while(*s1) {
             "movb (%1), %%bl\n\t"
-            "cmpl $0, %%ebx\n\t"
+            "cmpb $0, %%bl\n\t"
             "jz matoi16_end%=\n\t"
             "shll $4, %0\n\t"       //      ret <<= 4
 
-            "cmpl $0x61, %%ebx\n\t" //      if(*s1 > 'a') goto small_letters
+            "cmpb $0x61, %%bl\n\t" //      if(*s1 > 'a') goto small_letters
             "jge matoi16_small_letters%=\n\t"
 
-            "cmpl $0x41, %%ebx\n\t" //      if(*s1 > 'A') goto big_letters
+            "cmpb $0x41, %%bl\n\t" //      if(*s1 > 'A') goto big_letters
             "jge matoi16_big_letters%=\n\t"
 
             "subl $0x30, %%ebx\n\t" //      ebx = *s1 - '0'
@@ -58,7 +58,7 @@ int matoi8(char const* volatile s)
 
             "matoi8_loop%=:\n\t"      // while(*s1) {
             "movb (%1), %%bl\n\t"
-            "cmpl $0, %%ebx\n\t"
+            "cmpb $0, %%bl\n\t"
             "jz matoi8_end%=\n\t"
             "shll $3, %0\n\t"       //      ret <<= 3
 
@@ -86,7 +86,7 @@ int matoi10(char const* volatile s)
 
             "matoi10_loop%=:\n\t"      // while(*s1) {
             "movb (%1), %%dl\n\t"
-            "cmpl $0, %%edx\n\t"
+            "cmpb $0, %%dl\n\t"
             "jz matoi10_end%=\n\t"
             "movl %0, %%ebx\n\t"        // ret *= 10
             "shll $1, %%ebx\n\t"

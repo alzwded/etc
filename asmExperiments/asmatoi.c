@@ -9,7 +9,7 @@ int matoi16(char const* volatile s)
     int volatile ret;
     asm volatile (   
             "xorl %%ebx, %%ebx\n\t"    // upper three bytes -> 0
-            "xorl %0, %0\n\t"       // ret = 0
+            "xorl %0, %0\n"       // ret = 0
 
             "matoi16_loop%=:\n\t"     // while(*s1) {
             "movb (%1), %%bl\n\t"
@@ -23,19 +23,19 @@ int matoi16(char const* volatile s)
             "cmpb $0x41, %%bl\n\t" //      if(*s1 > 'A') goto big_letters
             "jge matoi16_big_letters%=\n\t"
 
-            "subl $0x30, %%ebx\n\t" //      ebx = *s1 - '0'
+            "subl $0x30, %%ebx\n" //      ebx = *s1 - '0'
             "matoi16_sum%=:\n\t"
             "addl %%ebx, %0\n\t"    //      ret += ebx
             "inc %1\n\t"            //      s1++
-            "jmp matoi16_loop%=\n\t"
+            "jmp matoi16_loop%=\n"
 
             "matoi16_big_letters%=:\n\t"
             "subl $0x37, %%ebx\n\t" //      ebx = *s1 - 'A'
-            "jmp matoi16_sum%=\n\t"
+            "jmp matoi16_sum%=\n"
 
             "matoi16_small_letters%=:\n\t"
             "subl $0x57, %%ebx\n\t" //      ebx = *s1 - 'a'
-            "jmp matoi16_sum%=\n\t"
+            "jmp matoi16_sum%=\n"
             "matoi16_end%=:\n\t"
             : "=&a"(ret)
             : "r"(s1)
@@ -54,7 +54,7 @@ int matoi8(char const* volatile s)
     int volatile ret;
     asm volatile (   
             "xorl %%ebx, %%ebx\n\t"    // upper three bytes -> 0
-            "xorl %0, %0\n\t"       // ret = 0
+            "xorl %0, %0\n"       // ret = 0
 
             "matoi8_loop%=:\n\t"      // while(*s1) {
             "movb (%1), %%bl\n\t"
@@ -65,7 +65,7 @@ int matoi8(char const* volatile s)
             "subl $0x30, %%ebx\n\t" //      ebx = *s1 - '0'
             "addl %%ebx, %0\n\t"    //      ret += ebx
             "inc %1\n\t"            //      s1++
-            "jmp matoi8_loop%=\n\t"
+            "jmp matoi8_loop%=\n"
 
             "matoi8_end%=:\n\t"
             : "=&a"(ret)             // output ret, W/O random register
@@ -82,7 +82,7 @@ int matoi10(char const* volatile s)
     int volatile ret;
     asm volatile(
             "xorl %%edx, %%edx\n\t"    // upper three bytes -> 0
-            "xorl %0, %0\n\t"       // ret = 0
+            "xorl %0, %0\n"       // ret = 0
 
             "matoi10_loop%=:\n\t"      // while(*s1) {
             "movb (%1), %%dl\n\t"
@@ -96,7 +96,7 @@ int matoi10(char const* volatile s)
             "subl $0x30, %%edx\n\t" //      edx = *s1 - '0'
             "addl %%edx, %0\n\t"    //      ret += edx
             "inc %1\n\t"            //      s1++
-            "jmp matoi10_loop%=\n\t"
+            "jmp matoi10_loop%=\n"
 
             "matoi10_end%=:\n\t"
             : "=&r"(ret)             // output ret, W/O random register
@@ -126,7 +126,7 @@ short satoi8(char const* volatile s)
     short volatile ret;
     asm volatile (   
             "xorw %%ax, %%ax\n\t"    // upper three bytes -> 0
-            "xorw %0, %0\n\t"       // ret = 0
+            "xorw %0, %0\n"       // ret = 0
 
             "satoi8_loop%=:\n\t"      // while(*s1) {
             "movb (%1), %%al\n\t"
@@ -137,7 +137,7 @@ short satoi8(char const* volatile s)
             "subw $0x30, %%ax\n\t" //      eax = *s1 - '0'
             "addw %%ax, %0\n\t"    //      ret += eax
             "inc %1\n\t"            //      s1++
-            "jmp satoi8_loop%=\n\t"
+            "jmp satoi8_loop%=\n"
 
             "satoi8_end%=:\n\t"
             : "=&r"(ret)             // output ret, W/O random register
@@ -156,7 +156,7 @@ short satoi16(char const* volatile s)
     short volatile ret;
     asm volatile (   
             "xorw %%ax, %%ax\n\t"    // upper three bytes -> 0
-            "xorw %0, %0\n\t"       // ret = 0
+            "xorw %0, %0\n"       // ret = 0
 
             "satoi16_loop%=:\n\t"     // while(*s1) {
             "movb (%1), %%al\n\t"
@@ -170,19 +170,19 @@ short satoi16(char const* volatile s)
             "cmpw $0x41, %%ax\n\t" //      if(*s1 > 'A') goto big_letters
             "jge satoi16_big_letters%=\n\t"
 
-            "subw $0x30, %%ax\n\t" //      eax = *s1 - '0'
+            "subw $0x30, %%ax\n" //      eax = *s1 - '0'
             "satoi16_sum%=:\n\t"
             "addw %%ax, %0\n\t"    //      ret += eax
             "inc %1\n\t"            //      s1++
-            "jmp satoi16_loop%=\n\t"
+            "jmp satoi16_loop%=\n"
 
             "satoi16_big_letters%=:\n\t"
             "subw $0x37, %%ax\n\t" //      eax = *s1 - 'A'
-            "jmp satoi16_sum%=\n\t"
+            "jmp satoi16_sum%=\n"
 
             "satoi16_small_letters%=:\n\t"
             "subw $0x57, %%ax\n\t" //      eax = *s1 - 'a'
-            "jmp satoi16_sum%=\n\t"
+            "jmp satoi16_sum%=\n"
             "satoi16_end%=:\n\t"
             : "=&r"(ret)
             : "r"(s1)
@@ -198,7 +198,7 @@ short satoi10(char const* volatile s)
     short volatile ret;
     asm volatile(
             "xorw %%ax, %%ax\n\t"    // upper three bytes -> 0
-            "xorw %0, %0\n\t"       // ret = 0
+            "xorw %0, %0\n"       // ret = 0
 
             "satoi10_loop%=:\n\t"      // while(*s1) {
             "movb (%1), %%al\n\t"
@@ -212,7 +212,7 @@ short satoi10(char const* volatile s)
             "subw $0x30, %%ax\n\t" //      eax = *s1 - '0'
             "addw %%ax, %0\n\t"    //      ret += eax
             "inc %1\n\t"            //      s1++
-            "jmp satoi10_loop%=\n\t"
+            "jmp satoi10_loop%=\n"
 
             "satoi10_end%=:\n\t"
             : "=&r"(ret)             // output ret, W/O random register

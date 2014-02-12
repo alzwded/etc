@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
     _Complex float X[NFREQS];
     size_t i;
 
-    float fqv = 440.f;
+    float fqv = 430.66936f;
 
     if(argc > 1) fqv = atof(argv[1]);
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
     printf("X:\n");
     for(i = 0; i < NFREQS; ++i) {
         if(argc > 2) printf("%10f + i%10f\n", crealf(X[i]), cimagf(X[i]));
-        printf("%10fHz: %10f\n", (float)i * 44100.f / NSAMPLES, cabsf(X[i]));
+        printf("%10.2fHz: %10f\n", (float)i * 44100.f / NSAMPLES, cabsf(X[i]));
     }
 
     if(argc > 2) {

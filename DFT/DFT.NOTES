@@ -1,0 +1,62 @@
+phase 1 -- the slow way
+=======================
+
+IN: _Complex x[N];
+OUT: _Complex X[N];
+LOCAL: _Complex w(1.0, 0.0);
+w = pow(w, 1.0/N);
+for(size_t sample = 0; sample < N; ++sample) {
+    X[sample] = 0;
+    for(size_t i = 0; i < N; ++i) {
+        X[sample] += _Complex(cos(2*M_PI*i/N), sin(2*M_PI*i/N)) * x[i];
+    }
+}
+
+C code:
+void DFT(size_t N, _Complex float* x, size_t NF, _Complex float* X)
+{
+    size_t sample, k;
+    _Complex float w;
+
+    for(k = 0; k < NF; ++k) {
+        X[k] = 0;
+        float arg = 2 * M_PI * k / NF;
+        for(sample = 0; sample < N; ++sample) {
+            w = cos(arg) + I * sin(arg);
+            X[k] += x[sample] * w;
+        }
+    }
+
+    return X;
+}
+
+void IDFT(size_t NF, _Complex float* X, size_t N, _Complex float* x)
+{
+    _Complex float* X1 = (_Complex float*)malloc(sizeof(_Complex float) * NF);
+    size_t k;
+
+    // swap real and imag parts
+    for(k = 0; k < NF; ++k) {
+        X1[k] = cimagf(X[k]) + I * crealf(X[k]);
+    }
+
+    // apply DFT transform
+    DFT(NF, X1, N, x);
+
+    // swap real and imag parts again
+    for(k = 0; k < N; ++k) {
+        x[k] = cimagf(x[k]) + I * crealf(x[k]);
+    }
+
+    free(X1);
+}
+
+phase 2 -- ???
+==============
+
+phase 3 -- Profit!
+==================
+
+Working real-time library for 512 sample chunks.
+
+Here, we provide float[N] input and expect float[N] output from IDFT.

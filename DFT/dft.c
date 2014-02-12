@@ -25,8 +25,6 @@ void DFT(size_t N, _Complex float* x, size_t NF, _Complex float* X)
 void IDFT(size_t NF, _Complex float* X, size_t N, _Complex float* x)
 {
 #if 0
-    // this also works! :D but rather poorly :(
-
     _Complex float* X1 = (_Complex float*)malloc(sizeof(_Complex float) * NF);
     size_t k;
 
@@ -46,17 +44,19 @@ void IDFT(size_t NF, _Complex float* X, size_t N, _Complex float* x)
 
     free(X1);
 #else
+    // this also works! :D but rather poorly :(
+
     size_t sample, k;
     _Complex float w;
 
-    for(k = 0; k < NF; ++k) {
-        X[k] = 0;
-        float arg = (2.f * pi * (float)k) / (float)N;
-        for(sample = 0; sample < N; ++sample) {
-            w = cos((float)sample * arg) + I * sin((float)sample * arg);
-            X[k] += x[sample] * w;
+    for(sample = 0; sample < N; ++sample) {
+        x[sample] = 0;
+        float arg = (2.f * pi * (float)sample) / (float)NF;
+        for(k = 0; k < NF; ++k) {
+            w = cos((float)k * arg) + I * sin((float)k * arg);
+            x[sample] += X[k] * w;
         }
-        X[k] /= (float)N;
+        x[sample] /= (float)N;
     }
 #endif
 }
@@ -65,7 +65,8 @@ void IDFT(size_t NF, _Complex float* X, size_t N, _Complex float* x)
 int main(int argc, char* argv[])
 {
 #define NSAMPLES 512
-#define NFREQS NSAMPLES / 2
+//#define NFREQS NSAMPLES / 2
+#define NFREQS NSAMPLES
     _Complex float x[NSAMPLES];
     _Complex float X[NFREQS];
     size_t i;
@@ -98,6 +99,8 @@ int main(int argc, char* argv[])
         printf("x:\n");
         for(i = 0; i < NSAMPLES; ++i) {
             printf("%10f + i%10f\n", crealf(x[i]), cimagf(x[i]));
+        }
+        for(i = 0; i < NSAMPLES; ++i) {
             printf("%10f\n", cabsf(x[i]));
         }
     }

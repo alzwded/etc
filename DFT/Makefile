@@ -10,4 +10,4 @@ run: dfttest fftest
 	time -p ./fftest 440 a > log.fft
 
 clean:
-	rm -f test log.* fftest
+	rm -f test log.* fftest log

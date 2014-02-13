@@ -62,6 +62,15 @@ CrashProject
 
 scripts used to download many jpegs and to pack them into cbr files (cha cha cha)
 
+DFT
+===
+
+FFT radix-2 DIT implementation of the Cooley-Tukey algorithm.
+
+A static library `libfft.a` and a header `fft.h` are provided for convenience.
+
+There's also a naïve DFT implementation for speed comparisson.
+
 espeak-chain
 ============
 

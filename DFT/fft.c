@@ -23,12 +23,11 @@ static inline size_t mylog(size_t n)
 static inline void fft_brs(size_t N, _Complex float* X)
 {
     size_t i, j, k;
-    _Complex float T;
 
     // bit reversal sorting
     for(i = 1, j = N/2; i <= N - 2; ++i) {
         if(i < j) {
-            T = X[j];
+            _Complex float T = X[j];
             X[j] = X[i];
             X[i] = T;
         }
@@ -44,20 +43,17 @@ static inline void fft_brs(size_t N, _Complex float* X)
 
 static inline void fft_dnq(size_t N, _Complex float* X)
 {
+    size_t i, j, k;
     size_t logn = mylog(N);
-    size_t j;
-    size_t i, k, stride, m;
-    _Complex float T, w, s;
 
     // compute logn stages of divide and conquer
-    for(k = 1; k <= logn; ++k) {
-        stride = 1 << k;
-        m = stride / 2;
-        w = 1.0f;
-        s = cos(PI / (float)m) - I * sin(PI / (float)m);
-        for(j = 1; j <= m; ++j) {
-            for(i = j - 1; i < N; i += stride) {
-                T = X[i + m] * w;
+    for(k = 0; k < logn; ++k) {
+        size_t m = 1 << k;
+        _Complex float w = 1.0f;
+        _Complex float s = cos(PI / (float)m) - I * sin(PI / (float)m);
+        for(j = 0; j < m; ++j) {
+            for(i = j; i < N; i += (m << 1)) {
+                _Complex float T = X[i + m] * w;
                 X[i + m] = X[i] - T;
                 X[i] = X[i] + T;
             }

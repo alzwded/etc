@@ -1,5 +1,5 @@
 libfft.a: fft.c
-	gcc -c --std=c99 -o fft.o -O4 fft.c
+	gcc -Wall -c --std=c99 -o fft.o -O4 fft.c
 	ar rcs libfft.a fft.o
 
 .PHONY: dist
@@ -17,7 +17,7 @@ dfttest: dft.c
 	gcc --std=c99 -o dfttest dft.c -DTEST -lm
 
 fftest: fft.c
-	gcc --std=c99 -g -o fftest fft.c -DTEST -lm
+	gcc -Wall --std=c99 -g -o fftest fft.c -DTEST -lm
 
 .PHONY: run
 run: dfttest fftest

@@ -6,7 +6,8 @@
 # TODO actually look up the latest C standard on what exactly is allowed
 # or not, this was written off the top of my head
 
-my $regex = '^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)([f]|[l])?$';
+my $regex = '^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)([e][-+]?[0-9]*)?([f]|[l])?$';
+my $regex2 = '^[-+]?0x([0-9a-fA-F]+\.?|[0-9a-fA-F]*\.[0-9a-fA-F]+)([p][-+]?[0-9]*)?([f]|[l])?$';
 my $s = <STDIN>;
 chomp $s;
 print "yes\n" if $s =~ m/$regex/;

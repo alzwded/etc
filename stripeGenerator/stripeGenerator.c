@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
                 bit_depth, color_type, interlace_type,
                 compression_type, filter_method);
 
-        fillImage(row_pointers, atoi(argv[4]), atoi(argv[5]), strtol(argv[6], NULL, 0), strtol(argv[7], NULL, 0), width, height);
+        fillImage(row_pointers, l1w, l2w, c1, c2, width, height);
 
         png_set_rows(png_ptr, info_ptr, row_pointers);
         png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);

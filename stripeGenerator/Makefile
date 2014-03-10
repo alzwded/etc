@@ -10,7 +10,7 @@ LINE2COLOUR = 0xD6D25A
 
 SHOW = 1
 
-stripes.png: stripeGenerator do.sh
+stripes.png: stripeGenerator
 	./stripeGenerator stripes.png $(WIDTH) $(HEIGHT) $(LINE1WIDTH) $(LINE2WIDTH) $(LINE1COLOUR) $(LINE2COLOUR)
 	[ $(SHOW) ] && display stripes.png
 

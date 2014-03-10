@@ -75,18 +75,18 @@ int main(int argc, char* argv[])
     int width = atoi(argv[2]);
     int height = atoi(argv[3]);
     int const bit_depth = 8;
-
-    png_bytep* row_pointers = png_malloc(png_ptr, height * png_sizeof(png_bytep));
-    for(i = 0; i < width; ++i) {
-        row_pointers[i] = png_malloc(png_ptr, width * 3 * (bit_depth / 8));
-    }
+    png_bytep* row_pointers = NULL;
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         rc = 3;
     } else {
+        row_pointers = png_malloc(png_ptr, height * png_sizeof(png_bytep));
+        memset(row_pointers, 0, height * png_sizeof(png_bytep));
+        for(i = 0; i < width; ++i) {
+            row_pointers[i] = png_malloc(png_ptr, width * 3 * (bit_depth / 8));
+        }
 
         png_init_io(png_ptr, fp);
-
 #define color_type PNG_COLOR_TYPE_RGB
 #define interlace_type PNG_INTERLACE_NONE
 #define compression_type PNG_COMPRESSION_TYPE_DEFAULT
@@ -97,20 +97,18 @@ int main(int argc, char* argv[])
 
         fillImage(row_pointers, atoi(argv[4]), atoi(argv[5]), strtol(argv[6], NULL, 0), strtol(argv[7], NULL, 0), width, height);
 
-        //png_write_image(png_ptr, row_pointers);
         png_set_rows(png_ptr, info_ptr, row_pointers);
         png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-
         png_write_end(png_ptr, info_ptr);
     }
 
+    for(i = 0; row_pointers && i < width; ++i) {
+        png_free(png_ptr, row_pointers[i]);
+    }
+    png_free(png_ptr, row_pointers);
+
     png_destroy_write_struct(&png_ptr, &info_ptr);
     fclose(fp);
-
-    for(i = 0; i < width; ++i) {
-        free(row_pointers[i]);
-    }
-    free(row_pointers);
 
     return rc;
 }

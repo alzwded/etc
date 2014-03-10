@@ -2,7 +2,14 @@
 #include <stdlib.h>
 #include <png.h>
 
-void fillImage(png_byte** row_pointers, int l1w, int l2w, unsigned int c1, unsigned int c2, int width, int height)
+void fillImage(
+        png_byte*__restrict* row_pointers,
+        int l1w,
+        int l2w,
+        unsigned int c1,
+        unsigned int c2,
+        int width,
+        int height)
 {
 #define R(X, Y) (row_pointers[Y][X * 3 + 0])
 #define G(X, Y) (row_pointers[Y][X * 3 + 1])
@@ -35,11 +42,7 @@ int main(int argc, char* argv[])
 {
     FILE* fp = NULL;
     size_t i = 0;
-    png_bytep* row_pointers = NULL;
     int rc = 0;
-    int width;
-    int height;
-    int const bit_depth = 8;
 
     if(argc != 8) {
         printf("usage: %s file w h l1w l2w c1 c2\n", argv[0]);
@@ -69,10 +72,11 @@ int main(int argc, char* argv[])
         return 2;
     }
 
-    width = atoi(argv[2]);
-    height = atoi(argv[3]);
+    int width = atoi(argv[2]);
+    int height = atoi(argv[3]);
+    int const bit_depth = 8;
 
-    row_pointers = png_malloc(png_ptr, height * png_sizeof(png_bytep));
+    png_bytep* row_pointers = png_malloc(png_ptr, height * png_sizeof(png_bytep));
     for(i = 0; i < width; ++i) {
         row_pointers[i] = png_malloc(png_ptr, width * 3 * (bit_depth / 8));
     }

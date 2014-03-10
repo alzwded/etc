@@ -74,8 +74,25 @@ int main(int argc, char* argv[])
 
     int width = atoi(argv[2]);
     int height = atoi(argv[3]);
+    int l1w = atoi(argv[4]);
+    int l2w = atoi(argv[5]);
+    unsigned c1 = strtol(argv[6], NULL, 0);
+    unsigned c2 = strtol(argv[7], NULL, 0);
     int const bit_depth = 8;
     png_bytep* row_pointers = NULL;
+
+    if(width <= 0 || height <= 0) {
+        fprintf(stderr, "width and height must be greater than 0\n");
+        return 1;
+    }
+    if(l1w <= 0 || l2w <= 0) {
+        fprintf(stderr, "line widths must be greater than 0\n");
+        return 1;
+    }
+    if(c1 > 0x00FFFFFF || c2 > 0x00FFFFFF) {
+        fprintf(stderr, "colours must be between 0h and FFFFFFh\n");
+        return 1;
+    }
 
     if (setjmp(png_jmpbuf(png_ptr))) {
         rc = 3;

@@ -133,6 +133,11 @@ photoProc
 
 scripts I used once to make a hand laser-scanned book readable.
 
+rsff-engine-stress-test
+=======================
+
+big model generator for http://github.com/alzwded/school-rsff
+
 school-PG
 =========
 

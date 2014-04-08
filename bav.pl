@@ -17,7 +17,7 @@ if($files[0] eq '-l' && scalar(@files) == 2) {
         $date =~ /([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})/;
         my $nicedate = "$1/$2/$3 $4:$5:$6";
         print "$nicedate:\n";
-        system "cat '$file'";
+        catfile($file);
         print(("-" x 72)."\n");
 
     }
@@ -32,9 +32,8 @@ if(scalar @files == 1) {
 
 $basename =~ s#^.*/([^/]*)\.?.*$#$1#;
 
-my $date = `date +%Y%m%d%H%M%S`;
-chomp $date;
-my $cmd = "tar cjf '$basename,$date.tbz' ";
+my $date = getdate();
+my $cmd = getarchcommand($basename, $date);
 foreach (@files) {
     $cmd .= "'$_' ";
 }
@@ -57,3 +56,20 @@ while(<STDIN>) {
 
 close A;
 print "\n";
+
+sub getdate {
+    my $date = `date +%Y%m%d%H%M%S`;
+    chomp $date;
+    return $date;
+}
+
+sub getarchcommand {
+    my ($basename, $date) = @_;
+    my $cmd = "tar cjf '$basename,$date.tbz' ";
+    return $cmd;
+}
+
+sub catfile {
+    my ($file) = @_;
+    system "cat '$file'";
+}

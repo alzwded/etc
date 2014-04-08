@@ -52,6 +52,11 @@ bachScripts
 
 scripts used to extract archives which contain names in dubious code pages to an ntfs fs that doesn't support said code pages.
 
+bav.pl
+======
+
+backup tool. Create a tbz tarball with the current timestamp and also add a message file with the same name
+
 clpfcdgen & clpromgen
 =====================
 

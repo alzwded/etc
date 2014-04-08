@@ -23,6 +23,24 @@ if($files[0] eq '-l' && scalar(@files) == 2) {
     }
 
     exit 0;
+} elsif($files[0] eq '-l' && scalar(@files) == 1) {
+    my @messages = sort split /\n/, `ls -1 *','*'.msg'`;
+
+    foreach (@messages) {
+        next if $_ eq '';
+        my $file = $_;
+        $file =~ m/^(.*),(.*)\.msg$/;
+        my $date = $2;
+        my $basename = $1;
+        $date =~ /([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})/;
+        my $nicedate = "$1/$2/$3 $4:$5:$6";
+        print "$nicedate: $basename\n";
+        catfile($file);
+        print(("-" x 72)."\n");
+
+    }
+
+    exit 0;
 }
 
 my $basename = cwd();

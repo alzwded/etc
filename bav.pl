@@ -7,7 +7,7 @@ my @files = @ARGV;
 die "usage: bav.pl files" unless scalar @files > 0;
 
 if($files[0] eq '-l' && scalar(@files) == 2) {
-    my @messages = sort { $b cmp $a } split /\n/, `ls -1 '$files[1],'*'.msg'`;
+    my @messages = sort { $b cmp $a } split /\n/, `ls -1 '$files[1],'[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'.msg'`;
 
     foreach (@messages) {
         next if $_ eq '';
@@ -24,7 +24,7 @@ if($files[0] eq '-l' && scalar(@files) == 2) {
 
     exit 0;
 } elsif($files[0] eq '-l' && scalar(@files) == 1) {
-    my @messages = sort { $b cmp $a } split /\n/, `ls -1 *','*'.msg'`;
+    my @messages = sort { $b cmp $a } split /\n/, `ls -1 *','[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'.msg'`;
 
     foreach (@messages) {
         next if $_ eq '';

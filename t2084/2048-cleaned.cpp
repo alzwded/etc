@@ -28,9 +28,7 @@ class Pack {
                 a_.rbegin(),
                 a_.rend(),
                 std::inserter(r_, r_.begin()),
-                [&](decltype(a_)::value_type const& p) {
-                    return *p;
-                });
+                [&](decltype(a_)::value_type const& p) { return *p; });
 
 
         for(auto i = r_.begin(), next = i;
@@ -51,6 +49,22 @@ class Pack {
             }
         }
     }
+
+    struct Translator {
+        std::list<cell_t> const& r_;
+        std::list<cell_t>::const_iterator i_;
+        Translator(std::list<cell_t> const& R)
+            : r_(R)
+            , i_(R.begin())
+        {}
+
+        void operator()(cell_t* a)
+        {
+            if(i_ != r_.end()) *a = *i_++;
+            else *a = 0;
+        }
+    };
+
 public:
     Pack(cell_t* first, ...)
     {
@@ -73,16 +87,8 @@ public:
     void shift()
     {
         std::list<cell_t> R;
-
         shift_(R);
-
-        auto pa = a_.rbegin();
-        for(auto pr = R.begin(); pr != R.end(); ++pr, ++pa) {
-            **pa = *pr;
-        }
-        for(; pa != a_.rend(); ++pa) {
-            **pa = 0;
-        }
+        std::for_each(a_.rbegin(), a_.rend(), Translator(R));
     }
 };
 

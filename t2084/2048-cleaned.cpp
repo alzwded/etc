@@ -65,6 +65,8 @@ class Pack {
     };
 
 public:
+    typedef std::deque<cell_t*> Builder;
+
     Pack(cell_t* first, ...)
     {
         va_list p;
@@ -74,9 +76,11 @@ public:
         }
     }
 
-    Pack(cell_t** vcells)
+    Pack(Builder const& bld)
     {
-        for(cell_t** i = vcells; *i; ++i) {
+        for(Builder::const_iterator i = bld.begin();
+                i != bld.end(); ++i)
+        {
             pointers_.push_back(*i);
         }
     }
@@ -96,12 +100,11 @@ template<int A, int B0, int B>
 void tshift()
 {
     for(size_t i = 0; i < 4; ++i) {
-        Pack p(
-                &board[A * i + B * 0 + B0],
-                &board[A * i + B * 1 + B0],
-                &board[A * i + B * 2 + B0],
-                &board[A * i + B * 3 + B0],
-                NULL);
+        Pack::Builder bld;
+        for(size_t j = 0; j < 4; ++j) {
+            bld.push_back(&board[A * i + B * j + B0]);
+        }
+        Pack p(bld);
         p.shift();
     }
 }

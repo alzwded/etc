@@ -78,11 +78,7 @@ public:
 
     Pack(Builder const& bld)
     {
-        for(Builder::const_iterator i = bld.begin();
-                i != bld.end(); ++i)
-        {
-            pointers_.push_back(*i);
-        }
+        std::copy(bld.begin(), bld.end(), std::inserter(pointers_, pointers_.begin()));
     }
 
     // shift cells left-to-right relative to the order the cells were

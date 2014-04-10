@@ -1,6 +1,5 @@
 #include <deque>
 #include <list>
-#include <cstdlib>
 #include <stdarg.h>
 #include <cstdio>
 #include <algorithm>

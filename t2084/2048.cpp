@@ -17,67 +17,67 @@ cell_t board[16] = {
     2, 0, 1, 1,
 };
 
-// resolves movement on line
+// resolves movement on cells
 class Pack {
     // pointers to the actual cells that will be modified
-    std::deque<cell_t*> a_;
+    std::deque<cell_t*> pointers_;
 
     // perform actual shift removing any 0 values (empty cells)
-    void shift_(std::list<cell_t>& r_)
+    void shift_(std::list<cell_t>& cells)
     {
         TALK("new shift\n");
         // copy values into results vector
         std::transform(
-                a_.rbegin(),
-                a_.rend(),
-                std::inserter(r_, r_.begin()),
-                [&](decltype(a_)::value_type const& p) { return *p; });
+                pointers_.rbegin(),
+                pointers_.rend(),
+                std::inserter(cells, cells.begin()),
+                [&](decltype(pointers_)::value_type const& p) { return *p; });
 
-        ONLY_IF_TALKING for(auto i = r_.begin(); i != r_.end(); ++i) {
+        ONLY_IF_TALKING for(auto i = cells.begin(); i != cells.end(); ++i) {
             TALK("%d ", *i);
         ONLY_IF_TALKING }
         TALK("\n");
 
-        for(auto i = r_.begin(), next = i;
-                i != r_.end() && ++next != r_.end();
-                next = i)
+        for(auto cell = cells.begin(), next = cell;
+                cell != cells.end() && ++next != cells.end();
+                next = cell)
         {
-            TALK("I am %d\n", *i);
-            ONLY_IF_TALKING for(auto i = r_.begin(); i != r_.end(); ++i) {
-                TALK("%d ", *i);
+            TALK("I am %d\n", *cell);
+            ONLY_IF_TALKING for(auto cell = cells.begin(); cell != cells.end(); ++cell) {
+                TALK("%d ", *cell);
             ONLY_IF_TALKING }
             TALK("\n");
-            if(!*i) { // special case I don't know how to get rid of: 0 on edge
+            if(!*cell) { // special case I don't know how to get rid of: 0 on edge
                 TALK("removing self (0)\n");
-                r_.erase(i);
-                i = next;
+                cells.erase(cell);
+                cell = next;
             } else if(!*next) { // eliminate empty cells
                 TALK("removing buddy (0)\n");
-                r_.erase(next);
-            } else if(*i == *(next)) { // merge cells of equal value
-                TALK("merging with buddy (%d)\n", *i);
-                ++*i;
-                r_.erase(next);
-                ++i;
+                cells.erase(next);
+            } else if(*cell == *(next)) { // merge cells of equal value
+                TALK("merging with buddy (%d)\n", *cell);
+                ++*cell;
+                cells.erase(next);
+                ++cell;
             } else { // default, move to next cell
                 TALK("moving along\n");
-                ++i;
+                ++cell;
             }
         }
     }
 
     struct Translator {
-        std::list<cell_t> const& r_;
+        std::list<cell_t> const& cells_;
         std::list<cell_t>::const_iterator i_;
-        Translator(std::list<cell_t> const& R)
-            : r_(R)
-            , i_(R.begin())
+        Translator(std::list<cell_t> const& cells)
+            : cells_(cells)
+            , i_(cells.begin())
         {}
 
-        void operator()(cell_t* a)
+        void operator()(cell_t* cell)
         {
-            if(i_ != r_.end()) *a = *i_++;
-            else *a = 0;
+            if(i_ != cells_.end()) *cell = *i_++;
+            else *cell = 0;
         }
     };
 
@@ -88,7 +88,7 @@ public:
         va_start(p, first);
         for(cell_t* i = first; i; i = va_arg(p, cell_t*)) {
             TALK("pushing %d\n", *i);
-            a_.push_back(i);
+            pointers_.push_back(i);
         }
     }
 
@@ -96,7 +96,7 @@ public:
     {
         for(cell_t** i = vcells; *i; ++i) {
             TALK("pushing %d\n", **i);
-            a_.push_back(*i);
+            pointers_.push_back(*i);
         }
     }
 
@@ -104,9 +104,9 @@ public:
     //     passed into the constructor
     void shift()
     {
-        std::list<cell_t> R;
-        shift_(R);
-        std::for_each(a_.rbegin(), a_.rend(), Translator(R));
+        std::list<cell_t> cells;
+        shift_(cells);
+        std::for_each(pointers_.rbegin(), pointers_.rend(), Translator(cells));
     }
 };
 
@@ -115,12 +115,11 @@ template<int A, int B0, int B>
 void tshift()
 {
     for(size_t i = 0; i < 4; ++i) {
-        int bs[] = { B0, B0 + B, B0 + B + B, B0 + B + B + B };
         Pack p(
-                &board[A * i + bs[0]],
-                &board[A * i + bs[1]],
-                &board[A * i + bs[2]],
-                &board[A * i + bs[3]],
+                &board[A * i + B * 0 + B0],
+                &board[A * i + B * 1 + B0],
+                &board[A * i + B * 2 + B0],
+                &board[A * i + B * 3 + B0],
                 NULL);
         p.shift();
     }

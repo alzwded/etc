@@ -1,16 +1,30 @@
 #!/usr/bin/perl -w
 
-open A, ">manyBoxes";
+open A, ">manyBoxes" or die "can't open 'manyBoxes'";
 
 my $size = 0.1;
 my $L = $ARGV[0] || 20;
+
+print A "REM generated with manyBoxGenerator.pl\n" .
+    "REM https://github.com/alzwded/etc/tree/master/rsff-engine-stress-test\n" or die "can't write to 'manyBoxes'";
 
 for(my $i = 0; $i < $L; ++$i) {
     for(my $j = 0; $j < $L; ++$j) {
         for(my $k = 0; $k < $L; ++$k) {
             printBox($i, $j, $k);
         }
+        if($i != 0 && $j < $i) {
+            printf A "SENSOR ROUTER %f %f %f  %f\n",
+                $i * $size, 0, $j * $size,
+                $size * 1.8;
+        }
     }
+    if($i == 0) { print A "SENSOR SENSOR ", $i * $size, " ", $i * $size, " ", $i * $size, " ", $size * 1.8, "\n"; }
+    else { print A "SENSOR ROUTER ", $i * $size, " ", $i * $size, " ", $i * $size, " ", $size * 1.8, "\n"; }
+}
+printf A "SENSOR CENTRAL %f %f %f  %f\n", $size * $L, $size * $L, $size * $L, $size * 1.8;
+for(my $i = 0; $i < $L; ++$i) {
+    printf A "SENSOR CENTRAL %f %f %f  %f\n", $size * $L, 0, $i * $size, $size * 1.8;
 }
 
 close A;

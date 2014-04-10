@@ -52,6 +52,11 @@ bachScripts
 
 scripts used to extract archives which contain names in dubious code pages to an ntfs fs that doesn't support said code pages.
 
+bav.pl
+======
+
+backup tool. Create a tbz tarball with the current timestamp and also add a message file with the same name
+
 clpfcdgen & clpromgen
 =====================
 
@@ -132,6 +137,11 @@ photoProc
 =========
 
 scripts I used once to make a hand laser-scanned book readable.
+
+rsff-engine-stress-test
+=======================
+
+big model generator for http://github.com/alzwded/school-rsff
 
 school-PG
 =========

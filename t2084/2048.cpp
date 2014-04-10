@@ -114,7 +114,7 @@ public:
     }
 };
 
-// a line is defined as A*i + B*j + B0, for i = 0..3 and j = 0..3
+// a line is defined as A*i + B*j + B0, for j = 0..3 and a given i
 template<int A, int B0, int B>
 void tshift()
 {

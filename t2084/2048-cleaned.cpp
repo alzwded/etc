@@ -5,9 +5,6 @@
 #include <cstdio>
 #include <algorithm>
 
-#define ONLY_IF_TALKING // debug stuff
-static bool TALKATIVE = 0;
-#define TALK if(TALKATIVE) printf
 
 typedef enum { UP = 0, LEFT = 1, DOWN = 2, RIGHT = 3 } direction_t;
 typedef unsigned char cell_t;
@@ -26,7 +23,6 @@ class Pack {
     // perform actual shift removing any 0 values (empty cells)
     void shift_(std::list<cell_t>& r_)
     {
-        TALK("new shift\n");
         // copy values into results vector
         std::transform(
                 a_.rbegin(),
@@ -36,34 +32,21 @@ class Pack {
                     return *p;
                 });
 
-        ONLY_IF_TALKING for(auto i = r_.begin(); i != r_.end(); ++i) {
-            TALK("%d ", *i);
-        ONLY_IF_TALKING }
-        TALK("\n");
 
         for(auto i = r_.begin(), next = i;
                 i != r_.end() && ++next != r_.end();
                 next = i)
         {
-            TALK("I am %d\n", *i);
-            ONLY_IF_TALKING for(auto i = r_.begin(); i != r_.end(); ++i) {
-                TALK("%d ", *i);
-            ONLY_IF_TALKING }
-            TALK("\n");
             if(!*i) { // special case I don't know how to get rid of: 0 on edge
-                TALK("removing self (0)\n");
                 r_.erase(i);
                 i = next;
             } else if(!*next) { // eliminate empty cells
-                TALK("removing buddy (0)\n");
                 r_.erase(next);
             } else if(*i == *(next)) { // merge cells of equal value
-                TALK("merging with buddy (%d)\n", *i);
                 ++*i;
                 r_.erase(next);
                 ++i;
             } else { // default, move to next cell
-                TALK("moving along\n");
                 ++i;
             }
         }
@@ -74,7 +57,6 @@ public:
         va_list p;
         va_start(p, first);
         for(cell_t* i = first; i; i = va_arg(p, cell_t*)) {
-            TALK("pushing %d\n", *i);
             a_.push_back(i);
         }
     }
@@ -82,7 +64,6 @@ public:
     Pack(cell_t** vcells)
     {
         for(cell_t** i = vcells; *i; ++i) {
-            TALK("pushing %d\n", **i);
             a_.push_back(*i);
         }
     }

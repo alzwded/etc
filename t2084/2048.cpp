@@ -119,12 +119,11 @@ template<int A, int B0, int B>
 void tshift()
 {
     for(size_t i = 0; i < 4; ++i) {
-        Pack::Builder bld;
+        Pack::Builder line;
         for(size_t j = 0; j < 4; ++j) {
-            bld.push_back(&board[A * i + B * j + B0]);
+            line.push_back(&board[A * i + B * j + B0]);
         }
-        Pack p(bld);
-        p.shift();
+        Pack(line).shift();
     }
 }
 

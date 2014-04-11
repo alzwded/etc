@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <set>
 #include <cstring>
+#include <ctime>
 #include "header.h"
 
 
@@ -29,7 +30,7 @@ class Pack {
                 pointers_.rbegin(),
                 pointers_.rend(),
                 std::inserter(cells, cells.begin()),
-                [&](decltype(pointers_)::value_type const& p) { return *p; });
+                [&](cell_t* p) { return *p; });
 
 
         for(auto cell = cells.begin(), next = cell;
@@ -148,7 +149,7 @@ int main(int argc, char* argv[])
     memset(board, 0, 16); // TODO uncomment after actual game is implemented
 
     addRandomTile();
-    //addRandomTile();
+    addRandomTile();
 
     init_display(&argc, argv);
     loop();

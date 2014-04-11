@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <set>
 #include <cstring>
+#include <ctime>
 #include "header.h"
 
 #define ONLY_IF_TALKING // debug stuff
@@ -33,7 +34,7 @@ class Pack {
                 pointers_.rbegin(),
                 pointers_.rend(),
                 std::inserter(cells, cells.begin()),
-                [&](decltype(pointers_)::value_type const& p) { return *p; });
+                [&](cell_t* p) { return *p; });
 
         ONLY_IF_TALKING for(auto i = cells.begin(); i != cells.end(); ++i) {
             TALK("%d ", *i);
@@ -166,7 +167,7 @@ int main(int argc, char* argv[])
     memset(board, 0, 16); // TODO uncomment after actual game is implemented
 
     addRandomTile();
-    //addRandomTile();
+    addRandomTile();
 
     init_display(&argc, argv);
     loop();

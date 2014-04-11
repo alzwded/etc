@@ -3,15 +3,16 @@
 #include <stdarg.h>
 #include <cstdio>
 #include <algorithm>
+#include <set>
+#include <cstring>
+#include "header.h"
 
 
-typedef enum { UP = 0, LEFT = 1, DOWN = 2, RIGHT = 3 } direction_t;
-typedef unsigned char cell_t;
 cell_t board[16] = {
     1, 0, 1, 2,
-    0, 1, 1, 1,
+    1, 1, 1, 0,
     0, 0, 1, 0,
-    2, 0, 1, 1,
+    2, 1, 0, 1
 };
 
 // resolves movement on cells
@@ -20,8 +21,9 @@ class Pack {
     std::deque<cell_t*> pointers_;
 
     // perform actual shift removing any 0 values (empty cells)
-    void shift_(std::list<cell_t>& cells)
+    void shift_(std::list<cell_t>& cells, int& moved)
     {
+        moved = 0;
         // copy values into results vector
         std::transform(
                 pointers_.rbegin(),
@@ -37,9 +39,14 @@ class Pack {
             if(!*cell) { // special case I don't know how to get rid of: 0 on edge
                 cells.erase(cell);
                 cell = next;
+                if(next != cells.end() && *next) moved = 1;
             } else if(!*next) { // eliminate empty cells
                 cells.erase(next);
+                next = cell;
+                next++;
+                if(next != cells.end() && *next) moved = 1;
             } else if(*cell == *(next)) { // merge cells of equal value
+                moved = 1;
                 ++*cell;
                 cells.erase(next);
                 ++cell;
@@ -83,81 +90,68 @@ public:
 
     // shift cells left-to-right relative to the order the cells were
     //     passed into the constructor
-    void shift()
+    int shift()
     {
         std::list<cell_t> cells;
-        shift_(cells);
+        int anythingAccomplished = 0;
+        shift_(cells, anythingAccomplished);
         std::for_each(pointers_.rbegin(), pointers_.rend(), Translator(cells));
+        return anythingAccomplished;
     }
 };
 
 // a line is defined as A*i + B*j + B0, for j = 0..3 and a given i
 template<int A, int B0, int B>
-void tshift()
+int tshift()
 {
+    int ret = 0;
     for(size_t i = 0; i < 4; ++i) {
         Pack::Builder line;
         for(size_t j = 0; j < 4; ++j) {
             line.push_back(&board[A * i + B * j + B0]);
         }
-        Pack(line).shift();
+        ret = Pack(line).shift() || ret;
     }
+    return ret;
 }
 
-typedef void (*shift_fn)();
-shift_fn shift[4] = {
+int nop() {}
+
+shift_fn shift[5] = {
+    &nop,
     &tshift<1, 12, -4>,
     &tshift<4, 3, -1>,
     &tshift<1, 0, 4>,
     &tshift<4, 0, 1>,
 };
 
+void addRandomTile()
+{
+    cell_t maxi = 1;
+    std::set<cell_t> cells;
+    for(size_t i = 0; i < 16; cells.insert(i++));
+
+    static auto n = time(NULL);
+    n = n * 3913 + 23;
+
+    while(cells.size()) {
+        auto i = cells.begin();
+        std::advance(i, n % cells.size());
+        if(!board[*i]) { board[*i] = maxi; break; }
+        else { maxi = std::max(maxi, (cell_t)(board[*i] / 2)); }
+        cells.erase(i);
+    }
+}
+
 int main(int argc, char* argv[])
 {
-    // FIXME implement actual game
-    //memset(board, 0, 16); // TODO uncomment after actual game is implemented
+    memset(board, 0, 16); // TODO uncomment after actual game is implemented
 
-    printf("before:");
-    for(size_t i = 0; i < 16; ++i) {
-        if(i % 4 == 0) printf("\n");
-        printf("%4d ", board[i]);
-    }
-    printf("\n");
+    addRandomTile();
+    //addRandomTile();
 
-    shift[RIGHT]();
+    init_display(&argc, argv);
+    loop();
 
-    printf("after:");
-
-    for(size_t i = 0; i < 16; ++i) {
-        if(i % 4 == 0) printf("\n");
-        printf("%4d ", board[i]);
-    }
-    printf("\n");
-
-    shift[LEFT]();
-
-    printf("after more:");
-    for(size_t i = 0; i < 16; ++i) {
-        if(i % 4 == 0) printf("\n");
-        printf("%4d ", board[i]);
-    }
-    printf("\n");
-
-    shift[UP]();
-
-    printf("after up:");
-    for(size_t i = 0; i < 16; ++i) {
-        if(i % 4 == 0) printf("\n");
-        printf("%4d ", board[i]);
-    }
-    printf("\n");
-
-    shift[DOWN]();
-
-    printf("after down:");
-    for(size_t i = 0; i < 16; ++i) {
-        if(i % 4 == 0) printf("\n");
-        printf("%4d ", board[i]);
-    }
-    printf("\n");
+    return 0;
 }

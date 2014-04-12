@@ -1,6 +1,6 @@
 #include <deque>
 #include <list>
-#include <stdarg.h>
+#include <cstdarg>
 #include <cstdio>
 #include <algorithm>
 #include <set>

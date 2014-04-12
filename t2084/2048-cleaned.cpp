@@ -82,6 +82,7 @@ public:
         for(cell_t* i = first; i; i = va_arg(p, cell_t*)) {
             pointers_.push_back(i);
         }
+        va_end(p);
     }
 
     Pack(Builder const& bld)

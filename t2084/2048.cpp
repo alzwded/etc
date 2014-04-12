@@ -100,6 +100,7 @@ public:
             TALK("pushing %d\n", *i);
             pointers_.push_back(i);
         }
+        va_end(p);
     }
 
     Pack(Builder const& bld)

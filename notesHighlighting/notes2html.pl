@@ -32,6 +32,7 @@ sub output {
     if($c !~ m/[ \t\n]/) { $convertSpaces = 0; }
     if($c eq '<') { return "&lt;"; }
     if($c eq '>') { return "&gt;"; }
+    if($c eq '`') { return "&nbsp;"; }
     if(!$convertSpaces) { return $c; }
     if($c eq ' ') { return "&nbsp;"; }
     if($c eq "\t") { return "&nbsp;" x 4; }

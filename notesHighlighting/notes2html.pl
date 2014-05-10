@@ -2,9 +2,10 @@
 
 print "<html><head><style>";
 print 'p { margin-top: 2px; margin-bottom: 2px; }';
-print "</style></head><body style=\"";
-print "font: Monospace, 12;";
-print "\">\n";
+print "</style></head><body style='";
+print 'font-family: "Consolas", "Lucida Console", monospace;';
+print 'font-size: 12;';
+print "'>\n";
 
 my $alreadyPrinted = 0;
 my $convertSpaces = 0;

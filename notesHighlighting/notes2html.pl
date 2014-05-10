@@ -29,6 +29,8 @@ getnext();
 sub output {
     my ($c) = @_;
     if($c !~ m/[ \t\n]/) { $convertSpaces = 0; }
+    if($c eq '<') { return "&lt;"; }
+    if($c eq '>') { return "&gt;"; }
     if(!$convertSpaces) { return $c; }
     if($c eq ' ') { return "&nbsp;"; }
     if($c eq "\t") { return "&nbsp;" x 4; }
@@ -56,9 +58,19 @@ sub defaultp {
             &comment();
             next;
         }
-
+        
         getnext();
-
+        if(scalar(@current) >= 2 and $current[0] eq '<' and $current[1] eq '-') {
+            print '<span style="color: darkgreen; font-weight: bold;">&#8592</span>';
+            shift @current;
+            shift @current;
+            next;
+        } elsif(scalar(@current) >= 2 and $current[0] eq '-' and $current[1] eq '-') {
+            print '<span style="color: darkgreen; font-weight: bold;">&mdash;</span>';
+            shift @current;
+            shift @current;
+            next;
+        }
         my $c = $current[0];
         if($c =~ m|[.,;/*\-+]|) {
             print '<span style="font-weight: bold; color: red;">' . &output($c) . '</span>';

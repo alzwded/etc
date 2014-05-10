@@ -53,6 +53,7 @@ $basename =~ s#^.*/([^/]*)\.?.*$#$1#;
 my $date = getdate();
 my $cmd = getarchcommand($basename, $date);
 foreach (@files) {
+    die if !-e $_;
     $cmd .= "'$_' ";
 }
 

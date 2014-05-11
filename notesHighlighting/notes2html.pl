@@ -1,11 +1,56 @@
 #!/usr/bin/perl -w
 
-print "<html><head><style>";
-print 'p { margin-top: 2px; margin-bottom: 2px; }';
-print "</style></head><body style='";
-print 'font-family: "Consolas", "Lucida Console", monospace;';
-print 'font-size: 12;';
-print "'>\n";
+print <<EOT
+<!DOCTYPE html>
+<html><head><title>NOTES</title><meta charset="utf-8"><style>
+p.notes {
+    margin-top: 2px; margin-bottom: 2px;
+    font-family: "Consolas", "Lucida Console", monospace;
+    font-size: 12;
+}
+
+p.notes .redchar {
+    font-weight: bold;
+    color: red;
+}
+
+p.notes .greenchar {
+    font-weight: bold;
+    color: green;
+}
+
+p.notes .def {
+    font-weight: bold;
+    color: red;
+}
+
+p.notes .exclamation {
+    font-weight: bold;
+    color: navy;
+}
+
+p.notes .doublecolon {
+    font-weight: bold;
+    font-size: larger;
+}
+
+p.notes .percent {
+    font-weight: bold;
+    font-style: oblique;
+}
+
+p.notes .comment {
+    font-style: italic;
+    color: #404040;
+    position: relative;
+    top: +0.2em;
+    font-size: 80%;
+}
+
+</style></head><body>
+EOT
+;
+
 
 my $alreadyPrinted = 0;
 my $convertSpaces = 0;
@@ -63,19 +108,19 @@ sub defaultp {
         
         getnext();
         if(scalar(@current) >= 2 and $current[0] eq '<' and $current[1] eq '-') {
-            print '<span style="color: darkgreen; font-weight: bold;">&#8592</span>';
+            print '<span class="greenchar">&#8592;</span>';
             shift @current;
             shift @current;
             next;
         } elsif(scalar(@current) >= 2 and $current[0] eq '-' and $current[1] eq '-') {
-            print '<span style="color: darkgreen; font-weight: bold;">&mdash;</span>';
+            print '<span class="greenchar">&mdash;</span>';
             shift @current;
             shift @current;
             next;
         }
         my $c = $current[0];
         if($c =~ m|[.,;/*\-+]|) {
-            print '<span style="font-weight: bold; color: red;">' . &output($c) . '</span>';
+            print '<span class="redchar">' . &output($c) . '</span>';
         } else {
             print &output($c);
         }
@@ -86,7 +131,7 @@ sub defaultp {
 }
 
 sub doublecolon {
-    print '<span style="font-weight: bold; font-size: larger;">';
+    print '<span class="doublecolon">';
     shift @current;
     shift @current;
     while(1) {
@@ -102,7 +147,7 @@ sub doublecolon {
 }
 
 sub def {
-    print '<span style="font-weight: bold; color: red;">';
+    print '<span class="def">';
     while(1) {
         getnext();
         if($current[0] eq ':' and $current[1] eq '=') {
@@ -116,7 +161,7 @@ sub def {
 }
 
 sub exclamation {
-    print '<span style="font-weight: bold; color: navy;">';
+    print '<span class="exclamation">';
     shift @current;
     while(1) {
         getnext();
@@ -130,12 +175,12 @@ sub exclamation {
 }
 
 sub percent {
-    print '<span style="font-weight: bold;"><i>';
+    print '<span class="percent">';
     shift @current;
     while(1) {
         getnext();
         if($current[0] eq '%') {
-            print("</i></span>");
+            print("</span>");
             shift @current;
             return;
         }
@@ -144,12 +189,12 @@ sub percent {
 }
 
 sub comment {
-    print '<span style="color: #404040;"><i><sub>';
+    print '<span class="comment">';
     shift @current;
     while(1) {
         getnext();
         if($current[0] eq "\n") {
-            print("</sub></i></span>");
+            print("</span>");
             shift @current;
             return;
         }
@@ -164,7 +209,7 @@ sub getnext {
         $currentLine = <STDIN>;
         if(!$currentLine) { &doexit(); }
         @current = split //, $currentLine;
-        print('<p>');
+        print('<p class="notes">');
         $convertSpaces = 1;
     } else {
         #print defined(@current);

@@ -121,6 +121,8 @@ sub defaultp {
         my $c = $current[0];
         if($c =~ m|[.,;/*\-+]|) {
             print '<span class="redchar">' . &output($c) . '</span>';
+        } elsif($c =~ m|[[\](){}]|) {
+            print '<span class="greenchar">' . &output($c) . '</span>';
         } else {
             print &output($c);
         }

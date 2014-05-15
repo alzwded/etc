@@ -90,7 +90,7 @@ sub defaultp {
 
         if($currentLine =~ m/^.*[:][=]/) {
             &def();
-            $currentLine = join @current;
+            $currentLine = join '', @current;
             next;
         } elsif(scalar(@current) >= 2 and $current[0] eq ':' and $current[1] eq ':') {
             &doublecolon();
@@ -117,8 +117,12 @@ sub defaultp {
             shift @current;
             shift @current;
             next;
+        } elsif(scalar(@current) >= 2 and (join '', @current[0..1]) =~ m|[-=][>]|) {
+            print '<span class="greenchar">'.output(shift @current).output(shift @current).'</span>';
+            next;
         }
         my $c = $current[0];
+        shift @current;
         if($c =~ m|[.,;/*\-+]|) {
             print '<span class="redchar">' . &output($c) . '</span>';
         } elsif($c =~ m|[[\](){}]|) {
@@ -126,9 +130,6 @@ sub defaultp {
         } else {
             print &output($c);
         }
-
-        shift @current;
-
     }
 }
 

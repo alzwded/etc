@@ -20,6 +20,7 @@ syn region NOTES_header matchgroup=NOTES_header start="::" end="::"
 syn region NOTES_important matchgroup=NOTES_important start="%" end="%"
 syn match NOTES_note "[<][-]"
 syn match NOTES_emdash "[-][-]"
+syn match NOTES_results "[=-][>]"
 syn match NOTES_parentheses "[(){}\[\]]"
 syn region NOTES_header2 matchgroup=NOTES_header2 start="[#]" end="$"
 
@@ -31,4 +32,5 @@ hi link NOTES_header2 Comment
 hi link NOTES_important Structure
 hi link NOTES_note Structure
 hi link NOTES_emdash Structure
+hi link NOTES_results Structure
 hi link NOTES_parentheses Structure

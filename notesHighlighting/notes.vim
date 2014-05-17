@@ -14,6 +14,7 @@
 set syntax=
 
 syn match NOTES_spacharacters "[*+-;:]"
+syn match NOTES_connectingChars "[|&^@]"
 syn match NOTES_def "^.*[:][=]"
 syn region NOTES_bolded matchgroup=NOTES_bolded start="!" end="[!.]"
 syn region NOTES_header matchgroup=NOTES_header start="::" end="::"
@@ -34,3 +35,4 @@ hi link NOTES_note Structure
 hi link NOTES_emdash Structure
 hi link NOTES_results Structure
 hi link NOTES_parentheses Structure
+hi link NOTES_connectingChars Structure

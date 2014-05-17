@@ -123,7 +123,7 @@ sub defaultp {
         }
         my $c = $current[0];
         shift @current;
-        if($c =~ m|[.,;/*\-+]|) {
+        if($c =~ m|[.,\:;/*\-+]|) {
             print '<span class="redchar">' . &output($c) . '</span>';
         } elsif($c =~ m#[[\](){}|&^@]#) {
             print '<span class="greenchar">' . &output($c) . '</span>';

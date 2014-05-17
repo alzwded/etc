@@ -13,7 +13,7 @@
 
 set syntax=
 
-syn match NOTES_spacharacters "[*+-;:]"
+syn match NOTES_spacharacters "[*+-;:/.,]"
 syn match NOTES_connectingChars "[|&^@]"
 syn match NOTES_def "^.*[:][=]"
 syn region NOTES_bolded matchgroup=NOTES_bolded start="!" end="[!.]"

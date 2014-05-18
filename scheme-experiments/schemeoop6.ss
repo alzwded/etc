@@ -1,3 +1,9 @@
+#!/usr/bin/env tinyscheme
+;!#
+; lemme explain the two rows above:
+;   - guile wants a !# to end the #!
+;   - tinyscheme doesn't
+;
 ; works in tinyscheme 1.37!
 ; target:
 ; (let ((o (new-test-object 1 "a")))
@@ -61,7 +67,7 @@
                     )
                   )
            )
-      ; bundle the data and the functions together
+      ; return a callable procedure/object monster
       (lambda (name . params)
         (cond ((eqv? name 'f1) (apply f1 params))
               ((eqv? name 'f2) (apply f2 params))
@@ -75,10 +81,32 @@
       )
     )
   )
-; of course, there's always the question of "how do we support inheritance/interfaces?"
+
+(define new-derived-object
+  (lambda (a)
+    (let* (
+           (base (new-test-object a "derived"))
+           (f1 (lambda ()
+                 ; this isn't gonna work...
+                 ; no way to access base members
+                 ; how to gain access to private members?
+                 (base 'f1) 
+                 (base 'f1)
+                 )
+               )
+           )
+      (lambda (name . params)
+        (cond ((eqv? name 'f1) (apply f1 params))
+              (else (apply base (cons name params)))
+              )
+        )
+      )
+    )
+  )
 
 (let ((o (new-test-object 0 "hello"))
       (k (new-test-object 0 "other"))
+      (q (new-derived-object 12))
       )
   (o 'f1)
   (k 'f1)
@@ -98,7 +126,14 @@
     (display b)(newline)
     )
   (display (o 'get-b))(newline)
+
+  (q 'f1)
+  (q 'f2)(newline)
+  (q 'f3 2)
+  (q 'f4 2 2)
+  (q 'set-b "newname")
+  (q 'f2)(newline)
+  ;(q 'fail)
   )
 
-; next target:
-; bind the "self" data into the member methods and not rely on an external parameter or something like that
+; next target: better inheritance!

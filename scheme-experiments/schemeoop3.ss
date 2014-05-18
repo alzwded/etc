@@ -8,7 +8,7 @@
   (let ((data (car blob))
         (funcs (car (cdr blob)))
         )
-    (if (eq? n 0)
+    (if (= n 0)
       ; bind the "this" data to the method and allow calling it with any
       ; number of parameters
       (lambda params

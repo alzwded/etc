@@ -1,30 +1,9 @@
-; scratchpad for working with encapsulated objects in scheme
-; maybe scheme supports OOP anyway, but I'm practising here
-
-; okay, now we have a target:
-; (let ((o (new-object-x param1 param2 etc)))
-;   (o f3 "some string argument")
+; target:
+; (let ((o (new-object-x 1)))
+;   (o 0)
+;   (o 1 2)
 ;   )
 
-; framework function; call the nth function on the supplied data
-; parameters:
-;   blob: ( data (funcs) )
-;   n:    the nth function to call
-(define (call-nth blob n)
-  (let ((data (car blob))
-        (funcs (car (cdr blob)))
-        )
-    (if (eq? n 0)
-      ; found the function, call it on the data
-      ((car funcs) data)
-      ; else, pop the head of funcs and continue without it
-      (call-nth (list data (cdr funcs)) (- n 1))
-      )
-    )
-  )
-; how to support member functions that are called with parameters?
-; maybe:
-; ( (get-nth blob n) param1 param2)
 (define (get-nth blob n)
   (let ((data (car blob))
         (funcs (car (cdr blob)))
@@ -42,9 +21,6 @@
     )
   )
 
-
-; prototype for a new object
-; to build this object, e.g. (let ((x (new-test-object 0 "hello"))) dostuff)
 (define new-test-object
   ; this is the constructor, so it is a lambda with contructor parameters
   (lambda (a b)
@@ -103,45 +79,28 @@
           )
       ; bundle the data and the functions together
       (let ((my-test-funcs (list f1 f2 f3 f4)))
-        (list my-test-data my-test-funcs))
+        (lambda (n . params)
+          (if (null? params)
+            ((get-nth (list my-test-data my-test-funcs) n))
+            (apply (get-nth (list my-test-data my-test-funcs) n) params)
+            )
+          ;((get-nth (list my-test-data my-test-funcs) n) params) ; pushes an empty list if params is empty.......
+          )
+        )
       )
     )
   )
 ; of course, there's always the question of "how do we support inheritance/interfaces?"
 
-; spawn 2 objects
 (let ((o (new-test-object 0 "hello"))
       (k (new-test-object 0 "other"))
       )
-  ; dump them
-  (display "o: ")
-  (display o)
-  (newline)
-
-  (display "k: ")
-  (display k)
-  (newline)
-
-  ; call methods on them
-  (call-nth o 0)
-  (call-nth o 1)
-  (newline)
-  (call-nth k 1)
-  (newline)
-  ; test out calling a method with a random number of parameters
-  ((get-nth k 2) 42)
-  ((get-nth k 2) 999)
-  ((get-nth o 2) 42)
-  ((get-nth o 2) 999)
-  ((get-nth k 3) 10 2)
-  ((get-nth o 3) 10 2)
-
-  ; dump them again
-  (display "o: ")
-  (display o)
-  (newline)
-
-  (display "k: ")
-  (display k)
-  (newline)
+  (o 0)
+  (k 0)
+  (k 0)
+  (o 1) (newline)
+  (k 1) (newline)
+  ; now, all that's left is to call methods by symbolic name and not by index
+  (o 3 2 2)
+  (k 3 2 2)
   )

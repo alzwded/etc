@@ -79,12 +79,14 @@
           )
       ; bundle the data and the functions together
       (let ((my-test-funcs (list f1 f2 f3 f4)))
-        (lambda (n . params)
-          (if (null? params)
-            ((get-nth (list my-test-data my-test-funcs) n))
-            (apply (get-nth (list my-test-data my-test-funcs) n) params)
+        (let ((self (list my-test-data my-test-funcs)))
+          (lambda (n . params)
+            (if (null? params)
+              ((get-nth self n))
+              (apply (get-nth self n) params)
+              )
+            ;((get-nth (list my-test-data my-test-funcs) n) params) ; pushes an empty list if params is empty.......
             )
-          ;((get-nth (list my-test-data my-test-funcs) n) params) ; pushes an empty list if params is empty.......
           )
         )
       )
@@ -104,3 +106,9 @@
   (o 3 2 2)
   (k 3 2 2)
   )
+
+; idea on calling by symbolic name:
+; self also has a literal list of the symbolic names of the functions
+; then, keep popping the head of both the symbolic names and my-test-funcs
+; until the name_parameter matches the symbol
+; then, call that head with the parameters

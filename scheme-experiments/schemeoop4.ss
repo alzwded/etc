@@ -4,23 +4,6 @@
 ;   (o f3 2)
 ;   )
 
-(define (get-nth blob n)
-  (let ((data (car blob))
-        (funcs (car (cdr blob)))
-        )
-    (if (= n 0)
-      ; bind the "this" data to the method and allow calling it with any
-      ; number of parameters
-      (lambda params
-        ; apply binds the objects that follow as parameters to the procedure
-        ; that is the first parameter (or something like that)
-        (apply (car funcs) data params)
-        )
-      (get-nth (list data (cdr funcs)) (- n 1))
-      )
-    )
-  )
-
 (define (get-symbolic blob name)
   (let ((data (car blob))
         (funcs (car (cdr blob)))
@@ -30,15 +13,15 @@
     (if (null? symbols)
       (throw 'no-such-symbol)
       (if (eq? name (car symbols))
-         ; bind the "this" data to the method and allow calling it with any
-         ; number of parameters
-         (lambda params
-           ; apply binds the objects that follow as parameters to the procedure
-           ; that is the first parameter (or something like that)
-           (apply (car funcs) data params)
-           )
-         (get-symbolic (list data (cdr funcs) (cdr symbols)) name)
-         )
+        ; bind the "this" data to the method and allow calling it with any
+        ; number of parameters
+        (lambda params
+          ; apply binds the objects that follow as parameters to the procedure
+          ; that is the first parameter (or something like that)
+          (apply (car funcs) data params)
+          )
+        (get-symbolic (list data (cdr funcs) (cdr symbols)) name)
+        )
       )
     )
   )
@@ -125,13 +108,10 @@
   (k 'f1)
   (o 'f2) (newline)
   (k 'f2) (newline)
-  ; now, all that's left is to call methods by symbolic name and not by index
+  (k 'f3 1)
   (o 'f4 2 2)
   (k 'f4 2 2)
   )
 
-; idea on calling by symbolic name:
-; self also has a literal list of the symbolic names of the functions
-; then, keep popping the head of both the symbolic names and my-test-funcs
-; until the name_parameter matches the symbol
-; then, call that head with the parameters
+; next target:
+; bind the "self" data into the member methods and not rely on an external parameter or something like that

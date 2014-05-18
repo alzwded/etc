@@ -115,3 +115,8 @@
 
 ; next target:
 ; bind the "self" data into the member methods and not rely on an external parameter or something like that
+
+; a combination between this is schemeoop6 would be great for implementing
+; inheritance in such a way that you can freely access the base members
+; in schemeoop6 there is no way to do this other than providing
+; getters and setters for all fields

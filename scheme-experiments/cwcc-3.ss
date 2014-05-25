@@ -88,5 +88,10 @@
             lists)
   ; if you'd prefer returning a set of lists you like, you could change this for-each to a
   ; (filter (lambda (x) (not (apply walk-until-question x))) lists)
+
+  ; the following two lines work in scheme implementations that support
+  ; filter, e.g. guile
+  ; (for-each (lambda (x) (display-list x))
+  ;           (filter (lambda (x) (apply walk-until-question x)) lists))
   )
 

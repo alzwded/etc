@@ -10,6 +10,8 @@ while(<A>) {
     chomp;
     my $title = $_;
 
+    print "     downloading $title (hopefully)\n";
+
     next if -f "$title.epub";
 
     while(1) {
@@ -19,7 +21,7 @@ while(<A>) {
 
         my $request = HTTP::Tiny->new();
         my $response = $request->request("POST", $url);
-        if($response->success) {
+        if($response->{success}) {
             last;
         } else {
             print "failed to download $title; retrying in 30s...\n";

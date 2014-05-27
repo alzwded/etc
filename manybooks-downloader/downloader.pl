@@ -14,14 +14,20 @@ while(<A>) {
 
     next if -f "$title.epub";
 
+    my $url = "http://manybooks.net/_scripts/send.php?tid=$title&book=1:epub:.epub:epub";
+
     while(1) {
         # post!
-        my $url = "http://manybooks.net/_scripts/download-ebook.php?tid=$title&book=1:epub:.epub:epub";
-        #my %args = ( tid => $title, book => "1:epub:.epub:epub" );
+        my $url = "http://manybooks.net/_scripts/download-ebook.php";#?tid=$title&book=1:epub:.epub:epub";
+        my %args = ( tid => $title, book => "1:epub:.epub:epub", );
+
+        print "      posting to $url: $args{tid}&$args{book}\n";
 
         my $request = HTTP::Tiny->new();
-        my $response = $request->request("POST", $url);
+        my $response = $request->post_form($url, \%args);
         if($response->{success}) {
+            #print $response->{content};
+            #die 'testing';
             last;
         } else {
             print "failed to download $title; retrying in 30s...\n";
@@ -30,11 +36,10 @@ while(<A>) {
         }
     }
 
-    my $url = "http://manybooks.net/_scripts/spend.php?tid=$title&book=1:epub:.epub:epub";
-
     my $count = 0;
     while(1) {
-        my $hr = system("curl \"$url\" > \"$title\".epub");
+        print "     downing $url\n";
+        my $hr = system("curl -L \"$url\" > \"$title\".epub");
         if($hr == 0) { last; }
         if($count < 30) {
             $count++;

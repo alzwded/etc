@@ -12,7 +12,7 @@ while($i <= $maxi)
     echo at link $link
     set pageTmp=`mktemp`
     echo "  downloading page..."
-    curl $link > $pageTmp
+    curl -L $link > $pageTmp
     set linksTmp=`mktemp`
     echo "  extracting links..."
     perl link-extractor.pl $pageTmp > $linksTmp 
@@ -22,6 +22,12 @@ while($i <= $maxi)
 
         echo "  downloading books..."
         perl downloader.pl $linksTmp
+        if( $? != 0 ) then
+            echo "failed to download something"
+            rm $linksTmp
+            set linksTmp=""
+            exit 1
+        endif
 
         rm $linksTmp
         set linksTmp=""

@@ -1,0 +1,17 @@
+--- ../link-extractor.pl	2014-05-27 22:25:13.046157744 +0300
++++ link-extractor.pl	2014-05-28 11:21:07.347770607 +0300
+@@ -8,12 +8,11 @@
+ while(<A>) {
+     chomp;
+     my $line = $_;
+-
+     if($line =~ /<a href="([^"]*)">/) {
+         my $potential = $1;
+-        if($potential =~ m#^/titles/(.+)\.html#) {
++
++        if($potential =~ m#^http://www\.munseys\.com/book/([^/]+)/(.+)#) {
+             my $title = $1;
+-            #print "http://manybooks.net/_scripts/send.php?tid=$title&book=1:ebup:.epub:epub\n";
+             print $title."\n";
+             $ret = 0;
+         }

@@ -1,0 +1,17 @@
+--- ../launcher.csh	2014-05-27 22:25:12.974157748 +0300
++++ launcher.csh	2014-05-28 11:21:07.347770607 +0300
+@@ -3,12 +3,12 @@
+ onintr cleanup
+ 
+ set i=1
+-set maxi=19
++set maxi=69
+ set pageTmp=""
+ set linksTmp=""
+ 
+ while($i <= $maxi)
+-    set link="http://manybooks.net/categories/PUL/$i"
++    set link="http://www.munseys.com/detail/mode/cat/12/Pulp_Fiction/page/$i"
+     echo at link $link
+     set pageTmp=`mktemp`
+     echo "  downloading page..."

@@ -1,0 +1,46 @@
+--- ../downloader.pl	2014-05-27 22:25:12.974157748 +0300
++++ downloader.pl	2014-05-28 11:21:07.347770607 +0300
+@@ -18,16 +18,15 @@
+ 
+     while(1) {
+         # post!
+-        my $url = "http://manybooks.net/_scripts/download-ebook.php";#?tid=$title&book=1:epub:.epub:epub";
+-        my %args = ( tid => $title, book => "1:epub:.epub:epub", );
++        my $url = "http://www.munseys.com/dl_file.php";
++        my %args = ( book_id => $title, format => "format12", );
+ 
+-        print "      posting to $url: $args{tid}&$args{book}\n";
++        print "      posting to $url: $args{book_id}&$args{format}\n";
+ 
+-        my $request = HTTP::Tiny->new();
+-        my $response = $request->post_form($url, \%args);
+-        if($response->{success}) {
+-            #print $response->{content};
+-            #die 'testing';
++        my $hr = system("curl -L -d \"book_id=$args{book_id}&format=$args{format}\" $url > $title.epub");
++        #my $request = HTTP::Tiny->new();
++        #my $response = $request->post_form($url, \%args);
++        if($hr == 0) {
+             last;
+         } else {
+             print "failed to download $title; retrying in 30s...\n";
+@@ -35,19 +34,4 @@
+             next;
+         }
+     }
+-
+-    my $count = 0;
+-    while(1) {
+-        print "     downing $url\n";
+-        my $hr = system("curl -L \"$url\" > \"$title\".epub");
+-        if($hr == 0) { last; }
+-        if($count < 30) {
+-            $count++;
+-            print "something went wrong; retrying in 30s...\n";
+-            sleep 30;
+-            next;
+-        } else {
+-            die 'something went horribly wrong!';
+-        }
+-    }
+ }

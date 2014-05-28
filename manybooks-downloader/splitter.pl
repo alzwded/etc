@@ -13,7 +13,7 @@ if($ARGV[0] eq '-d') {
 }
 
 my @files = @ARGV;
-my %dests = map { $_ => "$targetDir/".lc(substr $_, 0, 1)."/" ; } @files;
+my %dests = map { $_ => "$targetDir/".&fromChar(lc(substr $_, 0, 1))."/" ; } @files;
 
 foreach (keys %dests) {
     my $file = $_;
@@ -24,4 +24,12 @@ foreach (keys %dests) {
         make_path($dest) == 1 or die;
     }
     move($file, $dest) or die;
+}
+
+sub fromChar {
+    my ($char) = @_;
+    if($char =~ m/[a-z]/) {
+        return $char;
+    }
+    return "Misc";
 }

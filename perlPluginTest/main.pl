@@ -18,9 +18,9 @@ foreach (@plugins) {
     # $plug->exec();
 }
 
-while(1) {
-    my $line = readline;
-    last if(!defined($line) or $line =~ m/^$/);
+while(<>) {
+    my $line = $_;
+    last if($line =~ m/^$/);
 
     chomp $line;
 

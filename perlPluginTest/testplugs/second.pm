@@ -1,7 +1,6 @@
 package second;
 
 sub init {
-    print "second init'd\n";
 }
 
 sub exec {
@@ -14,4 +13,5 @@ sub enum {
     return ("asd", "qwe");
 }
 
-1
+print "second init'd\n";
+1;

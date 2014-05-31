@@ -1,7 +1,6 @@
 package hello;
 
 sub init {
-    print "hello init'd\n";
 }
 
 sub exec {
@@ -14,4 +13,5 @@ sub enum {
     return ("lol", "kik");
 }
 
-1
+print "hello init'd\n";
+1;

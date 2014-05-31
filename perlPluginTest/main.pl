@@ -49,6 +49,7 @@ sub load {
             next;
         }
         #push %plugins, (("" + $a) => $a);
+        $a->init;
         push @plugins, $a;
     }
 }

@@ -3,7 +3,7 @@
 use strict;
 use Data::Dumper;
 
-my @indirs = sort @ARGV;
+my @indirs = map { $_ =~ s/^(.*)\/$/$1/; $_ } sort @ARGV;
 
 system("rm -rf repo") and die;
 system("mkdir repo") and die;
@@ -21,15 +21,15 @@ foreach my $dir(@indirs) {
     print "-"x 72 . "\n";
 
     foreach my $file (@files) {
-        print "$file\n";
-        my $key = substr $file, length($dir) + 1;
+        print "$dir||$file\n";
+        my $key = substr $file, (length($dir) + 1);
         print "  $key\n";
         if($covered{$key}) {
             print "  $key deleted\n";
             delete $covered{$key};
         }
-        print "  tar cv -C $dir $key | tar xv -C repo\n";
-        system("tar cv -C $dir $key | tar xv -C repo") and die;
+        print "  tar cv -C $dir $key | tar xv -C repo --ignore-command-error-m \n";
+        system("tar cv -C $dir $key | tar xv -C repo --ignore-command-error -m ") and die;
         system("git --work-tree=repo --git-dir=repo/.git add $key") and die;
     }
 

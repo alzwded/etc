@@ -16,13 +16,26 @@
 <body>
 <table id="t" style="border:solid 2px black">
 </table>
-<div style="float:bottom">
-    <!--your images here-->
-    <img id="a" src="a.png" width="100" height="100" onclick="perform('a.png')"></img>
-    <img id="b" src="b.png" width="100" height="100" onclick="perform('b.png')"></img>
+<div id="pallette" style="position:absolute;bottom:0">
 </div>
 
 <script type="text/javascript" lang="javascript">
+//<!--your images here-->
+var myImages = [
+    "a.png",
+    "b.png",
+    "a.png",
+    "a.png",
+    "a.png",
+    "b.png",
+    "b.png",
+    "b.png",
+];
+
+myImages.forEach(function(path) {
+    document.getElementById("pallette").innerHTML += '<img src="' + path + '" width="100" height="100" onclick="perform(\'' + path + '\')"></img>'
+})
+
 var selTCell = null
 
 var cellsText = ""

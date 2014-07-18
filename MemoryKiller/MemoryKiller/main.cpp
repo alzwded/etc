@@ -25,7 +25,6 @@ void ErrorPrint(LPSTR lpszFunction)
         0, NULL );
 
     // Display the error message and exit the process
-
     lpDisplayBuf = (LPSTR)LocalAlloc(LMEM_ZEROINIT, 
         (lstrlenA((LPCSTR)lpMsgBuf) + lstrlenA((LPCSTR)lpszFunction) + 40) * sizeof(CHAR)); 
     StringCchPrintfA((STRSAFE_LPSTR)lpDisplayBuf, 
@@ -51,12 +50,9 @@ int main(int argc, char* argv[])
         l(void (*_f)(void*), void* _data)
             : f(_f), data(_data)
         {}
-        ~l() {
-            if(f && data) {
-                f(data);
-            }
-        }
+        ~l() { f && data && (f(data), true); }
     } mem1(free, lpidProcess);
+
     BOOL hr = EnumProcesses(lpidProcess, SIZE, &lpcbNeeded);
     if(!hr) {
         std::cerr << "enum processes failed" << std::endl;

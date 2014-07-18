@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include <Psapi.h>
 #include <cstdlib>
-#include <memory>
 #include <iostream>
 #include <strsafe.h>
 
@@ -46,7 +45,18 @@ int main(int argc, char* argv[])
 #define SIZE (NUM * sizeof(DWORD))
     DWORD* lpidProcess = (DWORD*)calloc(1024, sizeof(DWORD));
     DWORD lpcbNeeded(0);
-    std::unique_ptr<DWORD> mem1(lpidProcess);
+    struct l {
+        void (*f)(void*);
+        void* data;
+        l(void (*_f)(void*), void* _data)
+            : f(_f), data(_data)
+        {}
+        ~l() {
+            if(f && data) {
+                f(data);
+            }
+        }
+    } mem1(free, lpidProcess);
     BOOL hr = EnumProcesses(lpidProcess, SIZE, &lpcbNeeded);
     if(!hr) {
         std::cerr << "enum processes failed" << std::endl;

@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
                                 FALSE, lpidProcess[i] );
         if(hwnd == NULL) continue; // probably no rights to open the process, d/c
 
-        std::cout << "killing working set of " << hwnd << std::endl;
+        std::cout << "killing working set of " << lpidProcess[i] << std::endl;
 
         hr = EmptyWorkingSet(hwnd);
         if(hr == 0) {

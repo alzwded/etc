@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html5>
 <html>
     <head>
         <meta charset="utf-8">
@@ -31,14 +31,24 @@ var H = 8
     border-style: solid;
     border-width: 3px;
 }
+table {
+    border:solid 2px black;
+    table-layout:fixed;
+    line-height: 0;
+    font-size: 0;
+}
+td {
+    margin: 0 0 0 0;
+    padding: 0px 0px 0px 0px;
+}
         </style>
     </head>
     <body>
         <p style="font-size:6;position:absolute;right:0px;top:0px;margins:0px 0px 0px 0px;padding:0">Vlad is awesum!</p>
-        <table id="t" style="border:solid 2px black">
+        <table id="t">
         </table>
 
-        <div id="pallette" style="position:absolute;bottom:0">
+        <div id="pallette" style="position:relative;bottom:0">
         <input type="button" onclick="clr()" value="clear" style="vertical-align:top;width:100px;height:100px">
         <input type="button" onclick="clearAll()" value="wipe board" style="vertical-align:top;width:100px;height:100px">
         </div>
@@ -94,7 +104,7 @@ function clearAll() {
         cellsText += "<tr>"
         for(var j = 0; j < W; ++j) {
             var id = 'cell' + i + '_' + j
-            cellsText += "<td class='default' style=\"background-repeat:no-repeat; background-size:cover;width:100px;height:100px; \" id=\"" + id + "\" onclick=\"setMe('" + id + "')\"></td>"
+            cellsText += "<td class='default' style=\"background-repeat:no-repeat; background-size:cover;width:100px;height:100px;min-width:100px;min-height:100px \" id=\"" + id + "\" onclick=\"setMe('" + id + "')\"></td>"
         }
         cellsText += "</tr>"
     }

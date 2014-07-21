@@ -1,6 +1,8 @@
-<!DOCTYPE html!>
+<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <title>Picture Picker!</title>
         <script type="text/javascript">
 //<!--your images here-->
 //configuration section
@@ -37,11 +39,11 @@ var H = 8
         </table>
 
         <div id="pallette" style="position:absolute;bottom:0">
-        <input type="button" onclick="clr()" value="clear" style="vertical-align:top;width:100px;height:100px"></input>
-        <input type="button" onclick="clearAll()" value="wipe board" style="vertical-align:top;width:100px;height:100px"></input>
+        <input type="button" onclick="clr()" value="clear" style="vertical-align:top;width:100px;height:100px">
+        <input type="button" onclick="clearAll()" value="wipe board" style="vertical-align:top;width:100px;height:100px">
         </div>
 
-        <script type="text/javascript" lang="javascript">
+        <script type="text/javascript">
 var selTCell = null
 
 myImages.forEach(function(path) {

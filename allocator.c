@@ -268,7 +268,7 @@ int main(int argc, char* argv[])
 
     dfree(f);
     SAY("free'd f");
-    dfree(b);http://blogs.msdn.com/b/oldnewthing/archive/2007/04/02/2008357.aspx
+    dfree(b);
     SAY("free'd b");
     dfree(a);
     SAY("free'd a");

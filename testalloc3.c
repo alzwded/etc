@@ -47,7 +47,7 @@ ptr_t dalloc(int size)
 {
     int addr = 0;
     size_t i = 0;
-    for(i = 0; i < TOTAL && memory[i] != 0; ++i) {
+    for(i = 0; 1; ++i) {
         if(memory[i] < 0) {
             addr += -memory[i];
             continue;
@@ -57,69 +57,61 @@ ptr_t dalloc(int size)
         } else if(memory[i] > size) {
             // move everything back
             int j = i;
-            type_t buf = memory[j];
+            type_t buf = memory[i] - size;
+            memory[i] = -size;
             while(buf != 0) {
                 ++j;
                 SWAP(buf, memory[j]);
             }
-            memory[i] = -size;
-            memory[i + 1] -= size;
             return &memory[addr * BLOCK + ALLOCTAB];
         } else {
             addr += memory[i];
             continue;
         }
     }
-    abort();
+    // no code here
 }
 
 void dfree(ptr_t p)
 {
     int base = (p - memory - ALLOCTAB) / BLOCK;
-    for(size_t i = 0; i < TOTAL && memory[i] != 0; ++i) {
-        if(memory[i] < 0) {
-            base -= -memory[i];
-            if(base < 0) {
-                memory[i] = -memory[i];
-                // normalize
-                if(i > 0 && memory[i - 1] > 0
-                    && memory[i + 1] > 0)
-                {
-                    memory[i - 1] += memory[i] + memory[i + 1];
-                    size_t j = i + 1;
-                    for(; memory[j] && memory[j + 1]; ++j) {
-                        memory[j - 1] = memory[j + 1];
-                    }
-                    memory[j - 1] = 0;
-                    memory[j] = 0;
-                } else if(i > 0 && memory[i - 1] > 0
-                    && memory[i + 1] <= 0)
-                {
-                    memory[i - 1] += memory[i];
-                    size_t j = i + 1;
-                    for(; memory[j]; ++j) {
-                        memory[j - 1] = memory[j];
-                    }
-                    memory[j - 1] = 0;
-                } else if(memory[i + 1] > 0) {
-                    memory[i] += memory[i + 1];
-                    size_t j = i + 1;
-                    for(; memory[j + 1]; ++j) {
-                        memory[j] = memory[j + 1];
-                    }
-                    memory[j] = 0;
-                } else if(memory[i + 1] == 0) {
-                    memory[i] = 0; // all these =0 are for debug purposes
-                } else {
-                    return; // nothing more to normalize
-                }
-                return;
-            }
-        } else if(memory[i] > 0) {
+    size_t j, o = 0;
+    for(size_t i = 0; 1; ++i) {
+        if(memory[i] > 0) {
             base -= memory[i];
+            continue;
         }
+        base -= -memory[i];
+        if(base >= 0) continue;
+
+        memory[i] = -memory[i];
+
+        // normalize
+        if(i > 0 && memory[i - 1] > 0) {
+            memory[i - 1] += memory[i];
+            if(memory[i + 1] > 0) {
+                memory[i - 1] += memory[i + 1];
+                j = i + 1;
+                o = 1;
+                goto toEndWithIt;
+            } else {
+                j = i + 1;
+                goto toEndWithIt;
+            }
+        } else if(memory[i + 1] >= 0) {
+            memory[i] += memory[i + 1];
+            j = i + 2;
+            goto toEndWithIt;
+        }
+        return;
     }
-    abort();
+    // no code here
+
+toEndWithIt:
+    for(; memory[j - 1]; ++j) {
+        memory[j - 1] = memory[j + o];
+    }
+    return;
 }
 
 int main(int argc, char* argv[])

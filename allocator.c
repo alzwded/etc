@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
 /* represent the SWAP operation as a macro since the JakVMhs swap*/
 /*     code bears no resemblance to C code*/
@@ -40,36 +39,37 @@
 #define JUMP(X) goto X
 
 /* configuration constants; theoretically determined at compile time*/
-/* BASEADDR: the base address of the malloc area as an offset of words; */
+/* MLEFT: the base address of the malloc area as an offset of words; */
 /*           everything that's before it is static program data*/
-#define BASEADDR (3)
-/* TOTAL: the total amount of memory, 64k words*/
+#define MLEFT (3)
+/* MRIGHT: the total amount of memory, 64k words*/
 /*        well, actually it can be considered to be the 'right' marker*/
-/*        of the malloc area if you consider BASEADDR to be the 'left'*/
-#define TOTAL (64*1024)
-/* ALLOCTAB: the size of the allocation table, in words*/
-/*           memory will be allocated starting from BASEADDR + ALLOCTAB*/
-#define ALLOCTAB (3200)
-/* BLOCK: the size of an allocation block, in number of words*/
-#define BLOCK (8)
+/*        of the malloc area if you consider MLEFT to be the 'left'*/
+#define MRIGHT (64*1024)
+/* ATABSIZE: the size of the allocation table, in words*/
+/*           memory will be allocated starting from MLEFT + ATABSIZE*/
+#define ATABSIZE (3200)
+/* BLOCKSIZE: the size of an allocation block, in number of words*/
+#define BLOCKSIZE (8)
 
 /* a representation of the memory*/
-typedef int16_t type_t;
+typedef short type_t;
 typedef type_t* ptr_t;
-type_t memory[TOTAL];
+type_t memory[MRIGHT];
 
 /* this would become wrapped in a*/
 /* wdalloc(int numBytes) {*/
-/*     return dalloc(numBytes / BLOCK + (numBytes % BLOCK != 0));*/
+/*     return dalloc(numBytes / BLOCKSIZE + (numBytes % BLOCKSIZE != 0));*/
 /* }*/
-ptr_t dalloc(int size)
+ptr_t
+dalloc(size)
 {
 /* the variables we're using*/
     int addr;
     size_t i, j;
     type_t buf;
     addr = 0;
-    i = BASEADDR - 1;
+    i = MLEFT - 1;
 
 /* jump into the main body of the function*/
     JUMP(dalloc_mainLoop);
@@ -103,7 +103,7 @@ dalloc_foundMatching:
     /* mark it as occupied*/
     memory[i] = -memory[i];
     /* compute the pointer address and return*/
-    return &memory[BASEADDR + addr * BLOCK + ALLOCTAB];
+    return &memory[MLEFT + addr * BLOCKSIZE + ATABSIZE];
 
 /* entered when a slot was found that is big enough*/
 dalloc_foundMore:
@@ -132,17 +132,18 @@ dalloc_pushBackStart:
     JUMP(dalloc_pushBackStart);
 dalloc_pushBackEnd:
     /* compute the pointer address and return*/
-    return &memory[BASEADDR + addr * BLOCK + ALLOCTAB];
+    return &memory[MLEFT + addr * BLOCKSIZE + ATABSIZE];
 }
 
-void dfree(ptr_t p)
+dfree(p)
+    ptr_t p;
 {
 /* the variables we're using*/
     int base;
     size_t i, j, o;
-    i = BASEADDR-1;
+    i = MLEFT-1;
     o = 0;
-    base = (p - memory - BASEADDR - ALLOCTAB) / BLOCK;
+    base = (p - memory - MLEFT - ATABSIZE) / BLOCKSIZE;
 
     JUMP(dfree_mainLoop);
 
@@ -169,7 +170,7 @@ dfree_mainLoop:
 /* normalize*/
 /**/
     /* if we have a free slot on the left, merge with it*/
-    WHEN(i > BASEADDR && memory[i - 1] > 0)
+    WHEN(i > MLEFT && memory[i - 1] > 0)
     JUMP(dfree_haveLeft);
     /* if we have a free slot on the right, merge with it*/
     WHEN(memory[i + 1] >= 0)
@@ -214,12 +215,14 @@ dfree_toEndWithItEnd:
     return;
 }
 
-int main(int argc, char* argv[])
+main(argc, argv)
+    int argc;
+    char* argv[];
 {
     size_t i;
     ptr_t a, b, c, d, e, f, g, h;
     memset(&memory[0], 0, sizeof(memory));
-    memory[BASEADDR] = (TOTAL - ALLOCTAB - BASEADDR) / BLOCK;
+    memory[MLEFT] = (MRIGHT - ATABSIZE - MLEFT) / BLOCKSIZE;
 
 #define SAY(STR) do{\
     size_t i; \
@@ -236,7 +239,7 @@ int main(int argc, char* argv[])
     printf("    PWORD%5d PCHAR%5d\n", VAR - memory, (char*)VAR - (char*)memory); \
 }while(0)
 
-    for(i = 0; i < BASEADDR; memory[i++] = (i%2)?-9999:9999)
+    for(i = 0; i < MLEFT; memory[i++] = (i%2)?-9999:9999)
         ;
     SAY("+-9999 is a momentarily reserved value for testing purposes\nconsider them cannaries");
 

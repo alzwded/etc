@@ -47,71 +47,124 @@ type_t memory[TOTAL];
 // }
 ptr_t dalloc(int size)
 {
+// the variables we're using
     int addr = 0;
-    size_t i, j;
-    for(i = 0; 1; ++i) {
-        if(memory[i] < 0) {
-            addr += -memory[i];
-            continue;
-        }
-        if(memory[i] == size) {
-            memory[i] = -memory[i];
-            return &memory[addr * BLOCK + ALLOCTAB];
-        }
-        if(memory[i] > size) {
-            // move everything back
-            j = i;
-            type_t buf = memory[i] - size;
-            memory[i] = -size;
-            while(buf != 0) {
-                ++j;
-                SWAP(buf, memory[j]);
-            }
-            return &memory[addr * BLOCK + ALLOCTAB];
-        }
-        addr += memory[i];
-        continue;
+    size_t i = -1, j;
+
+// jump into the main body of the function
+    goto dalloc_mainLoop;
+
+// entered when a slot is occupied
+dalloc_occupied:
+    // increment our return pointer by the amount that's in the
+    //     occupied slot
+    addr += -memory[i];
+    // fall through back into the main loop
+
+dalloc_mainLoop:
+    // look at the next slot
+    ++i;
+    // if it's occupied, handle it
+    if(memory[i] < 0) goto dalloc_occupied;
+    // if it's an exact match, handle it
+    if(memory[i] == size) goto dalloc_foundMatching;
+    // if there's room, handle it
+    if(memory[i] > size) goto dalloc_foundMore;
+    // otherwise move the potential pointer by that amount
+    addr += memory[i];
+    // and loop
+    goto dalloc_mainLoop;
+
+// entered when an exact size match is found
+dalloc_foundMatching:
+    // mark it as occupied
+    memory[i] = -memory[i];
+    // compute the pointer address and return
+    return &memory[addr * BLOCK + ALLOCTAB];
+
+// entered when a slot was found that is big enough
+dalloc_foundMore:
+    // save the slot's index
+    j = i;
+    // push back algorithm:
+    //     hold the next value in a buffer
+    //     while there is an array, swap the slot
+    //         on the next position with the one in the buffer
+    //         and increment the index
+    // but first, the i+1 position will be (i)-size, so initialize
+    //     the buffer with that
+    type_t buf = memory[i] - size;
+    // mark the current slot as occupied
+    memory[i] = -size;
+    // unleash the push back algorithm;
+    // 0 is the terminator
+    while(buf != 0) {
+        // move to the next slot
+        ++j;
+        // swap out buf and the slot
+        SWAP(buf, memory[j]);
     }
-    // no code here
+    // compute the pointer address and return
+    return &memory[addr * BLOCK + ALLOCTAB];
 }
 
 void dfree(ptr_t p)
 {
+// the variables we're using
     int base = (p - memory - ALLOCTAB) / BLOCK;
-    size_t i, j, o = 0;
-    for(i = 0; 1; ++i) {
-        if(memory[i] > 0) {
-            base -= memory[i];
-            continue;
-        }
-        base -= -memory[i];
-        if(base >= 0) continue;
-        // else...
-        memory[i] = -memory[i];
+    size_t i = -1, j, o = 0;
 
-        // normalize
-        if(i > 0 && memory[i - 1] > 0) {
-            memory[i - 1] += memory[i];
-            if(memory[i + 1] > 0) {
-                memory[i - 1] += memory[i + 1];
-                j = i + 1;
-                o = 1;
-                goto toEndWithIt;
-            } else {
-                j = i + 1;
-                goto toEndWithIt;
-            }
-        } else if(memory[i + 1] >= 0) {
-            memory[i] += memory[i + 1];
-            j = i + 2;
-            goto toEndWithIt;
-        }
-        return;
-    }
-    // no code here
+    goto dfree_mainLoop;
 
-    // multiple points of entry
-toEndWithIt:
+// entered when a slot is occupied
+dfree_occupied:
+    // decrement our debt
+    base -= memory[i];
+    // fall through to dfree_mainLoop
+dfree_mainLoop:
+    // move to the next slot
+    ++i;
+    // if it's occupied, deal with it
+    if(memory[i] > 0) goto dfree_occupied;
+    // decrement our debt
+    base -= -memory[i];
+    // if we still have debt, move on
+    // 0 is still debt because reasons; magic number ho
+    if(base >= 0) goto dfree_mainLoop;
+    // else, mark the memory as free
+    memory[i] = -memory[i];
+//
+// normalize
+//
+    // if we have a free slot on the left, merge with it
+    if(i > 0 && memory[i - 1] > 0) goto dfree_haveLeft;
+    // if we have a free slot on the right, merge with it
+    if(memory[i + 1] >= 0) goto dfree_haveRight;
+    // nothing to normalize
+    return;
+
+dfree_haveRight:
+    // add the value of the right slot to this slot
+    memory[i] += memory[i + 1];
+    // jump to the move code
+    j = i + 2;
+    goto dfree_toEndWithIt;
+
+dfree_haveLeft:
+    // add the value of this slot to the left slot
+    memory[i - 1] += memory[i];
+    // if we don't have a free slot to our right, skip some code
+    if(memory[i + 1] <= 0) goto dfree_noFreeRight;
+    // we have a free slot on the right; merge it with the left slot
+    memory[i - 1] += memory[i + 1];
+    // configure toEndWithIt to reach a slot farther to its right
+    o = 1;
+    // fall through to dfree_noFreeRight
+dfree_noFreeRight:
+    // configure the move code
+    j = i + 1;
+    // fall through to dfree_toEndWithIt
+dfree_toEndWithIt:
     for(; memory[j - 1]; ++j) {
         memory[j - 1] = memory[j + o];
     }
@@ -136,6 +189,7 @@ int main(int argc, char* argv[])
     printf("    PWORD%5d PCHAR%5d\n", VAR - memory, (char*)VAR - (char*)memory); \
 }while(0)
 
+    printf("=============\n");
     SAY("initial");
     ptr_t a = dalloc(1);
     SAY2("a = 1 block", a);
@@ -171,15 +225,46 @@ int main(int argc, char* argv[])
     dfree(h);
     SAY("free'd h");
 
-
     dfree(f);
     SAY("free'd f");
-    dfree(b);
+    dfree(b);http://blogs.msdn.com/b/oldnewthing/archive/2007/04/02/2008357.aspx
     SAY("free'd b");
     dfree(a);
     SAY("free'd a");
     dfree(e);
     SAY("free'd e");
+
+    printf("=============\n");
+    a = dalloc(1);
+    SAY2("a = 1", a);
+    b = dalloc(1);
+    SAY2("b = 1", b);
+    c = dalloc(1);
+    SAY2("c = 1", c);
+    dfree(a);
+    SAY("free a");
+    dfree(c);
+    SAY("free c");
+    dfree(b);
+    SAY("free b");
+
+    printf("=============\n");
+    a = dalloc(1);
+    SAY2("a = 1", a);
+    b = dalloc(1);
+    SAY2("b = 1", b);
+    c = dalloc(1);
+    SAY2("c = 1", c);
+    d = dalloc(7000);
+    SAY2("d = 7000", c);
+    dfree(a);
+    SAY("free a");
+    dfree(c);
+    SAY("free c");
+    dfree(b);
+    SAY("free b");
+    dfree(d);
+    SAY("free d");
 
     return 0;
 }

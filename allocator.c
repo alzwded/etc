@@ -135,6 +135,7 @@ dalloc_pushBackEnd:
     return &memory[MLEFT + addr * BLOCKSIZE + ATABSIZE];
 }
 
+void
 dfree(p)
     ptr_t p;
 {
@@ -215,6 +216,7 @@ dfree_toEndWithItEnd:
     return;
 }
 
+int
 main(argc, argv)
     int argc;
     char* argv[];
@@ -236,10 +238,10 @@ main(argc, argv)
     printf("%s\n", STR); \
     for(i = 0; i < 10; ++i) printf("%5d", (int)memory[i]); \
     printf("\n"); \
-    printf("    PWORD%5d PCHAR%5d\n", VAR - memory, (char*)VAR - (char*)memory); \
+    printf("    PWORD%5ld PCHAR%5ld\n", (long)(VAR - memory), (long)((char*)VAR - (char*)memory)); \
 }while(0)
 
-    for(i = 0; i < MLEFT; memory[i++] = (i%2)?-9999:9999)
+    for(i = 0; i < MLEFT; memory[i] = (i%2)?-9999:9999, ++i)
         ;
     SAY("+-9999 is a momentarily reserved value for testing purposes\nconsider them cannaries");
 

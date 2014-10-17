@@ -17,6 +17,8 @@
        of blocks free at the end of the list instead of magical 0s
 
    Simplified less error-checky version of testalloc2.c
+   The reason for this is because I'll implement this in JakVMhs assembly
+       so the code's gotta be short and effective
 
    compile with --v to see the magic
        gcc --std=c99 testalloc2.c
@@ -46,17 +48,19 @@ type_t memory[TOTAL];
 ptr_t dalloc(int size)
 {
     int addr = 0;
-    size_t i = 0;
+    size_t i, j;
     for(i = 0; 1; ++i) {
         if(memory[i] < 0) {
             addr += -memory[i];
             continue;
-        } else if(memory[i] == size) {
+        }
+        if(memory[i] == size) {
             memory[i] = -memory[i];
             return &memory[addr * BLOCK + ALLOCTAB];
-        } else if(memory[i] > size) {
+        }
+        if(memory[i] > size) {
             // move everything back
-            int j = i;
+            j = i;
             type_t buf = memory[i] - size;
             memory[i] = -size;
             while(buf != 0) {
@@ -64,10 +68,9 @@ ptr_t dalloc(int size)
                 SWAP(buf, memory[j]);
             }
             return &memory[addr * BLOCK + ALLOCTAB];
-        } else {
-            addr += memory[i];
-            continue;
         }
+        addr += memory[i];
+        continue;
     }
     // no code here
 }
@@ -75,15 +78,15 @@ ptr_t dalloc(int size)
 void dfree(ptr_t p)
 {
     int base = (p - memory - ALLOCTAB) / BLOCK;
-    size_t j, o = 0;
-    for(size_t i = 0; 1; ++i) {
+    size_t i, j, o = 0;
+    for(i = 0; 1; ++i) {
         if(memory[i] > 0) {
             base -= memory[i];
             continue;
         }
         base -= -memory[i];
         if(base >= 0) continue;
-
+        // else...
         memory[i] = -memory[i];
 
         // normalize
@@ -107,6 +110,7 @@ void dfree(ptr_t p)
     }
     // no code here
 
+    // multiple points of entry
 toEndWithIt:
     for(; memory[j - 1]; ++j) {
         memory[j - 1] = memory[j + o];

@@ -1,4 +1,6 @@
 /*
+Copyright 2014 Vlad Mesco
+
 DISCLAIMER: I take no responsibility if using this code
             in any environment results in your cat exploding.
             This is for expositional purposes only.
@@ -13,7 +15,7 @@ To use it you need to implement 6 things:
   T being your collection; this is used by the compiler when trying to understand
   for(auto&& i : c)
 * a GenericIterator<...> end(T&) function, idem
-* void init(T&), void next(T&), bool more(T&) and Y val(T&) functions to be bound
+* void init(void*), void next(void*), bool more(void*) and Y val(void*) functions to be bound
   to the GenericIterator template instantiation. They do what you expect.
   If you don't know what to expect, imagine them being used as such:
   
@@ -21,8 +23,20 @@ To use it you need to implement 6 things:
       for(init(c); more(c); next(c)) {
           auto&& val = val(c);
       }
-      
-  TODO those four functions should also take the iterator as a parameter.
+
+  That is not any actual code. You can call it using whatever state variable you want. For example, you can create a class called something like
+
+      struct IteratorImplState
+      {
+          MyCollection collection_;
+          int someInt_;
+          void* otherStuff_;
+
+          // methods...
+      };
+
+  And use that instead of MyCollection directly. This is essentially the
+  data that gets passed in to the four functors.
 */
 
 #include <algorithm>

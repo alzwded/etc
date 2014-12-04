@@ -15,7 +15,7 @@ To use it you need to implement 6 things:
   T being your collection; this is used by the compiler when trying to understand
   for(auto&& i : c)
 * a GenericIterator<...> end(T&) function, idem
-* void init(void*), void next(void*), bool more(void*) and Y val(void*) functions to be bound
+* void init(T&), void next(T&), bool more(T&) and Y val(T&) functions to be bound
   to the GenericIterator template instantiation. They do what you expect.
   If you don't know what to expect, imagine them being used as such:
   
@@ -24,7 +24,8 @@ To use it you need to implement 6 things:
           auto&& val = val(c);
       }
 
-  That is not any actual code. You can call it using whatever state variable you want. For example, you can create a class called something like
+  That is not any actual code. You can call it using whatever state variable you want.
+  For example, you can create a class called something like
 
       struct IteratorImplState
       {
@@ -37,6 +38,11 @@ To use it you need to implement 6 things:
 
   And use that instead of MyCollection directly. This is essentially the
   data that gets passed in to the four functors.
+  
+  There are two factory methods on GenericIterator: First and End.
+  The only subtle difference is that FInit is only called for First
+  and not for End. I couldn't think of any more meaningful names for
+  the two constructors.
 */
 
 #include <algorithm>

@@ -1,6 +1,4 @@
 /*
-Copyright 2014 Vlad Mesco
-
 DISCLAIMER: I take no responsibility if using this code
             in any environment results in your cat exploding.
             This is for expositional purposes only.
@@ -15,17 +13,18 @@ To use it you need to implement 6 things:
   T being your collection; this is used by the compiler when trying to understand
   for(auto&& i : c)
 * a GenericIterator<...> end(T&) function, idem
-* void init(T&), void next(T&), bool more(T&) and Y val(T&) functions to be bound
+* void init(T&), void next(T&), bool checkend(T&), diff(T&, T&) and Y val(T&) functions to be bound
   to the GenericIterator template instantiation. They do what you expect.
+  The diff function is called to compare with whatever end() returns
+  (or nothing, or something else entirely, it's up to you)
   If you don't know what to expect, imagine them being used as such:
   
       MyCollection c;
-      for(init(c); more(c); next(c)) {
+      for(init(c); checkend(c); next(c)) {
           auto&& val = val(c);
       }
 
-  That is not any actual code. You can call it using whatever state variable you want.
-  For example, you can create a class called something like
+  That is not any actual code. You can call it using whatever state variable you want. For example, you can create a class called something like
 
       struct IteratorImplState
       {
@@ -38,11 +37,6 @@ To use it you need to implement 6 things:
 
   And use that instead of MyCollection directly. This is essentially the
   data that gets passed in to the four functors.
-  
-  There are two factory methods on GenericIterator: First and End.
-  The only subtle difference is that FInit is only called for First
-  and not for End. I couldn't think of any more meaningful names for
-  the two constructors.
 */
 
 #include <algorithm>
@@ -82,6 +76,7 @@ public:
     }
     bool HasMore()
     {
+        //return false;
         return idx_ < 5;
     }
     int& Value()
@@ -93,15 +88,15 @@ public:
 
 /* GENERIC ITERATOR */
 
-template<typename T, typename FInit, typename FMore, typename FNext, typename FVal>
+template<typename T, typename FInit, typename FCheckEnd, typename FNext, typename FVal, typename FDiff>
 class GenericIterator
 {
-    T& data_;
-    FMore fmore_;
+    T data_;
+    FCheckEnd fmore_;
     FNext fnext_;
     FVal fval_;
-    bool last_;
-    typedef GenericIterator<T, FInit, FMore, FNext, FVal> my_type;
+    FDiff fdiff_;
+    typedef GenericIterator<T, FInit, FCheckEnd, FNext, FVal, FDiff> my_type;
 public:
     typedef std::ptrdiff_t difference_type;
     typedef int value_type;
@@ -110,41 +105,39 @@ public:
     typedef std::forward_iterator_tag iterator_category;
 
 private:
-    GenericIterator(T& data, FMore fmore, FNext fnext, FVal fval, bool last = false)
+    GenericIterator(T data, FCheckEnd fmore, FNext fnext, FVal fval, FDiff fdiff)
         : data_(data)
         , fmore_(fmore)
         , fnext_(fnext)
         , fval_(fval)
-        , last_(last)
-    {}
+        , fdiff_(fdiff)
+    {} 
 
 public:
 
     my_type operator++()
     {
         fnext_(data_);
-        if(fmore_(data_)) {
-            return *this;
-        } else {
-            last_ = true;
-            return *this;
-        }
+        fmore_(data_);
+        return *this;
     }
 
-    static my_type First(MyCollection& data, FInit finit, FMore fmore, FNext fnext, FVal fval)
+    static my_type First(T data, FInit finit, FCheckEnd fcheckend, FNext fnext, FVal fval, FDiff fdiff)
     {
-        my_type ret(data, fmore, fnext, fval);
         finit(data);
+        fcheckend(data);
+        my_type ret(data, fcheckend, fnext, fval, fdiff);
         return ret;
     }
 
-    static my_type End(MyCollection& data, FInit finit, FMore fmore, FNext fnext, FVal fval)
+    static my_type Middle(T data, FInit finit, FCheckEnd fcheckend, FNext fnext, FVal fval, FDiff fdiff)
     {
-        my_type ret(data, fmore, fnext, fval, true);
+        fcheckend(data);
+        my_type ret(data, fcheckend, fnext, fval, fdiff);
         return ret;
     }
 
-    bool operator!=(my_type& o) { return last_ != o.last_; }
+    bool operator!=(my_type& o) { return fdiff_(data_, o.data_); }
 
     auto operator*() -> decltype(fval_(data_)) { return fval_(data_); }
 };
@@ -152,59 +145,84 @@ public:
 /* IMPLEMENTING GENERIC ITERATOR FOR MYCOLLECTION */
 
 namespace MyCollectionIteratorStuff {
-    void Next(MyCollection& c)
+    struct Enumerator
+    {
+        MyCollection& collection;
+        bool last;
+
+        Enumerator(MyCollection& c, bool l = false)
+            : collection(c)
+            , last(l)
+        {}
+    };
+    void Next(Enumerator& c)
     {
 #ifdef VERBOSE
         std::cerr << "next\n";
 #endif
-        c.Next();
+        c.collection.Next();
     }
-    bool More(MyCollection& c)
+    bool CheckEnd(Enumerator& c)
     {
+        bool ret = c.collection.HasMore();
 #ifdef VERBOSE
-        std::cerr << "more?\n";
+        std::cerr << "more?" << ret << "\n";
 #endif
-        return c.HasMore();
+        if(!ret) c.last = true;
+        return ret;
     }
-    void Init(MyCollection& c)
+    void Init(Enumerator& c)
     {
 #ifdef VERBOSE
         std::cerr << "reset\n";
 #endif
-        c.Reset();
+        c.collection.Reset();
     }
-    int& Val(MyCollection& c)
+    int& Val(Enumerator& c)
     {
 #ifdef VERBOSE
         std::cerr << "value\n";
 #endif
-        return c.Value();
+        return c.collection.Value();
+    }
+    bool Diff(Enumerator& c, Enumerator& co)
+    {
+#ifdef VERBOSE
+        std::cerr << "diff " << c.last << co.last << "\n";
+#endif
+        return c.last != co.last;
     }
 }//namespace
 
-typedef GenericIterator<MyCollection,
+typedef GenericIterator<MyCollectionIteratorStuff::Enumerator,
     decltype(&MyCollectionIteratorStuff::Init),
-    decltype(&MyCollectionIteratorStuff::More),
+    decltype(&MyCollectionIteratorStuff::CheckEnd),
     decltype(&MyCollectionIteratorStuff::Next),    
-    decltype(&MyCollectionIteratorStuff::Val)
+    decltype(&MyCollectionIteratorStuff::Val),
+    decltype(&MyCollectionIteratorStuff::Diff)
     > MyCollectionIterator;
 
 MyCollectionIterator begin(MyCollection& c)
 {
-    return MyCollectionIterator::First(c,
+    MyCollectionIteratorStuff::Enumerator e(c);
+    return MyCollectionIterator::First(e,
         &MyCollectionIteratorStuff::Init,
-        &MyCollectionIteratorStuff::More,
+        &MyCollectionIteratorStuff::CheckEnd,
         &MyCollectionIteratorStuff::Next,
-        &MyCollectionIteratorStuff::Val);
+        &MyCollectionIteratorStuff::Val,
+        &MyCollectionIteratorStuff::Diff);
 }
 
 MyCollectionIterator end(MyCollection& c)
 {
-    return MyCollectionIterator::End(c,
+    MyCollectionIteratorStuff::Enumerator e(c, true);
+    return MyCollectionIterator::Middle(e,
         &MyCollectionIteratorStuff::Init,
-        &MyCollectionIteratorStuff::More,
+        &MyCollectionIteratorStuff::CheckEnd,
         &MyCollectionIteratorStuff::Next,
-        &MyCollectionIteratorStuff::Val);
+        &MyCollectionIteratorStuff::Val,
+        &MyCollectionIteratorStuff::Diff);
+
 }
 
 /* END IMPLEMENTATION OF GENERIC ITERATOR IMPLEMENTATION FOR MYCOLLECTION */

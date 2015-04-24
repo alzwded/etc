@@ -10,6 +10,7 @@ void test1()
 {
     printf("test1: acquiring some resource\n");
     int x = 5, y = 7;
+    // VS wants auto&& here
     auto test_atExit = AtExit::Do([](int& x, int& y) {
         printf("test1: releasing resource %d+%d\n", x, y);
     }, x, y);
@@ -37,11 +38,12 @@ void test2()
 
 void test3()
 {
-    struct a { static void f(int x, std::string s) { printf("%s: releasing %d\n", s.c_str(), x); } };
+    struct a { static void f(int x, std::string s, std::string const& ss) { printf("%s: releasing %d for %s\n", s.c_str(), x, ss.c_str()); } };
 
     printf("test3: acquiring data\n");
     std::string s("test3");
-    auto test3_atExit = AtExit::Do(&a::f, 3, s);
+    std::string const& ss(s);
+    auto test3_atExit = AtExit::Do(&a::f, 3, s, ss);
     printf("test3: processing\n");
     printf("test3: returning\n");
     return;

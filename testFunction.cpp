@@ -1,6 +1,6 @@
 // compile with g++ -g --std=gnu++11 testFunction.cpp
 //      or with cl /EHsc /Zi /DEBUG testFunction.cpp
-// should print 1 2 3 4 5 7
+// should print 1 2 3 4 8 6
 
 #include <cstddef>
 #include <cstdio>
@@ -27,7 +27,7 @@ void iterateOver()
         auto fn = std::get<2>(i);
         auto ptr = std::get<3>(i);
 
-        for(; j < endj; j = fn(j)) {
+        for(; j != endj; j = fn(j)) {
             printf("%f ", ptr[j]);
         }
     }
@@ -42,8 +42,8 @@ int main(int argc, char* argv[])
 
     add(0, narray/2, defaultStep, aarray);
 
-    auto doubleStep = [](size_t i) -> size_t { return i + 2; };
-    add(narray/2, narray, doubleStep, aarray);
+    auto doubleStep = [](size_t i) -> size_t { return i - 2; };
+    add(narray - 1, narray/2 - 1, doubleStep, aarray);
 
     iterateOver();
 

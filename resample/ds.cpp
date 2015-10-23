@@ -23,6 +23,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // This file is used as a proving grounds for Delay::Resample from
 // over at github.com/alzwded/JakMuseV3/jakmuse
 
+// compile with:
+// g++ -fopenmp -O3 -msse -msse2 -msse3 -mssse3 -ffast-math --std=gnu++11 ds.cpp -lgomp
+// ...of which
+// -msse* do nothing (the compiler cannot parallelize this code, so no difference in performance; not its fault)
+// -O3 vs -O0 results in a 3x speed boost
+// -fopenmp results in an insignificant speed boost every now and then
+
 #define _USE_MATH_CONSTANTS
 #include <cstdio>
 #include <tuple>
@@ -35,6 +42,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 # define PRINT_RESAMPLE(F, ...)
 #endif
+
+#include <omp.h>
+
+//#define PERFTEST
+#ifdef PERFTEST
+int iteration = 0;
+
+void h(int)
+{
+    printf("was at: %d\n", iteration);
+    exit(0);
+}
+
+void omptest()
+{
+    #pragma omp parallel
+    {
+        fprintf(stderr, "%d\n", omp_get_thread_num());
+    }
+}
+# undef printf
+# define printf nop
+int nop(const char* s, ...) __attribute__((format(printf, 1, 2)));
+int nop(const char* s, ...) {}
+
+#endif
+
 
 enum class ResetKind
 {
@@ -60,7 +94,9 @@ void Resample(int64_t newSize, InterpolationMethod method)
         int64_t i1 = 0;
         double w = (double)oldSize / (double)newSize;
         int64_t i2 = (int64_t)ceil(w);
+        auto log_i2 = log(i2 + 1.0);
 
+        #pragma omp parallel for
         for(int64_t j = 0; j < newSize; ++j) {
             PRINT_RESAMPLE("j=%d\n", j);
             double i0 = ((double)j / (double)(newSize-1) * (double)(oldSize-1)); // map this
@@ -73,11 +109,12 @@ void Resample(int64_t newSize, InterpolationMethod method)
                 if(k < 0 || k >= buffer_.size()) continue;
 
                 double x = i2 - fabs(i0 - k) + 1.0;
-                double we = log(x) / log(i2 + 1.0);
+                double we = log(x) / log_i2;
                 if(we < 0.8) {
                     we = (0.2 + we) * (0.2 + we) - 0.2;
+                } else {
+                    we = 0.95 * we + 0.05;
                 }
-                we = 0.95 * we + 0.05;
 
                 PRINT_RESAMPLE("    k=%d we=%lf w=%lf\n", k, we, w);
                 PRINT_RESAMPLE("      > x=%lf i2=%lf i0=%lf\n", x, (double)i2, i0);
@@ -155,7 +192,9 @@ void Resample(int64_t newSize, InterpolationMethod method)
 #else
         double w = (double)(oldSize-1) / (double)(newSize-1);
         // cubic (feat. cosine) interpolation
-        for(int64_t idx = 0; idx < newSize; ++idx) {
+        //for(int64_t idx = 0; idx < newSize; ++idx) {
+        #pragma omp parallel for
+        for(int idx = 0; idx < newSize; ++idx) {
             double x = (double)idx * w;
 
             double i1 = floor(x), i2 = ceil(x);
@@ -334,4 +373,30 @@ std::initializer_list<double> sin21 = {
             return std::get<0>(e);
         });
     assign(mySecondaryBuffer, 24);
+
+#ifdef PERFTEST
+    /* WELL NOW
+       based on performance runs, I can guarantee you that
+       there's some completely different algorithm for handling
+       variations in the delay amount. Using resampling is slower
+       than real-time when only doing it for one delay unit (!)
+
+       we'll need to regroup and retry with a non-resampling aproach
+
+       oh, and neither cubic nor cosine interpolations are general enough anyway
+    */
+    //omptest();
+    signal(SIGINT, h);
+    for(int i = 0; i < 44100/20; ++i) {
+        iteration = i;
+        assign<double>(sin21, 400);
+        std::deque<double> mySecondaryBuffer;
+        std::transform(buffer_.begin(), buffer_.end(),
+            std::back_inserter(mySecondaryBuffer),
+            [](decltype(buffer_)::const_reference e) -> double {
+                return std::get<0>(e);
+            });
+        assign(mySecondaryBuffer, 300);
+    }
+#endif
 }

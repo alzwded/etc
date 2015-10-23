@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <deque>
 #include <cmath>
+#include <algorithm>
 #if 0
 # define PRINT_RESAMPLE(F, ...)  printf(F, __VA_ARGS__)
 #else
@@ -57,7 +58,6 @@ void Resample(int64_t newSize)
 
         for(int64_t j = 0; j < newSize; ++j) {
             PRINT_RESAMPLE("j=%d\n", j);
-            //int64_t i1 = (int64_t)round(j * w);
             double i0 = ((double)j / (double)(newSize-1) * (double)(oldSize-1)); // map this
             int64_t i1 = (int64_t)round(i0);
             double thing = 0.0;
@@ -66,10 +66,6 @@ void Resample(int64_t newSize)
             ResetKind rk = ResetKind::REST;
             for(int64_t k = i1 - i2; k <= i1 + i2; ++k) {
                 if(k < 0 || k >= buffer_.size()) continue;
-                //double x = fabs(i1 - k) / (double)i2;
-                //x *= M_PI_2;
-                //double we2 = 1.0 - atan2(i2 * M_PI, fabs(i1 - k));
-                //double we = we2 * 0.99999 + 0.00001;
 
                 double x = i2 - fabs(i0 - k) + 1.0;
                 double we = log(x) / log(i2 + 1.0);
@@ -98,6 +94,35 @@ void Resample(int64_t newSize)
 
         buffer_.assign(newBuffer.begin(), newBuffer.end());
     } else if(newSize > oldSize) {
+        double w = (double)oldSize / (double)newSize;
+        // polynomial interpolation
+        for(int64_t idx = 0; idx < newSize; ++idx) {
+            double x = (double)idx * w;
+            double x0 = std::get<0>(buffer_.front());
+
+            double y1 = 0.0;
+            for(int64_t i = 0; i < oldSize; ++i) {
+                double y2 = 1.0;
+                for(int64_t j = 0; j < oldSize; ++j) {
+                    if(j == i) continue;
+                    y2 *= (x - (double)j) / ((double)i - (double)j);
+                }
+                y1 += std::get<0>(buffer[i]) * y2;
+            }
+
+            std::get<0>(newBuffer[idx]) = y1;
+        }
+
+        int64_t last = 0;
+        for(int64_t i = 0; i < oldSize; ++i) {
+            int64_t next = round(i/w);
+            for(; last <= next && last < newSize; ++last) {
+                std::get<1>(newBuffer[last]) = std::get<1>(buffer_[i]);
+                std::get<2>(newBuffer[last]) = std::get<2>(buffer_[i]);
+            }
+        }
+
+        buffer_.assign(newBuffer.begin(), newBuffer.end());
     } else {
         //NOP
         return;
@@ -105,14 +130,14 @@ void Resample(int64_t newSize)
 }
 
 template<typename T>
-void assign(std::initializer_list<double> stuff, int newSize)
+void assign(T first, T last, int newSize)
 {
     printf("%s\n", std::string(62, '=').c_str());
-    printf("%d -> %d\n", stuff.size(), newSize);
+    printf("%d -> %d\n", last - first, newSize);
     printf("%s\n", std::string(62, '-').c_str());
     decltype(buffer_) newStuff;
-    for(auto&& i : stuff) {
-        newStuff.push_back(std::make_tuple(i, false, ResetKind::NOTE));
+    for(auto i = first; i != last; ++i) {
+        newStuff.push_back(std::make_tuple(*i, false, ResetKind::NOTE));
     }
     buffer_.assign(newStuff.begin(), newStuff.end());
     for(auto&& e : buffer_) {
@@ -124,6 +149,18 @@ void assign(std::initializer_list<double> stuff, int newSize)
         printf("%f\n", std::get<0>(e));
     }
     printf("\n");
+}
+
+template<typename T>
+void assign(std::initializer_list<T> stuff, int newSize)
+{
+    assign(stuff.begin(), stuff.end(), newSize);
+}
+
+template<typename T>
+void assign(T const& stuff, int newSize)
+{
+    assign(stuff.begin(), stuff.end(), newSize);
 }
 
 int main()
@@ -142,7 +179,9 @@ int main()
                     0.8, 0.85, 0.9, 0.95, 1.0},
                     16);
 
-std::initializer_list<double> x1 = {0.309011695,
+std::initializer_list<double> sin21 = {
+0.0,
+0.309011695,
 0.587776236,
 0.809007168,
 0.951049628,
@@ -162,6 +201,35 @@ std::initializer_list<double> x1 = {0.309011695,
 -0.587866398,
 -0.309117689,
 -0.000111451};
-    assign<double>(x1,
-                    16);
+    assign<double>(sin21, 16);
+    assign<double>(sin21, 10);
+    assign<double>(sin21, 8);
+
+    printf("%s\n", std::string(62, '#').c_str());
+    auto split = std::string((62 - 11) / 2, '#');
+    printf("%s UPSCALING %s\n", split.c_str(), split.c_str());
+    printf("%s\n", std::string(62, '#').c_str());
+
+    assign<double>(sin21, 22);
+    assign<double>(sin21, 32);
+    assign<double>(sin21, 42);
+    assign<double>(sin21, 84);
+
+    printf("%s\n", std::string(62, '#').c_str());
+    printf("%s\n", std::string(62, '#').c_str());
+
+    assign<double>(sin21, 18);
+    assign<double>(sin21, 24);
+
+    printf("%s\n", std::string(62, '#').c_str());
+    printf("%s\n", std::string(62, '#').c_str());
+
+    assign<double>(sin21, 18);
+    std::deque<double> mySecondaryBuffer;
+    std::transform(buffer_.begin(), buffer_.end(),
+        std::back_inserter(mySecondaryBuffer),
+        [](decltype(buffer_)::const_reference e) -> double {
+            return std::get<0>(e);
+        });
+    assign(mySecondaryBuffer, 24);
 }

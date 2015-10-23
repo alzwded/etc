@@ -230,15 +230,26 @@ void assign(T first, T last, int newSize)
         printf("%f\n", std::get<0>(e));
     }
     printf("\n");
-    Resample(newSize, InterpolationMethod::COSINE);
-    for(auto&& e : buffer_) {
-        printf("%f\n", std::get<0>(e));
-    }
-    printf("\n");
-    if(newSize <= last - first) return;
-    Resample(newSize, InterpolationMethod::CUBIC);
-    for(auto&& e : buffer_) {
-        printf("%f\n", std::get<0>(e));
+    if(newSize <= last - first) {
+        Resample(newSize, InterpolationMethod::COSINE);
+        for(auto&& e : buffer_) {
+            printf("%f\n", std::get<0>(e));
+        }
+        printf("\n");
+    } else {
+        printf("cosine\n");
+        auto bbuf = buffer_;
+        Resample(newSize, InterpolationMethod::COSINE);
+        for(auto&& e : buffer_) {
+            printf("%f\n", std::get<0>(e));
+        }
+        printf("\n");
+        printf("cubic\n");
+        buffer_ = bbuf;
+        Resample(newSize, InterpolationMethod::CUBIC);
+        for(auto&& e : buffer_) {
+            printf("%f\n", std::get<0>(e));
+        }
     }
 }
 

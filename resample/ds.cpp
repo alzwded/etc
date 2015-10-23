@@ -42,9 +42,14 @@ enum class ResetKind
     NOTE
 };
 
+enum class InterpolationMethod {
+    COSINE,
+    CUBIC
+};
+
 std::deque<std::tuple<double, bool, ResetKind>> buffer_;
 
-void Resample(int64_t newSize)
+void Resample(int64_t newSize, InterpolationMethod method)
 {
     auto oldSize = buffer_.size();
     std::vector<decltype(buffer_)::value_type> newBuffer(newSize, std::make_tuple(0.0, false, ResetKind::REST));
@@ -94,6 +99,32 @@ void Resample(int64_t newSize)
 
         buffer_.assign(newBuffer.begin(), newBuffer.end());
     } else if(newSize > oldSize) {
+#if 0
+        // extend limits with a couple of linear samples
+        int64_t numExtend = std::max(ceil(oldSize / 3.0), sqrt(oldSize));
+        double preD = std::get<0>(buffer[0]);;
+        double preD2 = std::get<0>(buffer.back());
+        std::deque<decltype(buffer)::value_type> pre;
+        std::deque<decltype(buffer)::value_type> post;
+        for(int64_t i = 0; i < numExtend; ++i) {
+            double d = std::get<0>(buffer[i + 1]) - std::get<0>(buffer[i]);
+            preD -= d;
+            pre.push_front(std::make_tuple(
+                    preD,
+                    false,
+                    ResetKind::REST));
+            d = std::get<0>(buffer[buffer.size() - 1 - i]) - std::get<0>(buffer[buffer.size() - 1 - i - 1]);
+            preD2 += d;
+            post.push_back(std::make_tuple(
+                    preD2,
+                    false,
+                    ResetKind::REST));
+        }
+        for(auto&& i : pre) printf("* %lf\n", std::get<0>(i));
+        decltype(buffer) b2;
+        b2.insert(b2.end(), pre.begin(), pre.end());
+        b2.insert(b2.end(), buffer.begin(), buffer.end());
+        b2.insert(b2.end(), post.begin(), post.end());
         double w = (double)oldSize / (double)newSize;
         // polynomial interpolation
         for(int64_t idx = 0; idx < newSize; ++idx) {
@@ -101,9 +132,9 @@ void Resample(int64_t newSize)
             double x0 = std::get<0>(buffer_.front());
 
             double y1 = 0.0;
-            for(int64_t i = 0; i < oldSize; ++i) {
+            for(int64_t i = 0; i < oldSize + 2 * numExtend; ++i) {
                 double y2 = 1.0;
-                for(int64_t j = 0; j < oldSize; ++j) {
+                for(int64_t j = 0; j < oldSize + numExtend; ++j) {
                     if(j == i) continue;
                     y2 *= (x - (double)j) / ((double)i - (double)j);
                 }
@@ -117,10 +148,65 @@ void Resample(int64_t newSize)
         for(int64_t i = 0; i < oldSize; ++i) {
             int64_t next = round(i/w);
             for(; last <= next && last < newSize; ++last) {
+                std::get<1>(newBuffer[last]) = std::get<1>(buffer_[numExtend + i]);
+                std::get<2>(newBuffer[last]) = std::get<2>(buffer_[numExtend + i]);
+            }
+        }
+#else
+        double w = (double)(oldSize-1) / (double)(newSize-1);
+        // cubic (feat. cosine) interpolation
+        for(int64_t idx = 0; idx < newSize; ++idx) {
+            double x = (double)idx * w;
+
+            double i1 = floor(x), i2 = ceil(x);
+            if(fabs(i1 - i2) < 1.0e-15) {
+                std::get<0>(newBuffer[idx]) = std::get<0>(buffer[(int)x]);
+                //PRINT_RESAMPLE("overlap\n");
+                continue;
+            }
+
+            if((method == InterpolationMethod::COSINE) || i1 <= 1 || i2 >= buffer.size() - 2) {
+                double u = (x - i1) * M_PI;
+                double t = (1.0 - cos(u)) / 2.0;
+                double y0 = std::get<0>(buffer[(int)i1]);
+                double y1 = std::get<0>(buffer[(int)i2]);
+                PRINT_RESAMPLE("idx=%d x=%lf u=%lf t=%lf y0=%lf y1=%lf\n",
+                        idx, x, u, t, y0, y1);
+                std::get<0>(newBuffer[idx]) = (1.0 - t) * y0 + t * y1;
+            } else {
+                double a[4];
+                double y[4] = {
+                    std::get<0>(buffer[(int)i1 - 1]),
+                    std::get<0>(buffer[(int)i1 - 0]),
+                    std::get<0>(buffer[(int)i1 + 1]),
+                    std::get<0>(buffer[(int)i1 + 2]),
+                };
+                double u = (x - i1);
+                double uu = u * u;
+                a[0] = y[3] - y[2] - y[0] + y[1];
+                a[1] = y[0] - y[1] - a[0];
+                a[2] = y[2] - y[0];
+                a[3] = y[1];
+                double yy = a[0] * u * uu
+                        + a[1] * uu
+                        + a[2] * u
+                        + a[3]
+                        ;
+                PRINT_RESAMPLE("cubic: idx=%d x=%lf u=%lf yy=%lf\n",
+                        idx, x, u, yy);
+                std::get<0>(newBuffer[idx]) = yy;
+            }
+        }
+
+        int64_t last = 0;
+        for(int64_t i = 0; i < oldSize; ++i) {
+            int64_t next = round(i/w);
+            for(; last <= next && last < newSize; ++last) {
                 std::get<1>(newBuffer[last]) = std::get<1>(buffer_[i]);
                 std::get<2>(newBuffer[last]) = std::get<2>(buffer_[i]);
             }
         }
+#endif
 
         buffer_.assign(newBuffer.begin(), newBuffer.end());
     } else {
@@ -144,11 +230,16 @@ void assign(T first, T last, int newSize)
         printf("%f\n", std::get<0>(e));
     }
     printf("\n");
-    Resample(newSize);
+    Resample(newSize, InterpolationMethod::COSINE);
     for(auto&& e : buffer_) {
         printf("%f\n", std::get<0>(e));
     }
     printf("\n");
+    if(newSize <= last - first) return;
+    Resample(newSize, InterpolationMethod::CUBIC);
+    for(auto&& e : buffer_) {
+        printf("%f\n", std::get<0>(e));
+    }
 }
 
 template<typename T>

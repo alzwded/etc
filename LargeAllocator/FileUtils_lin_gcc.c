@@ -145,7 +145,8 @@ FileHandle_t FU_OpenFile(StringType_t fname, FileMode_t mode)
 {
     initializeList();
 
-    mode_t fmode = 0;
+    mode_t pmode = 0;
+    int flags = 0;
     FileHandle_t ret;
 
     ret.mode = mode;
@@ -153,18 +154,20 @@ FileHandle_t FU_OpenFile(StringType_t fname, FileMode_t mode)
     // convert mode to UNIX open mode
     switch(mode) {
     case FU_READ:
-        fmode = O_RDONLY;
+        flags = O_RDONLY;
         break;
     case FU_WRITE:
-        fmode = O_WRONLY | O_CREAT | O_TRUNC;
+        flags = O_WRONLY | O_CREAT | O_TRUNC;
+        pmode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
         break;
     case FU_RW:
-        fmode = O_RDWR | O_CREAT;
+        flags = O_RDWR | O_CREAT;
+        pmode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
         break;
     }
 
     // open the file
-    ret.fh = open(fname, fmode);
+    ret.fh = open(fname, flags, pmode);
 
     if(ret.fh == -1) {
         ErrorExit(strerror(errno));

@@ -49,10 +49,10 @@ struct MM
           , currentTail_(0ul)
           , numPages_(numCachePages)
     {
-        fh_ = FU_OpenFile(file, FU_RW);
         if(numPages_ <= 0) {
             throw std::invalid_argument("Invalid number of cache pages specified");
         }
+        fh_ = FU_OpenFile(file, FU_RW);
     }
 
     ~MM()

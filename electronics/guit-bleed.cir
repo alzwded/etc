@@ -1,0 +1,17 @@
+Guitar tone bleed circuit
+
+VIN 1 0 AC 300m
+RIN 1 2 4.5k
+
+RTPOT 2 20 150k
+CTPOT 20 0 22u
+
+RVOL1 2 3 100k
+RVOL2 3 0 150k
+
+CBLEED 2 3 1n
+
+.AC DEC 100 80 22000
+.PLOT AC VDB(3) VP(3)
+
+.END

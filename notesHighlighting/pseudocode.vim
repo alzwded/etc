@@ -7,7 +7,7 @@
 set syntax=
 
 syn match PCODE_spacharacters "[%*+-:/.,!<=>&|~^\\]"
-syn keyword PCODE_def let for each in if else return yield set call to by while do repeat until loop next continue break exit new delete malloc free cmp drop end func function sub void pointer int integer float complex shared unique char string goto gosub from push pop add tail head insert into update mutable const map grep where not null as object struct class ordered unordered vector array list register stop jump
+syn keyword PCODE_def let for each in if else return yield set call to by while do repeat until loop next continue break exit new delete malloc free cmp drop end func function sub void pointer int integer float complex shared unique char string goto gosub from push pop add tail head insert into update mutable const map grep where not null as object struct class ordered unordered vector array list register stop jump of
 syn match PCODE_results "[=-][>]"
 syn match PCODE_parentheses "[(){}[\]]"
 syn region PCODE_comment matchgroup=PCODE_comment start="[;]" end=/\n/

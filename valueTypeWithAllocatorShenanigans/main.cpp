@@ -22,7 +22,8 @@ int main()
     printf("should call malloc/free and myAlloc/myFree\n");
 
     {
-        A a1, a2(myAlloc, myFree);
+        A_t a1;
+        A<myAlloc, myFree> a2;
         fill(&a1);
         fill(&a2);
 #define SHOW(X)\
@@ -36,7 +37,9 @@ int main()
     printf("\n");
 
 
-    printf("should call wrong malloc/wrong free\n");
-    extern A libA;
+#if 0
+    printf("expect wrong free call\n");
+    extern B libA;
     fill(&libA);
+#endif
 }

@@ -1,4 +1,5 @@
-CPPOPTS = -g -I. --std=c++03
+#CPPOPTS = -g -I. --std=c++03
+CPPOPTS = -g -I. --std=c++11
 
 a.out: libl.so main.cpp
 	g++ -L. $(CPPOPTS)  main.cpp -ll

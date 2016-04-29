@@ -8,43 +8,31 @@
 #ifndef HEAD_H
 #define HEAD_H
 
-#ifndef ALLOCATOR
-# define ALLOCATOR malloc
-#endif
-
-#ifndef DEALLOCATOR
-# define DEALLOCATOR free
-#endif
+typedef void* (*alloc_t)(size_t);
+typedef void (*dealloc_t)(void*);
 
 struct B
 {
-    typedef void* (*alloc_t)(size_t);
-    typedef void (*dealloc_t)(void*);
-    alloc_t alloc_;
-    dealloc_t dealloc_;
+    void* (*alloc_)(size_t);
+    void (*dealloc_)(void*);
     int* data_;
-    B(alloc_t alloc, dealloc_t dealloc)
-        : alloc_(alloc)
-        , dealloc_(dealloc)
-        , data_((int*)0)
-    {}
+};
 
-    virtual ~B()
+// using template arguments to get the correct malloc from the declaration context
+template<alloc_t ALLOC = malloc, dealloc_t DEALLOC = free>
+struct A : public B
+{
+    A() {
+        alloc_ = ALLOC;
+        dealloc_ = DEALLOC;
+    }
+    ~A()
     {
         dealloc_(data_);
     }
 };
 
-// using dummy template arguments to get the correct malloc from the declaration context
-template<typename = void>
-struct A : public B
-{
-    A(B::alloc_t a = ALLOCATOR, B::dealloc_t b = DEALLOCATOR)
-        : B(a, b)
-    {}
-};
-
 // remove the need to specify an empty template argument list
-#define A A<>
+#define A_t A<>
 
 #endif

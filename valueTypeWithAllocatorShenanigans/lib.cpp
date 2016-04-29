@@ -14,7 +14,9 @@ static void free(void*)
 
 #include <head.h>
 
-A libA;
+#if 0
+A_t libA;
+#endif
 
 void fill(B* b)
 {

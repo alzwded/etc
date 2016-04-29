@@ -15,10 +15,10 @@ void myFree(void* ptr)
     printf("myFree called %p %p\n", ptr, data);
 }
 
+extern "C" void fill(B*);
+
 int main()
 {
-    extern void fill(B*);
-
     printf("should call malloc/free and myAlloc/myFree\n");
 
     {

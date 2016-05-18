@@ -135,7 +135,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    RECT r;
-   SetRect(&r, 0, 0, 600, 600);
+   SetRect(&r, 0, 0, 400, 400);
    AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, TRUE);
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.top, NULL, NULL, hInstance, NULL);
@@ -156,9 +156,38 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+void DrawBitmap(HDC& memDC, int x, int y, int w, int h, LPCTSTR path)
+{
+    // load a bitmap; this should be global to avoid I/O
+    auto bmp = (HBITMAP)LoadImage(hInst, path, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    if(bmp == NULL) return;
+    // read the bitmap header because we need width and height
+    BITMAP bm;
+    GetObject(bmp, sizeof(BITMAP), &bm);
+
+    // create a DC for the bitmap
+    auto bmpDC = CreateCompatibleDC(memDC);
+    // switch our bitmap in
+    auto hOldBmp = (HBITMAP)GetCurrentObject(memDC, OBJ_BITMAP);
+    SelectObject(bmpDC, bmp);
+    // copy bitmap to memDC (over the gray background)
+    if(w < 0) w = bm.bmWidth;
+    if(h < 0) h = bm.bmHeight;
+    //BitBlt(memDC, x, y, w, h, bmpDC, 0, 0, SRCCOPY);
+    SetStretchBltMode(memDC, HALFTONE);
+    StretchBlt(memDC, x, y, w, h, bmpDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+
+    // switch to memDC
+    SelectObject(memDC, hOldBmp);
+
+    // cleanup
+    DeleteDC(bmpDC);
+    DeleteObject(bmp);
+}
+
 void Paint(HDC& hDC, PAINTSTRUCT ps, RECT wr)
 {
-    // create drawing area for tile map
+    // create buffered drawing area
     auto memDC = CreateCompatibleDC(hDC);
     HBITMAP hBM = CreateCompatibleBitmap(hDC, 400, 300 + 100);
 
@@ -170,25 +199,9 @@ void Paint(HDC& hDC, PAINTSTRUCT ps, RECT wr)
     SetRect(&r, 0, 0, 400, 300);
     FillRect(memDC, &r, (HBRUSH)GetStockObject(GRAY_BRUSH));
 
-    // load a bitmap; this should be global to avoid I/O
-    auto bmp = (HBITMAP)LoadImage(hInst, _T("c:\\bitmap.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-    // read the bitmap header because we need width and height
-    BITMAP bm;
-    GetObject(bmp, sizeof(BITMAP), &bm);
-
-    // create a DC for the bitmap
-    auto bmpDC = CreateCompatibleDC(memDC);
-    // switch our bitmap in
-    SelectObject(bmpDC, bmp);
-    // copy bitmap to memDC (over the gray background)
-    BitBlt(memDC, 50, 50, bm.bmWidth, bm.bmHeight, bmpDC, 0, 0, SRCCOPY);
-
-    // switch to memDC
-    SelectObject(memDC, hBM);
-
-    // cleanup
-    DeleteDC(bmpDC);
-    DeleteObject(bmp);
+    // draw a random bitmap
+    DrawBitmap(memDC, 50, 50, 300, 117, _T("c:\\bitmap.bmp"));
+    DrawBitmap(memDC, 380, 180, 10, 10, _T("c:\\bitmap.bmp"));
 
     // create some coloured brushes
     HBRUSH brushes[5] = {
@@ -211,9 +224,6 @@ void Paint(HDC& hDC, PAINTSTRUCT ps, RECT wr)
     // cleanup brushes
     for(size_t i = 0; i < 5; ++i) DeleteObject(brushes[i]);
 
-    // copy buffer onto screen
-    //BitBlt(hDC, 0, 0, 400, 300, memDC, 0, 0, SRCCOPY);
-
     // create DC for the graph
     auto memDC2 = CreateCompatibleDC(memDC);
     HBITMAP hBM2 = CreateCompatibleBitmap(memDC, 400, 100);
@@ -229,7 +239,7 @@ void Paint(HDC& hDC, PAINTSTRUCT ps, RECT wr)
     int x = 0;
     for(auto i: L)
     {
-        int y = i + 50;
+        int y = 50 - i;
         // draw a green pixel
         SetPixel(memDC2, x, y, RGB(100, 255, 100));
         ++x;

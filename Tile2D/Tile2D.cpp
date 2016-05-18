@@ -134,8 +134,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hInst = hInstance; // Store instance handle in our global variable
 
+   RECT r;
+   SetRect(&r, 0, 0, 600, 600);
+   AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, TRUE);
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+      CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.top, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
    {
@@ -153,11 +156,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-void Paint(HDC& hDC, PAINTSTRUCT ps)
+void Paint(HDC& hDC, PAINTSTRUCT ps, RECT wr)
 {
     // create drawing area for tile map
     auto memDC = CreateCompatibleDC(hDC);
-    HBITMAP hBM = CreateCompatibleBitmap(hDC, 400, 300);
+    HBITMAP hBM = CreateCompatibleBitmap(hDC, 400, 300 + 100);
 
     // switch to that
     SelectObject(memDC, hBM);
@@ -209,11 +212,11 @@ void Paint(HDC& hDC, PAINTSTRUCT ps)
     for(size_t i = 0; i < 5; ++i) DeleteObject(brushes[i]);
 
     // copy buffer onto screen
-    BitBlt(hDC, 0, 0, 400, 300, memDC, 0, 0, SRCCOPY);
+    //BitBlt(hDC, 0, 0, 400, 300, memDC, 0, 0, SRCCOPY);
 
     // create DC for the graph
-    auto memDC2 = CreateCompatibleDC(hDC);
-    HBITMAP hBM2 = CreateCompatibleBitmap(hDC, 400, 300);
+    auto memDC2 = CreateCompatibleDC(memDC);
+    HBITMAP hBM2 = CreateCompatibleBitmap(memDC, 400, 100);
 
     // switch to that
     SelectObject(memDC2, hBM2);
@@ -233,7 +236,11 @@ void Paint(HDC& hDC, PAINTSTRUCT ps)
     }
 
     // copy graph onto screen below the tile map
-    BitBlt(hDC, 0, 300, 400, 100, memDC2, 0, 0, SRCCOPY);
+    BitBlt(memDC, 0, 300, 400, 100, memDC2, 0, 0, SRCCOPY);
+
+    // commit buffer to main window, scaling to window dimensions
+    SetStretchBltMode(hDC, HALFTONE);
+    StretchBlt(hDC, wr.left, wr.top, wr.right, wr.bottom, memDC, 0, 0, 400, 300 + 100, SRCCOPY);
 
     // cleanup (I hope I got everything; leaks in a timed loop are aweful)
     DeleteObject(hBM);
@@ -257,6 +264,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
+    RECT wr;
 
 	switch (message)
 	{
@@ -278,8 +286,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
+        GetClientRect(hWnd, &wr);
 
-        Paint(hdc, ps);
+        Paint(hdc, ps, wr);
 
 		EndPaint(hWnd, &ps);
 		break;

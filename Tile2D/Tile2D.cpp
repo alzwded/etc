@@ -236,7 +236,6 @@ void Paint(HDC& hDC, PAINTSTRUCT ps)
     BitBlt(hDC, 0, 300, 400, 100, memDC2, 0, 0, SRCCOPY);
 
     // cleanup (I hope I got everything; leaks in a timed loop are aweful)
-    DeleteObject(bmp);
     DeleteObject(hBM);
     DeleteDC(memDC);
     DeleteObject(hBM2);

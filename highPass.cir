@@ -1,0 +1,60 @@
+.TITLE BASS HIGH PASS CIRCUIT
+
+* EOL comments are with ;
+
+.param anal={frequency_sweep}
+
+* knobs
+.param volb_p=100 voln_p=100 tone_p=50
+.param switch={switch_up}
+
+* input frequency
+.param fqv=120
+
+* constants 
+.param switch_up=0 switch_down=1
+.param volb_max=470k voln_max=470k tone_max=470k
+.param frequency_sweep=0 transient=1
+
+* computed parameters
+.param volb_up={1k+((100-volb_p)*volb_max/100)} volb_down={1k+(volb_p*volb_max/100)}
+.param voln_up={1k+((100-voln_p)*voln_max/100)} voln_down={1k+(voln_p*voln_max/100)}
+.param tone_up={(tone_p*tone_max/100) + 1k}
+.param wl={1/fqv}
+
+VB 101 0 0 AC 400mV PWL(0 0 {wl/4} 200m {wl/2} 0m {3*wl/4} -200m {wl} 0m) r=0
+VN 201 0 0 AC 500mV SIN(0 250mV {fqv} 0)
+
+LB 101 102 4H
+LN 201 202 3500mH
+
+RB 102 103 8500
+RN 202 203 7600
+
+CB 103 0 120p
+CN 203 0 120p
+
+RVOLB_up 103 301 {volb_up}
+RVOLB_down 103 0 {volb_down}
+RVOLN_up 203 301 {voln_up}
+RVOLN_down 203 0 {voln_down}
+
+.if(switch==switch_up)
+*    CHP 301 302 22n ; too insignificant
+    CHP 301 302 10n
+    RTON 302 0 {tone_up}
+.elseif(switch==switch_down)
+    R0 301 302 1
+    CLP 302 303 22n
+    RTON 303 0 {tone_up}
+.endif
+
+ROUT 302 0 800k
+
+.if(anal == frequency_sweep)
+    .ac dec 10 1 20k
+.elseif(anal == transient)
+    .tran {wl*4/1000} {wl*4}
+.endif
+
+.end

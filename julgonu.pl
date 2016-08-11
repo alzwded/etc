@@ -68,7 +68,7 @@ sub printBoard {
     $trn %= 2;
     for ($trn) {
         when (0) { print " zxcv's turn\n" }
-        when (1) { print "1234's turn\n" }
+        when (1) { print " 1234's turn\n" }
     }
     print ("/".("-" x 12)."\\\n");
     for(my $i = 0; $i < 4; ++$i) {
@@ -113,6 +113,9 @@ sub move {
     for(my $i = 0; $i < 16; ++$i) {
         if($board[$i] eq $what) {
             my $cnt = length $where;
+            # actually, being able to move so much without
+            # corner captures makes the game broken
+            $cnt = 1;
             for($where) {
                 when (/h+/) {
                     my $j = $i-$cnt;
@@ -260,7 +263,7 @@ q                       exit
 <who> <motion>          move piece, where
     who ::= [zxcv]      player one
           | [1234]      player two
-    motion ::= direction +
+    motion ::= direction
     direction ::= h     left
                 | j     down
                 | k     up

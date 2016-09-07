@@ -61,6 +61,7 @@ int main()
                 break;
             default:
                 std::cout << "Point\n";
+                point = std::get<2>(r);
                 state = ON;
                 n = 0;
                 break;

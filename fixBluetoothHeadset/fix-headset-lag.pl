@@ -26,11 +26,14 @@ $source =~ s/_card/_source/;
 
 print "$card\n";
 
+
+#echo profile1 && pactl set-card-profile $card a2dp_sink && \
+#echo profile2 && pactl set-card-profile $card headset_head_unit && \
+#echo profile3 && pactl set-card-profile $card a2dp_sink && \
+
 (system(<<EOT 
 echo profile1 && pactl set-card-profile $card a2dp_sink && \
-echo profile2 && pactl set-card-profile $card headset_head_unit && \
-echo profile3 && pactl set-card-profile $card a2dp_sink && \
 echo set sink && pactl set-default-sink $sink.a2dp_sink && \
-echo set latency && pactl set-port-latency-offset $card headset-output 20000
+echo set latency && pactl set-port-latency-offset $card headset-output 500000
 EOT
 ) == 0) or die 'pactl failed';

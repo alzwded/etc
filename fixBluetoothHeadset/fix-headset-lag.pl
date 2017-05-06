@@ -22,4 +22,4 @@ my $card = $1;
 
 print "$card\n";
 
-(system("pactl set-port-latency-offset $card headset-output 200000") == 0) or die 'pactl failed';
+(system("pactl set-port-latency-offset $card headset-output 20000") == 0) or die 'pactl failed';

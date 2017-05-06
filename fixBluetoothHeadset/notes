@@ -1,5 +1,9 @@
 find interface:
     pactl list short | grep 'bluez'
+    pacmd list-sinks
 
 fix delay:
     pactl set-port-latency-offset bluez_card.00_1A_7D_D0_27_0B headset-output 100000
+
+/etc/pulse/default.pa
+load-module module-stream-restore restore_device=false

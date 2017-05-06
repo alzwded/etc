@@ -19,7 +19,18 @@ my $line = $lines[0];
 print "$line\n";
 $line =~ m/^\d+\s+([^ \t\n]+).*$/g or die "can't read card";
 my $card = $1;
+my $sink = $card;
+my $source = $card;
+$sink =~ s/_card/_sink/;
+$source =~ s/_card/_source/;
 
 print "$card\n";
 
-(system("pactl set-port-latency-offset $card headset-output 20000") == 0) or die 'pactl failed';
+(system(<<EOT 
+echo profile1 && pactl set-card-profile $card a2dp_sink && \
+echo profile2 && pactl set-card-profile $card headset_head_unit && \
+echo profile3 && pactl set-card-profile $card a2dp_sink && \
+echo set sink && pactl set-default-sink $sink.a2dp_sink && \
+echo set latency && pactl set-port-latency-offset $card headset-output 20000
+EOT
+) == 0) or die 'pactl failed';

@@ -2,6 +2,10 @@
 
 # did some convert -monitor a.png -crop WxH+x+y b.png and convert -monitor a.png -bordercolor white -border 50 b.png before this
 
+# border to both sides:
+#    convert -monitor a.png -background white -gravity West -splice 50x0 b.png && \
+#    mogrify -monitor -background white -gravity East -splice 50x0 b.pn
+
 #convert -monitor `cat ukulele.lst` `\ls -b -q bordered/*.png` -quality 100 -units PixelsPerInch -density 72x72 -page A4 book.pdf
 
 # this one's ok, but I want more resolution

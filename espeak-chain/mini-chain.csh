@@ -14,7 +14,7 @@ shift
 set basePath=$out:h:q
 set tailPath=$out:t:q
 
-mkdir -p $basePath:q
+mkdir -p $basePath:q/$tailPath:q
 
 csh ./espeak.csh "$file" "$basePath/$tailPath/$tailPath.wav" 
 if($? == 0) then

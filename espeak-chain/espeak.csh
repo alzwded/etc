@@ -15,7 +15,8 @@ set lineLength=50 # lines < cause end-of-statement
 set speed=200 # words per minutes
 set minutes=20 # split wav after minutes
 set pitch=90 # 0-99
-set voice=lancashire
+set voice=english_wmids
+#set voice=lancashire
 #set voice=en-scottish
 #set voice=en-swedish
 

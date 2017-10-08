@@ -1,0 +1,4 @@
+videos are in reverse, so start at 1..N-L
+update lastindex
+proc.csh reads lastindex and start from there
+--playlist-start

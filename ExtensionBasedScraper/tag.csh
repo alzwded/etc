@@ -25,15 +25,15 @@ foreach i (*.mp3)
         set Album=$ALBUM:q
     #endif
     set Artist=`id3v2 -l $i:q | grep '^TPE1' | sed -E 's/.*: (.*)/\1/'`
-    if($Artist:q == "") then
+    if("$Artist" == "") then
         set Artist=$ALBUM:q
     endif
     set Title=`id3v2 -l $i:q | grep '^TIT2' | sed -E 's/.*: (.*)/\1/'`
-    if($Title:q == "") then
+    if("$Title" == "") then
         set Title=$i:t:r:q
     endif
     set Track=`id3v2 -l $i:q | grep '^TRCK' | sed -E 's/.*: (.*)/\1/'`
-    if($Track:q == "") then
+    if("$Track" == "") then
         set Track=$idx:q
     endif
 

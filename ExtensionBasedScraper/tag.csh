@@ -1,5 +1,4 @@
 #!/bin/csh
-set echo
 
 if(! $?ALBUM) then
     echo ALBUM env var not set

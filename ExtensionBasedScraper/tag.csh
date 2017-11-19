@@ -17,8 +17,6 @@ set idx=1
 foreach i (*.mp3)
     set newFile="$i:r:q-i.mp3"
 
-    lame -v -h --ti "$IMAGE:q" "$i:q" "$newFile:q" || exit 3
-
     set Album=`id3v2 -l "$i:q" | grep '^TALB' | sed -E 's/.*: (.*)/\1/'`
     #if($Album:q == "") then
         # always keep my album string...
@@ -37,7 +35,7 @@ foreach i (*.mp3)
         set Track=$idx:q
     endif
 
-    id3v2 -A "$Album:q" -a "$Artist:q" -T "$Track:q" -t "$Title:q" "$newFile:q" || exit 4
+    avconv -i "$i:q" -i "$IMAGE:q" -map 0:0 -map 1:0 -c copy -metadata:s:v title="Album cover" -metadata:s:v comment="Covert (Front)" -metadata title="$Title" -metadata artist="$Artist" -metadata album="$Album"  -metadata track="$Track" -ab 128000 "$newFile:q" || exit 4
     if("$Track:q" != "$idx:q") then
         @ idx++
     else if({ test "$Track:q" -ge "$idx:q" >& /dev/null }) then

@@ -1,0 +1,22 @@
+# GIMP tool preset file
+
+(stock-id "gimp-tool-pencil")
+(name "JakPencil")
+(tool-options "GimpPencilOptions"
+    (tool "gimp-pencil-tool")
+    (brush "2. Hardness 100")
+    (dynamics "PressureSize")
+    (gradient "FG to BG (RGB)")
+    (palette "Default")
+    (brush-size 10.000000)
+    (brush-aspect-ratio 1.000000)
+    (brush-angle -153.610000))
+(use-fg-bg yes)
+(use-brush yes)
+(use-dynamics yes)
+(use-gradient yes)
+(use-pattern no)
+(use-palette yes)
+(use-font no)
+
+# end of GIMP tool preset file

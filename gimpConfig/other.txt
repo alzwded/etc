@@ -1,0 +1,6 @@
+Theme: small
+Default image: 6"x20", 300dpi
+Hide pointer for paint tools, Black&White, Pointer mode. Tool icon with crosshair
+Window / Dockable Dialogs / Colours <- dock it under toolbox
+
+driver: digimend-kernel-drivers, from source (because the deb won't compile)

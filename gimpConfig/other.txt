@@ -1,5 +1,5 @@
 Theme: small
-Default image: 6"x20", 300dpi
+Default image: 6.625"x10.25" or 6.625x5", 300dpi
 Hide pointer for paint tools, Black&White, Pointer mode. Tool icon with crosshair
 Window / Dockable Dialogs / Colours <- dock it under toolbox
 

@@ -1,0 +1,22 @@
+# GIMP tool preset file
+
+(stock-id "gimp-tool-eraser")
+(name "JakEraser")
+(tool-options "GimpEraserOptions"
+    (tool "gimp-eraser-tool")
+    (brush "2. Hardness 100")
+    (dynamics "PressureSize")
+    (palette "Default")
+    (brush-size 10.000000)
+    (brush-aspect-ratio 1.000000)
+    (brush-angle -153.610000)
+    (hard yes))
+(use-fg-bg no)
+(use-brush yes)
+(use-dynamics yes)
+(use-gradient no)
+(use-pattern no)
+(use-palette yes)
+(use-font no)
+
+# end of GIMP tool preset file

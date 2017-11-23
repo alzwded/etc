@@ -1,0 +1,21 @@
+# GIMP tool preset file
+
+(stock-id "gimp-tool-pencil")
+(name "03 JakPencilNoDynamics")
+(tool-options "GimpPencilOptions"
+    (tool "gimp-pencil-tool")
+    (brush "JakBasicBrush")
+    (dynamics "NoDynamics")
+    (gradient "FG to BG (RGB)")
+    (palette "Default")
+    (brush-size 5.000000)
+    (dynamics-view-size 22))
+(use-fg-bg no)
+(use-brush yes)
+(use-dynamics yes)
+(use-gradient yes)
+(use-pattern no)
+(use-palette yes)
+(use-font no)
+
+# end of GIMP tool preset file

@@ -3,6 +3,8 @@ CMUTypewriter-Rglr-NoL
 
 Based on cmuntt.ttf (Computer Modern Unicode Typewriter) version 0.7.0
 
+Removed all ligatures because windows 10 decided it wants to render ligatures like fi, fj, ff even in *monospaced* fonts which made editing code difficult. Technically, I only had an issue with `ff`, `fj`, `fi`, `ij` and `->` but it's safer to just get rid of all of them.
+
 Changes
 =======
 

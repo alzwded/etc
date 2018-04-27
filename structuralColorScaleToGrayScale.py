@@ -83,22 +83,22 @@ def colormapToGrayscale(img, layer) :
                     # convert to HLS
                     (h, l, s) = colorsys.rgb_to_hls(r, g, b)
                     # process non-dark (almost non-black) pixels only
+                    # map hue from 0..1 to 0..1.4 and clamp it
                     if l > 0.2:
-                        # map hue from 0..1 to 0..1.4 and clamp it
                         l = min(h*1.4, 1)
-                        # saturation is 0 because we're doing grayscale
-                        s = 0
-                        # hue doesn't matter, but set it to 0
-                        h = 0
-                        # convert back to RGB
-                        # ...but the colorsys.hls_to_rgb function seems to accept 
-                        # parameters in a different order than it should; (at least for HSV it did)
-                        # not that it matters since everything but Luminosity is 0
-                        (r, g, b) = colorsys.hls_to_rgb(s, l, h)
-                        # make array and append any existing ALPHA channel
-                        newColor = (int(r * 255), int(g * 255), int(b * 255)) + pixel[3:]
-                        # set the new pixel
-                        layer.set_pixel(x,y, newColor)
+                    # saturation is 0 because we're doing grayscale
+                    s = 0
+                    # hue doesn't matter, but set it to 0
+                    h = 0
+                    # convert back to RGB
+                    # ...but the colorsys.hls_to_rgb function seems to accept 
+                    # parameters in a different order than it should; (at least for HSV it did)
+                    # not that it matters since everything but Luminosity is 0
+                    (r, g, b) = colorsys.hls_to_rgb(s, l, h)
+                    # make array and append any existing ALPHA channel
+                    newColor = (int(r * 255), int(g * 255), int(b * 255)) + pixel[3:]
+                    # set the new pixel
+                    layer.set_pixel(x,y, newColor)
         
         # Update the layer.
         layer.update(0, 0, layer.width, layer.height)

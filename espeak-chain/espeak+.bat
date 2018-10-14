@@ -37,7 +37,7 @@ GOTO START
 SET INPUTTED=%~1
 
 :RUNESPEAK
-SET COMMANDLINESTRING="c:\bin\eSpeak\command_line\espeak.exe" -l 20 -b 1 -f "%INPUTTED%" -w "%INPUTTED:~0,-3%wav"
+SET COMMANDLINESTRING="c:\bin\eSpeak\command_line\espeak.exe" -s 240 -p 90 -v english-north -l 50 -b 1 -f "%INPUTTED%" -w "%INPUTTED:~0,-3%wav"
 REM --split="60"
 IF "%EXTRAPARAS%"=="" GOTO NOEXTRAPARAS
 GOTO EXTRAPARAS

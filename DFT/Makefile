@@ -1,3 +1,6 @@
+test_dftcpp: dftcpp.cpp
+	g++ -Wall --std=gnu++11 -o test_dftcpp -DTEST dftcpp.cpp -lm
+
 libfft.a: fft.c
 	gcc -Wall -c --std=c99 -o fft.o -O4 fft.c
 	ar rcs libfft.a fft.o
@@ -27,7 +30,7 @@ run: dfttest fftest
 	time -p ./fftest 440 a > log.fft
 
 clean:
-	rm -rf test log.* fftest log *.o *.a dist
+	rm -rf test log.* fftest log *.o *.a dist dfttest
 
 clean-dist:
 	rm -rf *.tbz

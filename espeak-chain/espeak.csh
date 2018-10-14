@@ -12,7 +12,7 @@ set wavFile="$1"
 shift
 
 set lineLength=50 # lines < cause end-of-statement
-set speed=280 # words per minutes
+set speed=260 # words per minutes
 set minutes=20 # split wav after minutes
 set pitch=90 # 0-99
 set voice=en-gb-x-gbclan

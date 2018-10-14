@@ -33,7 +33,7 @@ if($? == 0) then
         #set ofile="$i:r.ogg"
         #ffmpeg -i "$i" -acodec libvorbis -ab 32000 "$ofile"
         set ofile="$i:r.mp3"
-        avconv -y -i "$i" -ab 32000 "$ofile"
+        [ which avconv ] && avconv -y -i "$i" -ab 32000 "$ofile" || ffmpeg -y -i "$i" -acodec libmp3lame -ab 32000 "$ofile"
         #set ofile="$i:r.mp4"
         #ffmpeg -i "$i" -acodec aac -ab 32000 "$ofile"
         if($? == 0) then

@@ -12,10 +12,11 @@ set wavFile="$1"
 shift
 
 set lineLength=50 # lines < cause end-of-statement
-set speed=240 # words per minutes
+set speed=280 # words per minutes
 set minutes=20 # split wav after minutes
 set pitch=90 # 0-99
-set voice=english-north
+set voice=en-gb-x-gbclan
+#set voice=english-north
 #set voice=lancashire
 #set voice=en-scottish
 #set voice=en-swedish

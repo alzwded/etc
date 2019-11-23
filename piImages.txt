@@ -1,0 +1,7 @@
+- if sd card is readonly
+    hdparm -r0 /dev/mmcblk0
+    eject
+    insert
+- if filesystems are corrupt
+    dd if=/dev/zero of=/dev/mmcblk0 count=50
+- balenaEtcher for writing images

@@ -1,0 +1,24 @@
+egl$ time ./egl
+libEGL warning: DRI2: failed to authenticate
+major/minor: 1.4
+wrote image.png
+10.185u 0.027s 0:02.84 359.1%   0+0k 0+24io 0pf+0w
+egl$ ./egl list
+device 0: EGL_NV_device_cuda EGL_EXT_device_drm
+device 1: EGL_MESA_device_software
+device 2: EGL_EXT_device_drm
+egl$ time ./egl 0
+Using device 0: EGL_NV_device_cuda EGL_EXT_device_drm
+major/minor: 1.5
+wrote image.png
+0.639u 0.367s 0:01.01 98.0% 0+0k 0+32io 1pf+0w
+egl$ time ./egl 1
+Using device 1: EGL_MESA_device_software
+major/minor: 1.4
+wrote image.png
+10.193u 0.027s 0:02.85 358.2%   0+0k 0+24io 0pf+0w
+egl$ time ./egl 2
+Using device 2: EGL_EXT_device_drm
+major/minor: 1.4
+wrote image.png
+10.171u 0.026s 0:02.85 357.5%   0+0k 0+24io 0pf+0w

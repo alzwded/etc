@@ -135,14 +135,18 @@ int main(int argc, char *argv[])
           } else {
               printf("Using device %d: %s\n", idx, deviceString);
           }
+
           if(strstr(deviceString, "EGL_NV_device_cuda")) {
               eglDpy = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, eglDevices[idx], 0);
           } else if(strstr(deviceString, "EGL_EXT_device_drm")) {
               int fd = open(eglQueryDeviceStringEXT(eglDevices[idx], EGL_DRM_DEVICE_FILE_EXT), O_RDWR);
 #ifdef HAVE_GBM
+              printf("Using gbm\n");
               auto gbm = gbm_create_device(fd);
+              pConfigAttribs += 2; // the pbuffer bit isn't supported on GBM
               eglDpy = eglGetDisplay((EGLNativeDisplayType)gbm);
 #else
+              printf("Using EGL_DRM_MASTER_FD_EXT\n");
 # if !defined(EGL_DRM_MASTER_FD_EXT) && defined(EGL_EXT_platform_device) && EGL_EXT_platform_device
 # define EGL_DRM_MASTER_FD_EXT 0x333C
 # endif
@@ -214,12 +218,17 @@ int main(int argc, char *argv[])
   GLuint buffers[1];
   glGenBuffers(sizeof(buffers)/sizeof(buffers[0]), buffers);
   glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-  GLfloat coords[] = {
+  const int NUM_TRIAS = 100000;
+  GLfloat s_coords[] = {
       -0.5f, -0.5f, 0.0f,
       +0.5f, -0.5f, 0.0f,
       -0.0f, +0.5f, 0.0f,
   };
-  glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STATIC_DRAW);
+  GLfloat* coords = (GLfloat*)malloc(sizeof(GLfloat) * 3 * 3 * NUM_TRIAS);
+  for(int i = 0; i < NUM_TRIAS; ++i) {
+      memcpy(&coords[i * 9], s_coords, 9 * sizeof(GLfloat));
+  }
+  glBufferData(GL_ARRAY_BUFFER, NUM_TRIAS * 3 * 3 * 4, coords, GL_STATIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -240,8 +249,8 @@ int main(int argc, char *argv[])
   //glClearColor(1, 1, 1, 1);
   glClearColor(1, 1, 1, 0);
   glClear(GL_COLOR_BUFFER_BIT);
-  for(int i = 0; i < 100000; ++i)
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  //for(int i = 0; i < 10; ++i)
+  glDrawArrays(GL_TRIANGLES, 0, NUM_TRIAS * 3);
 
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

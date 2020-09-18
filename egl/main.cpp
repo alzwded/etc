@@ -1,3 +1,4 @@
+// link with -lGLESv2 instead of -lGL
 #define EGL_EGLEXT_PROTOTYPES
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -23,7 +24,7 @@ static const EGLint configAttribs[] = {
         EGL_GREEN_SIZE, 8,
         EGL_RED_SIZE, 8,
         EGL_DEPTH_SIZE, 8,
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         EGL_NONE
 };    
 const EGLint* pConfigAttribs = configAttribs;
@@ -252,6 +253,7 @@ int main(int argc, char *argv[])
   //for(int i = 0; i < 10; ++i)
   glDrawArrays(GL_TRIANGLES, 0, NUM_TRIAS * 3);
 
+#if 0
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -261,6 +263,13 @@ int main(int argc, char *argv[])
   // Okay, honestly, I don't know how this will map into libpng, but the alpha comes first in memory xD
   int pixels[BUFSIZE * BUFSIZE];
   glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+#else
+  glFlush();
+  int pixels[BUFSIZE * BUFSIZE];
+  glReadPixels(0, 0, BUFSIZE, BUFSIZE, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
 
 #if 0
   for(int i = 0; i < 100; ++i) {

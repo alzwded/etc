@@ -1,7 +1,7 @@
 #define EGL_EGLEXT_PROTOTYPES
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <GL/glew.h>
+#include <GLES2/gl2.h>
 #include <string>
 #include <fstream>
 #include <streambuf>
@@ -27,6 +27,11 @@ static const EGLint configAttribs[] = {
         EGL_NONE
 };    
 const EGLint* pConfigAttribs = configAttribs;
+
+static const EGLint ctx_attribs[] = {
+        EGL_CONTEXT_CLIENT_VERSION, 2,
+        EGL_NONE };
+
 
 static const int pbufferWidth = 9;
 static const int pbufferHeight = 9;
@@ -140,6 +145,11 @@ int main(int argc, char *argv[])
               eglDpy = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, eglDevices[idx], 0);
           } else if(strstr(deviceString, "EGL_EXT_device_drm")) {
               int fd = open(eglQueryDeviceStringEXT(eglDevices[idx], EGL_DRM_DEVICE_FILE_EXT), O_RDWR);
+              if(fd < 0) {
+                  int err = errno;
+                  printf("Error opening device: %d/%s\n", err, strerror(err));
+                  abort();
+              }
 #ifdef HAVE_GBM
               printf("Using gbm\n");
               auto gbm = gbm_create_device(fd);
@@ -183,17 +193,25 @@ int main(int argc, char *argv[])
 
 
   // 2. Select an appropriate configuration
-  EGLint numConfigs;
+  EGLint numConfigs = 0;
   EGLConfig eglCfg;
 
-  eglChooseConfig(eglDpy, pConfigAttribs, &eglCfg, 1, &numConfigs);
+  auto configOK = eglChooseConfig(eglDpy, pConfigAttribs, &eglCfg, 1, &numConfigs);
+  if(!configOK) {
+      int err = eglGetError();
+      printf("Failed to choose a config: %d %x\n", err, err);
+      abort();
+  }
+  if(numConfigs <= 0) {
+      printf("No configs available\n");
+      abort();
+  }
 
   // 4. Bind the API
-  eglBindAPI(EGL_OPENGL_API);
+  eglBindAPI(EGL_OPENGL_ES_API);
 
   // 5. Create a context and make it current
-  EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, 
-                                       NULL);
+  EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, ctx_attribs);
 
 #if 0
   // if we're not setting up our own framebuffer, eglSurf fills that role
@@ -208,11 +226,13 @@ int main(int argc, char *argv[])
 
   // from now on use your OpenGL context
 
+#if 0
   GLenum err = glewInit();
   if(err != GLEW_OK) {
       printf("Error initializing GL: %s\n", glewGetErrorString(GLEW_VERSION));
       abort();
   }
+#endif
   GLuint program = loadProgram("shader");
   glUseProgram(program);
   GLuint buffers[1];

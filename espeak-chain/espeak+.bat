@@ -1,8 +1,18 @@
 @echo off
+SETLOCAL
+
+SET "ESPEAK_BIN=c:\bin\eSpeak\command_line\espeak.exe"
+SET "FFMPEG_BIN=ffmpeg"
+
 REM espeak+.bat
 REM this is very very old and doesn't work very well at all
+SET NOWAIT=0
 
 :START
+IF "%~1"=="/nw" (
+    SET NOWAIT=1
+    SHIFT
+)
 IF "%~1"=="" GOTO NOPARAMS
 IF "%~1"=="/?" GOTO HELP
 IF "%~1"=="-?" GOTO HELP
@@ -35,9 +45,11 @@ GOTO START
 
 :PARSEFILE
 SET INPUTTED=%~1
+SET WAVFILE=%~dpn1.wav
+SET ENCODEDFILE=%~dpn1.mp3
 
 :RUNESPEAK
-SET COMMANDLINESTRING="c:\bin\eSpeak\command_line\espeak.exe" -s 240 -p 90 -v english-north -l 50 -b 1 -f "%INPUTTED%" -w "%INPUTTED:~0,-3%wav"
+SET COMMANDLINESTRING=%ESPEAK_BIN% -s 240 -p 90 -v english-north -l 50 -b 1 -f "%INPUTTED%" -w "%WAVFILE%"
 REM --split="60"
 IF "%EXTRAPARAS%"=="" GOTO NOEXTRAPARAS
 GOTO EXTRAPARAS
@@ -66,10 +78,19 @@ GOTO END
 
 :SUCCESS
 ECHO conversion finished.
+where %FFMPEG_BIN%>NUL 2>&1
+IF ERRORLEVEL 1 GOTO END
+ECHO converting to mp3.
+ffmpeg -i "%WAVFILE%" -acodec libmp3lame -ab 48000 "%ENCODEDFILE%"
+IF ERRORLEVEL 1 GOTO :FIN
+DEL /q "%WAVFILE%"
+:FIN
+echo %ERRORLEVEL%
 GOTO END
 
 :HELP
 ECHO usage: espeak+  [switches] filename
+ECHO.     /nw - don't pause at the end
 ECHO.     /? - this message
 ECHO      /o - for extra options
 ECHO      /s - tell espeak to split the file
@@ -81,4 +102,5 @@ GOTO END
 REM CLEAN STUFF
 SET EXTRAPARAS=
 SET INPUTTED=
+IF %NOWAIT% GTR 0 GOTO :EOF
 PAUSE

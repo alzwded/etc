@@ -25,6 +25,7 @@ my $Pathsep = undef;
 my $nativePathsep = undef;
 my $Fullpath = undef;
 my $reverse = undef;
+my $exitcode = 1;
 
 #print STDERR "Jak's fake grep\n"; # proof/confirmation we have a modern re engine # too annoying to have it on
 
@@ -79,6 +80,8 @@ if(!$recursive) {
     do_dir($path);
 }
 
+exit $exitcode;
+
 # if we came from a file, print path, line number and matched line
 sub pprint {
     my ($file, $line, $s) = @_;
@@ -128,6 +131,7 @@ sub do_file {
             }
         }
         pprint($path, $line, $s) if $print;
+        $exitcode = 0 if $print;
         ++$line;
     }
 

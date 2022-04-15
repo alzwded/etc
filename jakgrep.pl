@@ -26,7 +26,7 @@ my $nativePathsep = undef;
 my $Fullpath = undef;
 my $reverse = undef;
 
-print STDERR "Jak's fake grep\n"; # proof/confirmation we have a modern re engine
+#print STDERR "Jak's fake grep\n"; # proof/confirmation we have a modern re engine # too annoying to have it on
 
 # this nicely matches -e, -r and -i from real grep
 GetOptions("expression=s" => \$expression,
@@ -105,19 +105,21 @@ sub do_file {
     while(<$fh>) {
         chomp;
         my $s = $_;
+        my $print = 0;
         if(!defined $reverse) {
-            if($s =~ /$expression/) {
-                pprint($path, $line, $s);
-            } elsif ($ignorecase && $s =~ /$expression/i) {
-                pprint($path, $line, $s);
+            if($ignorecase) {
+                $print = 1 if $s =~ /$expression/i;
+            } else {
+                $print = 1 if $s =~ /$expression/;
             }
         } else {
-            if ($ignorecase && $s !~ /$expression/i) {
-                pprint($path, $line, $s);
-            } elsif($s !~ /$expression/) {
-                pprint($path, $line, $s);
+            if($ignorecase) {
+                $print = 1 unless $s =~ /$expression/i;
+            } else {
+                $print = 1 unless $s =~ /$expression/;
             }
         }
+        pprint($path, $line, $s) if $print;
         ++$line;
     }
 

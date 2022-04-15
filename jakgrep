@@ -16,21 +16,40 @@
 use strict;
 
 use Getopt::Long;
+use File::Spec;
 my $expression = undef;
 my $recursive = undef;
 my $path = undef;
 my $ignorecase = undef;
+my $Pathsep = undef;
+my $nativePathsep = undef;
+my $Fullpath = undef;
 
 print STDERR "Jak's fake grep\n"; # proof/confirmation we have a modern re engine
 
 # this nicely matches -e, -r and -i from real grep
 GetOptions("expression=s" => \$expression,
            "recursive" => \$recursive,
-           "ignorecase" => \$ignorecase)
+           "ignorecase" => \$ignorecase,
+           "Pathsep=s" => \$Pathsep,
+           "Fullpath" => \$Fullpath)
            or die("Error in command line arguments");
 
 #use Data::Dumper;
 #print Dumper(\@ARGV);
+
+# sometimes on Cygwin or WSL I want to force Windows path separators to 
+# cut-paste paths into some windows app
+if(defined $Pathsep) {
+    die "Pathsep must be / or \\ or undefined; you provided `$Pathsep'" if($Pathsep !~ m/^(\\|\/)$/s);
+    $nativePathsep = File::Spec->catfile('','');
+    $Pathsep = $Pathsep;
+    if($nativePathsep eq $Pathsep) {
+        # no point in transforming if they're the same
+        $nativePathsep = undef;
+        $Pathsep = undef;
+    }
+}
 
 # get expression from "rest" if not already specified, like real grep
 if(! defined($expression)) {
@@ -62,7 +81,10 @@ if(!$recursive) {
 sub pprint {
     my ($file, $line, $s) = @_;
     if(defined $file) {
-        print( "$file:$line: ");
+        my $pfile = File::Spec->canonpath($file);
+        $pfile = File::Spec->rel2abs($pfile) if defined $Fullpath;
+        $pfile =~ s#\Q$nativePathsep\E#$Pathsep#g if defined $Pathsep;
+        print( "$pfile($line): ");
     }
     print $s."\n";
 }

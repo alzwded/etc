@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 # Copyright Vlad Meșco 2022
 # 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,15 @@ sub do_file {
 
     my $fh;
     if(defined($path)) {
-        open $fh, "<", $path or die "Can't open $path";
+        my $hr = open $fh, "<", $path;
+        if(!$hr) {
+            if(-e $path) {
+                print STDERR "grep: $path: Permission denied\n";
+            } else {
+                print STDERR "grep: $path: No such file\n";
+            }
+            return;
+        }
     } else {
         $fh = \*STDIN;
     }
@@ -131,7 +139,15 @@ sub do_file {
 sub do_dir {
     my ($path) = @_;
 
-    opendir(my $dh, $path) or die "Can't open $path";
+    my $hr = opendir(my $dh, $path);
+    if(!$hr) {
+        if(-e $path) {
+            print STDERR "grep: $path: Permission denied\n";
+        } else {
+            print STDERR "grep: $path: No such directory\n";
+        }
+        return;
+    }
 
     while(readdir $dh) {
         next if($_ eq '.' || $_ eq '..');

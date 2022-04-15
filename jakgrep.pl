@@ -24,6 +24,7 @@ my $ignorecase = undef;
 my $Pathsep = undef;
 my $nativePathsep = undef;
 my $Fullpath = undef;
+my $reverse = undef;
 
 print STDERR "Jak's fake grep\n"; # proof/confirmation we have a modern re engine
 
@@ -32,7 +33,8 @@ GetOptions("expression=s" => \$expression,
            "recursive" => \$recursive,
            "ignorecase" => \$ignorecase,
            "Pathsep=s" => \$Pathsep,
-           "Fullpath" => \$Fullpath)
+           "Fullpath" => \$Fullpath,
+           "v" => \$reverse)
            or die("Error in command line arguments");
 
 #use Data::Dumper;
@@ -103,10 +105,18 @@ sub do_file {
     while(<$fh>) {
         chomp;
         my $s = $_;
-        if($s =~ /$expression/) {
-            pprint($path, $line, $s);
-        } elsif ($ignorecase && $s =~ /$expression/i) {
-            pprint($path, $line, $s);
+        if(!defined $reverse) {
+            if($s =~ /$expression/) {
+                pprint($path, $line, $s);
+            } elsif ($ignorecase && $s =~ /$expression/i) {
+                pprint($path, $line, $s);
+            }
+        } else {
+            if ($ignorecase && $s !~ /$expression/i) {
+                pprint($path, $line, $s);
+            } elsif($s !~ /$expression/) {
+                pprint($path, $line, $s);
+            }
         }
         ++$line;
     }

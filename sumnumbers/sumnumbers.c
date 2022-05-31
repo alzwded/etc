@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
     }
 
     if(!return_sum) {
-        printf("%lg\n", sum);
+        printf("%.15lg\n", sum);
         return 0;
     } else {
         return (int)round(sum);

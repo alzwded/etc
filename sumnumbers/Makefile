@@ -1,7 +1,13 @@
 USR_LOCAL_BIN = /usr/local/bin
 
 sumnumbers: sumnumbers.c
-	gcc -O2 -o sumnumbers sumnumbers.c -lm
+	gcc -O2 -Wall -o sumnumbers sumnumbers.c -lm
+
+debug: sumnumbers.c
+	rm -f sumnumbers && \
+	    gcc -g -Wall -o sumnumbers sumnumbers.c -lm
+
+.PHONY: debug
 
 clean:
 	rm -f sumnumbers

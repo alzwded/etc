@@ -25,18 +25,28 @@ my $Pathsep = undef;
 my $nativePathsep = undef;
 my $Fullpath = undef;
 my $reverse = undef;
+my $showHelp = undef;
 my $exitcode = 1;
 
 #print STDERR "Jak's fake grep\n"; # proof/confirmation we have a modern re engine # too annoying to have it on
 
 # this nicely matches -e, -r and -i from real grep
-GetOptions("expression=s" => \$expression,
+my %options = (
+           "expression=s" => \$expression,
            "recursive" => \$recursive,
            "ignorecase" => \$ignorecase,
            "Pathsep=s" => \$Pathsep,
            "Fullpath" => \$Fullpath,
-           "v" => \$reverse)
-           or die("Error in command line arguments");
+           "v" => \$reverse,
+           "help" => \$showHelp);
+sub showHelpHelper {
+    my ($lambda) = @_;
+    use Data::Dumper;
+    print Data::Dumper->Dump([[sort keys %options]], [qw/options/]);
+    &$lambda() if $lambda;
+}
+GetOptions(%options) or showHelpHelper(sub { die("Error in command line arguments" ) });
+showHelpHelper(sub { exit 1 }) if defined $showHelp;
 
 #use Data::Dumper;
 #print Dumper(\@ARGV);

@@ -51,3 +51,39 @@ echo 'vim usage:
     :tn
     :tp'
 ```
+
+cscope
+======
+
+This is also a cool tool.
+
+Use `cscope -bqR` to (re)generate db.
+
+Use `cscope -bqR -s../include -s../drv` for additional sources. Add `-u` to force rebuild.
+
+Vim runs it as a piped child process.
+
+Start with `:cs add cscope.out`. Check processess with `:cs show`. I'm not sure how to globally generate this for a 3+ tier build system o_O.
+
+In vim, the `:cs` command is the entrypoint which shows help. Examples
+
+    :cs find g symbol_to_lookup
+    :cs find c callable
+    :cs find d what_does_this_call
+    :cs find s C_symbol
+    :cs find t text_string
+    :cs find e egrep_pattern
+    :cs find f file
+    
+It looks pretty useful, if a bit more dumb than ctags. The `c` thing seems pretty cool. Although it shows a lot of usages and whatnot. This together with ctags should be awesome as it covers everyone's need. Now, it's a shame that it appears to only work with C/C++.
+
+It has caveats for C++.
+
+GNU GLOBAL
+==========
+
+I haven't figured it out. Use `gtags` to generate 3 files, then `global` (with a ton of arguments) to look stuff up. Apparently there's a Vim plugin, but it wasn't already installed so I didn't bother.
+
+`global -x thing` prints in the `ctags -x` format`.
+
+Does this thing literally only find definitions period?!?!?!

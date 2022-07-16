@@ -35,7 +35,8 @@ __attribute__((noreturn)) void usage(const char* argv0)
 
 int from_stdin(double* n)
 {
-    while(!(1 == scanf("%lf", n))) {
+    do {
+        if(1 == scanf("%lf", n)) return 1;
         if(feof(stdin)) return 0;
         if(ferror(stdin)) return 0;
 
@@ -43,8 +44,7 @@ int from_stdin(double* n)
 #pragma GCC diagnostic ignored "-Wunused-result"
         (void) scanf("%*s");
 #pragma GCC diagnostic pop
-    }
-    return (1 == scanf("%lf", n));
+    } while(1);
 }
 
 int from_args(double* n)

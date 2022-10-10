@@ -1,0 +1,25 @@
+egl$ time ./egl
+libEGL warning: DRI2: failed to authenticate
+major/minor: 1.4
+wrote image.png
+10.145u 0.041s 0:02.82 360.9%   0+0k 0+24io 0pf+0w
+egl$ ./egl list
+device 0: EGL_NV_device_cuda EGL_EXT_device_drm
+device 1: EGL_MESA_device_software
+device 2: EGL_EXT_device_drm
+egl$ foreach i ( `seq 0 1 2` )
+foreach? time ./egl $i
+foreach? end
+Using device 0: EGL_NV_device_cuda EGL_EXT_device_drm
+major/minor: 1.5
+wrote image.png
+0.641u 0.381s 0:01.02 100.0%    0+0k 0+32io 1pf+0w
+Using device 1: EGL_MESA_device_software
+major/minor: 1.4
+wrote image.png
+10.187u 0.033s 0:02.85 358.2%   0+0k 0+24io 0pf+0w
+Using device 2: EGL_EXT_device_drm
+Using gbm
+major/minor: 1.4
+wrote image.png
+10.159u 0.035s 0:02.84 358.4%   0+0k 0+24io 0pf+0w

@@ -6,4 +6,4 @@
     insert
 - if filesystems are corrupt
     dd if=/dev/zero of=/dev/mmcblk0 count=50
-- balenaEtcher for writing images
+- ~~balenaEtcher for writing images~~ Recently, I was using Raspberry Pi Imager from the snap store, seems to work fine. Use the Server image as that allows provisioning ssh keys, hostname, and initial networking netplan (otherwise you'll need a monitor and keyboard to set those up)

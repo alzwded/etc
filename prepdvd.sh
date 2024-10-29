@@ -11,3 +11,4 @@ done
 
 echo "----------------------------------------"
 echo "Use DeVeDe to create a Video DVD project"
+echo "(add a menu with a playall option...)"

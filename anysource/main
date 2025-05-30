@@ -1,0 +1,1 @@
+echo $SHELL | grep -q csh && source a.csh || . a.sh

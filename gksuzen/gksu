@@ -1,0 +1,2 @@
+#!/bin/sh
+env SUDO_ASKPASS="$( realpath $0 )-askpass" sudo -A "$@"

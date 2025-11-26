@@ -1,0 +1,8 @@
+cheap-O gksu re-imagining using sudo and zenity.
+
+You might want to actually use ssh-askpass instead of the zenity based
+gksu-askpass.
+
+Or pkexec.
+
+Or... not this, in general.

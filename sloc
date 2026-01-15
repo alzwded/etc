@@ -1,0 +1,10 @@
+#!/bin/bash
+cat "$@" | \
+    sed -e 's/[{}]//g' \
+        -e '/^ *\r\{0,1\}$/d' \
+        -e '/^ *\/\//d' \
+        -e '/^# *include /d' \
+        -e '/using namespace /d' \
+        -e '/^ *\\/d' \
+        | \
+    wc -l

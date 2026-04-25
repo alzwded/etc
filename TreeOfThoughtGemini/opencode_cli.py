@@ -6,6 +6,7 @@ import os
 import sys
 import re
 import readline
+import shlex
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 
@@ -42,7 +43,7 @@ class TerminalManager:
         self.next_id += 1
         
         # Reconstruct the command string to handle piped inputs or shell operators
-        full_cmd_str = " ".join([command] + (args or []))
+        full_cmd_str = shlex.join([command] + (args or []))
         
         run_env = os.environ.copy()
         if env:
@@ -56,6 +57,7 @@ class TerminalManager:
             cmd = ["bash", "-c", full_cmd_str]
         
         # Initiate subprocess targeted for appropriate OS shell
+        # ADDED: stdin=subprocess.PIPE to allow the agent to send interactive keystrokes
         proc = subprocess.Popen(
             cmd, cwd=cwd, env=run_env,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,

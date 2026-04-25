@@ -210,6 +210,7 @@ class ACPClient:
             except json.JSONDecodeError:
                 continue # Discard unparseable stdout data safely
 
+
             # Classify payload variant
             if "id" in msg and ("result" in msg or "error" in msg):
                 # JSON-RPC Response variant: Matches a pending Client-to-Agent request
@@ -260,12 +261,12 @@ class ACPClient:
                     elif method_name == "fs/read_text_file":
                         file_path = params.get("path")
                         with open(file_path, "r", encoding="utf-8") as f:
-                            response_payload["result"] = {"text": f.read()}
+                            response_payload["result"] = {"content": f.read()}
                             
                     elif method_name == "fs/write_text_file":
                         file_path = params.get("path")
                         with open(file_path, "w", encoding="utf-8") as f:
-                            f.write(params.get("text", ""))
+                            f.write(params.get("content", ""))
                         response_payload["result"] = {}
                         
                     else:
@@ -408,17 +409,18 @@ class ACPClient:
 
 def extract_json_array(text: str) -> List[str]:
     """Identifies and decodes a JSON array structurally embedded within conversational text."""
-    match = re.search(r'\[.*?\]', text, re.DOTALL)
+    match = re.search(r'\[.*\]', text, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(0))
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             pass
     return
 
 def extract_score(text: str) -> float:
     """Isolates standardized numerical viability scores from textual evaluations."""
     matches = re.findall(r"0\.\d+|1\.0|0|1", text)
+    print(repr(matches))
     if matches:
         return float(matches[0])
     return 0.0
@@ -440,7 +442,8 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
     prompt_step2 = (
         f"The user wants to execute the following task:\n'{user_prompt}'\n\n"
         "Generate exactly 3 distinct opinions/interpretations on how to approach this. "
-        "Return your answer ONLY as a valid JSON array of 3 strings."
+        "Return your answer ONLY as a valid JSON array of 3 strings. "
+        "Do NOT execute the final task."
     )
     resp_text = acp.prompt(temp_session, prompt_step2)
     opinions_data = extract_json_array(resp_text)
@@ -479,6 +482,7 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
             f"Discoveries:\n{disc.report}\n\n"
             "Based on this, draft 3 distinct implementation plans. "
             "Return ONLY a valid JSON array of 3 strings."
+            "Do NOT execute the final task. "
         )
         resp_text = acp.prompt(plan_session, prompt_step4)
         plans_data = extract_json_array(resp_text)
@@ -490,11 +494,12 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
     for plan in plans:
         score_session = acp.create_session()
         prompt_step5 = (
-            f"Evaluate this plan.\n"
+            f"Evaluate this plan given the interpretation of the user's request.\n"
             f"Interpretation: '{plan.opinion.text}'\n"
             f"Plan: '{plan.text}'\n\n"
             "Score relevance and viability strictly from 0.0 to 1.0. "
-            "Output ONLY the numeric score."
+            "Output ONLY the numeric score. "
+            "Do NOT implement the final task."
         )
         resp_text = acp.prompt(score_session, prompt_step5)
         plan.score = extract_score(resp_text)

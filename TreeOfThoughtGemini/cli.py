@@ -442,11 +442,15 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
     prompt_step2 = (
         f"The user wants to execute the following task:\n'{user_prompt}'\n\n"
         "Generate exactly 3 distinct opinions/interpretations on how to approach this. "
-        "Return your answer ONLY as a valid JSON array of 3 strings. "
-        "Do NOT execute the final task."
+        "Return your answer ONLY as a valid JSON array of 3 strings. Each string is one of the three opinions as a valid JSON string. "
+        "Do NOT execute or implement the final task."
     )
     resp_text = acp.prompt(temp_session, prompt_step2)
     opinions_data = extract_json_array(resp_text)
+
+    if not opinions_data:
+        resp_text = acp.prompt(temp_session, "Please output a valid JSON array of 3 strings, each string being a valid properly escaped JSON string representing each opinion.")
+        opinions_data = extract_json_array(resp_text)
     
     if not opinions_data:
         print("[!] ToT Aborted: Failed to generate structured JSON interpretations.")
@@ -477,15 +481,25 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
     for disc in discoveries:
         plan_session = acp.create_session()
         prompt_step4 = (
+            "Return your answer ONLY as a valid JSON array of 3 strings.\n"
             f"User Task: '{user_prompt}'\n"
             f"Interpretation: '{disc.opinion.text}'\n"
             f"Discoveries:\n{disc.report}\n\n"
             "Based on this, draft 3 distinct implementation plans. "
-            "Return ONLY a valid JSON array of 3 strings."
-            "Do NOT execute the final task. "
+            "Return your answer ONLY as a valid JSON array of 3 strings, representing the 3 plans, each one valid JSON string. "
+            "Do NOT execute or implement the final task. "
         )
         resp_text = acp.prompt(plan_session, prompt_step4)
         plans_data = extract_json_array(resp_text)
+        if plans_data is None or len(plans_data) == 0:
+            # try again...?
+            resp_text = acp.prompt(plan_session, f"Please output a valid JSON array of 3 strings, each string being a valid properly escaped JSON string representing each plan.")
+            plans_data = extract_json_array(resp_text)
+            if plans_data is None or len(plans_data) == 0:
+                if resp_text is not None and len(resp_text) > 0:
+                    plans.append(Plan(opinion=disc.opinion, discovery=disc, text=f"The following text should contain three distinct plans. Consider and read ONLY the first plan! If the following text is some kind of error message or nonsense, then this is not a valid plan, so please skip.\n\n{resp_text}"))
+                continue
+            # else, fall through
         for p_text in plans_data[:3]:
             plans.append(Plan(opinion=disc.opinion, discovery=disc, text=p_text))
 
@@ -499,7 +513,7 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
             f"Plan: '{plan.text}'\n\n"
             "Score relevance and viability strictly from 0.0 to 1.0. "
             "Output ONLY the numeric score. "
-            "Do NOT implement the final task."
+            "Do NOT execute or implement the final task."
         )
         resp_text = acp.prompt(score_session, prompt_step5)
         plan.score = extract_score(resp_text)

@@ -41,13 +41,21 @@ class TerminalManager:
         term_id = f"term_{self.next_id}"
         self.next_id += 1
         
-        cmd = [command] + (args or [])
+        # Reconstruct the command string to handle piped inputs or shell operators
+        full_cmd_str = " ".join([command] + (args or []))
+        
         run_env = os.environ.copy()
         if env:
             for e in env:
                 run_env[e['name']] = e['value']
         
-        # Initiate subprocess targeted for Linux shells
+        # Route through native shell environments for robust execution
+        if os.name == 'nt':
+            cmd = ["powershell.exe", "-Command", full_cmd_str]
+        else:
+            cmd = ["bash", "-c", full_cmd_str]
+        
+        # Initiate subprocess targeted for appropriate OS shell
         proc = subprocess.Popen(
             cmd, cwd=cwd, env=run_env,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,

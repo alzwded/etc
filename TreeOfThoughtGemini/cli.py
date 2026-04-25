@@ -427,7 +427,7 @@ def extract_score(text: str) -> float:
     matches = re.findall(r"0\.\d+|1\.0|0|1", text)
     print(repr(matches))
     if matches:
-        return float(matches[0])
+        return float(matches[-1])
     return 0.0
 
 # --- Standardized Tree of Thoughts (ToT) Sub-Routine ---

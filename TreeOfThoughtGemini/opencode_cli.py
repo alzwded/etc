@@ -58,7 +58,7 @@ class TerminalManager:
         # Initiate subprocess targeted for appropriate OS shell
         proc = subprocess.Popen(
             cmd, cwd=cwd, env=run_env,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             text=True, bufsize=1
         )
         
@@ -77,6 +77,16 @@ class TerminalManager:
             
         threading.Thread(target=read_output, daemon=True).start()
         return term_id
+
+    def send_input(self, term_id: str, content: str):
+        if term_id in self.terminals:
+            proc = self.terminals[term_id]["process"]
+            if proc.stdin and proc.poll() is None:
+                try:
+                    proc.stdin.write(content)
+                    proc.stdin.flush()
+                except BrokenPipeError:
+                    pass
 
     def get_output(self, term_id: str) -> tuple:
         if term_id not in self.terminals:
@@ -234,6 +244,7 @@ class ACPClient:
                 params = msg.get("params", {})
                 
                 response_payload = {"jsonrpc": "2.0", "id": req_id}
+                skip_response = False # Used to prevent sending a response if handled asynchronously
                 
                 try:
                     # Linux YOLO Mode Execution Handlers
@@ -245,17 +256,45 @@ class ACPClient:
                             params.get("env")
                         )
                         response_payload["result"] = {"terminalId": term_id}
+                    
+                    elif method_name == "terminal/input":
+                        self.term_manager.send_input(params.get("terminalId"), params.get("content", ""))
+                        response_payload["result"] = {}
                         
                     elif method_name == "terminal/output":
                         out, status = self.term_manager.get_output(params.get("terminalId"))
                         res = {"output": out}
                         if status:
-                            res = status
+                            res["exitStatus"] = status # Merge dictionary, do not overwrite 'out'
                         response_payload["result"] = res
                         
                     elif method_name == "terminal/wait_for_exit":
-                        status = self.term_manager.wait_for_exit(params.get("terminalId"))
-                        response_payload["result"] = {"exitStatus": status}
+                        term_id = params.get("terminalId")
+                        skip_response = True
+                        
+                        # Execute wait operation in a dedicated thread to prevent JSON-RPC deadlock
+                        def async_wait_and_respond():
+                            try:
+                                status = self.term_manager.wait_for_exit(term_id)
+                                async_payload = {
+                                    "jsonrpc": "2.0", 
+                                    "id": req_id, 
+                                    "result": {"exitStatus": status}
+                                }
+                                self.process.stdin.write(json.dumps(async_payload) + "\n")
+                                self.process.stdin.flush()
+                            except Exception as async_err:
+                                error_payload = {
+                                    "jsonrpc": "2.0", "id": req_id,
+                                    "error": {"code": -32603, "message": str(async_err)}
+                                }
+                                try:
+                                    self.process.stdin.write(json.dumps(error_payload) + "\n")
+                                    self.process.stdin.flush()
+                                except BrokenPipeError:
+                                    pass
+                        
+                        threading.Thread(target=async_wait_and_respond, daemon=True).start()
                         
                     elif method_name == "terminal/kill":
                         self.term_manager.kill(params.get("terminalId"))
@@ -291,12 +330,13 @@ class ACPClient:
                         "message": str(e)
                     }
 
-                # Transmit execution results back to the agent
-                try:
-                    self.process.stdin.write(json.dumps(response_payload) + "\n")
-                    self.process.stdin.flush()
-                except BrokenPipeError:
-                    pass
+                # Transmit execution results back to the agent (if not handled asynchronously)
+                if not skip_response:
+                    try:
+                        self.process.stdin.write(json.dumps(response_payload) + "\n")
+                        self.process.stdin.flush()
+                    except BrokenPipeError:
+                        pass
             
             elif "method" in msg and msg["method"] == "session/update":
                 # JSON-RPC Notification variant: Streaming payload intercept

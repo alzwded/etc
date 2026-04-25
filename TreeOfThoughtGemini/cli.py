@@ -181,7 +181,8 @@ class ACPClient:
             raise ACPClientError("The ACP subprocess terminated unexpectedly.")
 
         # Suspend thread execution until the reader thread resolves the correlation event
-        event.wait(timeout=300.0)
+        #event.wait(timeout=300.0)
+        event.wait(timeout=6 * 300.0)
 
         with self.lock:
             result_data = self.pending_requests.pop(req_id, {}).get("response")
@@ -260,8 +261,12 @@ class ACPClient:
                         
                     elif method_name == "fs/read_text_file":
                         file_path = params.get("path")
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            response_payload["result"] = {"content": f.read()}
+                        try:
+                            with open(file_path, "r", encoding="utf-8") as f:
+                                response_payload["result"] = {"content": f.read()}
+                        except FileNotFoundError:
+                            # file not found needs to report "empty" so the agent can create it
+                            response_payload["result"] = {"content": ""}
                             
                     elif method_name == "fs/write_text_file":
                         file_path = params.get("path")
@@ -443,7 +448,7 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
         f"The user wants to execute the following task:\n'{user_prompt}'\n\n"
         "Generate exactly 3 distinct opinions/interpretations on how to approach this. "
         "Return your answer ONLY as a valid JSON array of 3 strings. Each string is one of the three opinions as a valid JSON string. "
-        "Do NOT execute or implement the final task."
+        "Do NOT execute or implement the final task. Do NOT modify files. Do NOT write files."
     )
     resp_text = acp.prompt(temp_session, prompt_step2)
     opinions_data = extract_json_array(resp_text)
@@ -470,7 +475,7 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
             f"User Task: '{user_prompt}'\n"
             f"Interpretation: '{op.text}'\n\n"
             "Use your built-in tools to explore the current directory for info relevant to this. "
-            "Report discoveries structurally. Do NOT execute the final task."
+            "Report discoveries structurally. Do NOT execute the final task. Do NOT modify files. Do NOT write files."
         )
         resp_text = acp.prompt(fork_session, prompt_step3)
         discoveries.append(Discovery(opinion=op, report=resp_text))
@@ -487,7 +492,7 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
             f"Discoveries:\n{disc.report}\n\n"
             "Based on this, draft 3 distinct implementation plans. "
             "Return your answer ONLY as a valid JSON array of 3 strings, representing the 3 plans, each one valid JSON string. "
-            "Do NOT execute or implement the final task. "
+            "Do NOT execute or implement the final task. Do NOT write files. Do NOT modify files."
         )
         resp_text = acp.prompt(plan_session, prompt_step4)
         plans_data = extract_json_array(resp_text)
@@ -513,7 +518,7 @@ def execute_tree_of_thoughts(acp: ACPClient, user_prompt: str, main_session_id: 
             f"Plan: '{plan.text}'\n\n"
             "Score relevance and viability strictly from 0.0 to 1.0. "
             "Output ONLY the numeric score. "
-            "Do NOT execute or implement the final task."
+            "Do NOT execute or implement the final task. Do NOT write files. Do NOT modify files."
         )
         resp_text = acp.prompt(score_session, prompt_step5)
         plan.score = extract_score(resp_text)

@@ -20,3 +20,8 @@ So what could be a couple of requests become 97 requests.
 All in all: it takes a fast, cheap model, and makes it slow and expensive :-)
 
 It was fun though.
+
+Protip, pick the cheapest model:
+- set GEMINI_MODEL=gemini-2.5-flash-lite or modify CLI invocation to --model gemini-2.5-flash-lite
+- set COPILOT_MODEL=gpt-5-mini or modify CLI invocation to --model gpt-5-mini
+- I don't know of any env var for opencode, so modify cli invocation to --model cheapest-fastest-thing-you-have-available

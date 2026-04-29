@@ -133,7 +133,7 @@ class ACPClient:
     def __init__(self, cli_args: List[str] = None):
         if cli_args is None:
             # Enable ACP mode natively without proprietary wrappers
-            cli_args = ["gemini", "--acp", "--yolo"]
+            cli_args = ["gemini", "--acp", "--yolo", "--direct"] # --model gemini-2.5-flash-lite
             
         self.request_id_counter = 0
         self.pending_requests: Dict = {}

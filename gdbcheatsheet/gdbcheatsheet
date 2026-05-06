@@ -1,0 +1,104 @@
+r					Run app
+c					Continue (if stopped at a breakpoint)
+s					Step into (steps one statement (if in source code mode), 
+					or one instruction (if in disassembly mode))
+n					step to Next statement (single stepping)
+b file.cpp:line		set a line breakpoint (in source code mode)
+b 0x7fffa71234		set an address breakpoint
+b NS::FnName		set a function breakpoint (if symbols are available)
+save breakpoints filename	save your breakpoints as a GDB RC file
+source filename		load breakpoints
+info breakpoints	list breakpoints
+delete N			delete the Nth breakpoint (see info breakpoints)
+disable N			disable a breakpoint
+enable N 			enable a breakpoint
+clear				delete all breakpoints
+condition N Cexpression	add a condition to a breakpoint; gdb understands C expressions to a certain extent
+w aVariable			set a data breakpoint on a variable (gdb calls it watch, but don't confuse it 
+					with Visual Studio's watches; this is equivalent to VS's data breakpoint)
+v                   print locals
+p expression		print the value of a C expression to the extent that GDB understands the symbols
+p /x expression		print int values in hex
+x/20dw				print 20 ints (w = word = int = 4 bytes) in decimal format
+x/20xb				print 20 bytes as hexa
+x/100ib				print 100 bytes as instructions
+x/s					print null terminated strings
+x/24fg				print 24 double's
+x/24fw				print 24 32bit float's
+p {struct FILE*}0x12345678	alternative to C style casts (has a bit of a different priority
+				 	to C style casts which can make writing expressions easier)
+where				print a callstack
+f					Finish -- runs until the current stack frame gets cleared
+					(think of it as run-till-end-of-function)
+info sharedlibrary	print the module table (where each SO is loaded; this is useful since GDB 
+					doesn't normally tell you what module you're in :-) )
+kill				kills the process under test
+attach PID			attach to a running process
+info registers		view registers; you can reference them in expressions
+					e.g. $rax, $ax, $al, $ebp, $esp, $rdi, etc........
+up					move up the stack
+down				move down the stack
+frame N				move to Nth stack frame
+display expression	like p but repeated everytime GDB breaks
+thread N			switch to thread
+set var x=y			assign (!) a value
+return expression	force the function to return (!) with that value
+j location			set the next instruction (!) to be location; location can be
+					an absolute address, line, function, etc. See break.
+list ...			list source code
+CTRL+x, s			switch to visual mode (warning: this mode is crashy)
+CTRL+x, a			switch from visual mode back to text mode (warning: do this before
+CTRL+x, 1			switch to single window
+CTRL+x, 2			toggle multi window view (bring up disassembly)
+CTRL+x, o			change active window
+					killing the debugged process, otherwise GDB may crash)
+disassembly [where]	disassemble at that location
+whatis variable_name	print type of variable
+show environment varname	print env var
+set environment a = b	set the value (!) of an environment variable
+catch throw			break on exceptions; info breakpoints shows this as well
+catch catch			catch catching an exception
+catch load libname	catch loading of a library
+
+(!) means you're externally affecting the process
+
+n.b.: CTRL+ hotkeys are given in the POSIXy way where SHIFT is not a modifier and letters
+are key chars instead of VKs; this is relevant if you have a non-US QWERTY keyboard layout
+
+You also need to install libcc1.so on the system (gcc as a library).
+compile code -- C code	compile & execute (!) C code; use set language cpp to switch to cpp
+compile code filename	compile & execute (!) C code from filename
+set compile-args	set the gcc/g++ compiler options
+The C code is valid C code within the scope 
+
+You can also compile a helper shared library (e.g. to pretty print stuff, or just to have symbols where you need them) with g++ -fPIC -shared + other relevant flags
+This method doesn't require anything special from GDB. It relies on libc's implementation of dlopen. We're lucky libc is normally loaded in by gdb.
+call (void*)__libc_dlopen_mode("./helper.so", 2) 				# or 0x102 in case libc changes in the future in weird and interesting ways)
+call (return_type)__helperfunction(arg1, arg2)					# where __helperfunction is e.g. extern return_type __helperfunction(int, Object*)
+
+Your helper functions can contain printers, or just link in a lot of application symbols. You can pretty much just dlopen almost any random thing and call stuff from it.
+
+Reversing:
+record				begin recording
+record stop			stop recording
+record goto start
+record goto end
+record goto n
+record save fname
+record restore fname
+rc					reverse continue
+set exec-direction forward
+set exec-direction reverse
+reverse-step
+reverse-stepi
+reverse-next
+reverse-nexti
+reverse-finish
+
+in TUI mode:
+S					reverse s
+N
+O
+I
+
+Careful reversing over I/O
